@@ -1,0 +1,16 @@
+{% extends "../dininghall/dininghall_index.html" %}
+
+{% block title %} Edit Menu {% endblock %}
+
+{% block template %}
+<div class="row">
+  <div class="mx-auto col-10 col-md-8 col-lg-6">
+    <h2>Update Menu</h2>
+    <form action="" method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" value="Update" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
