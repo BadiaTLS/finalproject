@@ -3,6 +3,7 @@ from datetime import datetime, time, timedelta
 from final_project.dininghall.models import table_time, table_menu, table_booking_dininghall
 from final_project.students.models import table_students_information
 from django.db import transaction
+from django.contrib import messages
 
 # Create your views here.
 def students_index(request):
@@ -38,7 +39,16 @@ def confirm(request):
         student_nim = table_students_information.objects.get(nim=191900602)
         menu = table_menu.objects.get(date=current_date, session=session)
         if choice == 'take':
-            booking = table_booking_dininghall.objects.create(vacancy=menu.session, time_booked=time_suggested, menu=menu)
+            booking = table_booking_dininghall.objects.filter(menu=menu)
+            if booking.exists():
+                latest_booking = booking.latest('id')
+                vacancy = latest_booking.vacancy - 1
+                if booking.latest('id').vacancy == 0:
+                    messages.warning(request, 'The vacancy is already full.')
+                    return redirect('dining_hall')
+            else:
+                vacancy = menu.vacancy - 1
+            booking = table_booking_dininghall.objects.create(vacancy=vacancy, time_booked=time_suggested, menu=menu)
             booking.students_nim.add(student_nim)
             return redirect('dining_hall')
         else:

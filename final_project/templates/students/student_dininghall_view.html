@@ -14,14 +14,17 @@
 </li>
 {% endblock %}
 
+{% block message %}
+  {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+  {% endif %}
+{% endblock %}
+
 {% block template %}
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
 <div class="wrap">
   <div class="table-responsive">
     <table class="table table-striped-columns w-50 text-center mx-auto mt-3">

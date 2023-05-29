@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from .models import table_menu
 from .forms import MenuForm
+from django.db import transaction
 
 # Create your views here.
 def dininghall_index(request):
@@ -9,6 +10,7 @@ def dininghall_index(request):
     context = {"menu_objects": menu_object}
     return render(request, "dininghall/dininghall_index.html", context)
 
+@transaction.atomic
 def add_menu(request):
     submitted = False
     if request.method == "POST":
@@ -22,6 +24,7 @@ def add_menu(request):
             submitted = True
     return render(request, "dininghall/add_menu.html", {"form":form, "submitted":submitted})
 
+@transaction.atomic
 def edit_menu(request, menu_id):
     menu = table_menu.objects.get(pk=menu_id)
     form = MenuForm(request.POST or None, instance=menu)
@@ -33,8 +36,8 @@ def edit_menu(request, menu_id):
                   {'menu':menu,
                    'form':form})
 
+@transaction.atomic
 def delete_menu(request, menu_id):
     menu = table_menu.objects.get(pk=menu_id)
     menu.delete()
     return redirect('dininghall_index')
-
