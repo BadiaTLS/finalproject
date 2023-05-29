@@ -35,4 +35,5 @@ class table_booking_dininghall(models.Model):
     students_nim = models.ManyToManyField(table_students_information)
     time_booked = models.TimeField()
     menu = models.ForeignKey(table_menu, on_delete=models.CASCADE, null=True)
+    vacancy = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
