@@ -1,3 +1,20 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Create your models here.
+class CustomUser(AbstractUser):
+    ROLE_CHOICES = [
+        ('sas', 'SAS'),
+        ('dininghall', 'Dining Hall'),
+        ('student', 'Student'),
+        ('library', 'Library'),
+        ('laboratorium', 'Laboratorium'),
+    ]
+    name = models.CharField(max_length=150)
+    nim = models.IntegerField(null=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, null=True, default=None)
+
+    class Meta:
+        # Remove 'groups' and 'user_permissions' fields
+        managed = True
+        default_permissions = ()
+        permissions = ()

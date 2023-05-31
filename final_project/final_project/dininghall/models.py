@@ -1,15 +1,4 @@
 from django.db import models
-from final_project.students.models import table_students_information
-from datetime import datetime
-from django.core.exceptions import ValidationError
-
-# Create your models here.
-class table_staff_information(models.Model):
-    name = models.CharField(max_length=50)
-    position = models.CharField(max_length=20)
-    username = models.CharField(max_length=50)
-    email = models.EmailField(null=True)
-    password = models.CharField(max_length=64)
 
 class table_menu(models.Model):
     breakfast = "Breakfast"
@@ -32,7 +21,7 @@ class table_time(models.Model):
         return f"{self.time}"
 
 class table_booking_dininghall(models.Model):
-    students_nim = models.ManyToManyField(table_students_information)
+    students_nim = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     time_booked = models.TimeField()
     menu = models.ForeignKey(table_menu, on_delete=models.CASCADE, null=True)
     vacancy = models.IntegerField(default=0)
