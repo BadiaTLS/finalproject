@@ -9,8 +9,12 @@ def login_user(request):
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
-            return redirect('/student')
+            if user.role == 'student':
+                login(request, user)
+                return redirect('/student')
+            elif user.role == 'dininghall':
+                login(request, user)
+                return redirect('/dininghall')
         else:
             messages.success(request, ("There was an error, try again"))
             return redirect('login')

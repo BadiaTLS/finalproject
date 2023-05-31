@@ -1,6 +1,6 @@
-{% extends "../students/student_index.html" %}
+{% extends "../students/student_dininghall_view.html" %}
 
-{% block template %}
+{% block activities %}
 <form action="{% url 'student_preferences' %}" method="POST" class="mx-auto col-10 col-md-8 col-lg-6 bootstrap">
     {% csrf_token %}
     <div class="form-row">

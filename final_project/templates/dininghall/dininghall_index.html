@@ -2,6 +2,10 @@
 
 {% block title %} Welcome Dining Hall {% endblock %}
 
+{% block logo %}
+<a class="navbar-brand" href="{% url 'dininghall_index' %}">DINE-IN TIME SUGGESTION</a>
+{% endblock %}
+
 {% block navbar %}
 <li class="nav-item">
     <a class="nav-link" href="{% url 'dininghall_index' %}">Home</a>
@@ -11,15 +15,27 @@
 </li>
 {% endblock %}
 
+{% block message %}
+  {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+  {% endif %}
+{% endblock %}
+
 {% block template %}
 <div class="wrap">
     <div class="table-responsive">
-        <table class="table table-striped-columns w-50 text-center mx-auto mt-3">
+        <table class="table table-striped-columns w-auto text-center mx-auto mt-3">
             <thead>
                 <tr>
-                    <th scope="col">Date</th>
+                    <th scope="col">Day</th>
                     <th scope="col">Session</th>
                     <th scope="col">Menu</th>
+                    <th scope="col">Total Available</th>
+                    <th scope="col">Seat Taken</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
@@ -29,6 +45,8 @@
                     <td>{{ obj.date }}</td>
                     <td>{{ obj.session }}</td>
                     <td>{{ obj.menu }}</td>
+                    <td>100</td>
+                    <td>50</td>
                     <td>
                         <a href="{% url 'edit_menu' obj.id %}" class="btn btn-primary">Edit</a>
                         <a href="{% url 'delete_menu' obj.id %}" class="btn btn-danger">Delete</a>

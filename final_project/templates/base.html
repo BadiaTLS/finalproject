@@ -9,7 +9,8 @@
   <body class="d-flex flex-column min-vh-100">
     <nav class="navbar bg-body-tertiary">
       <div class="container-fluid">
-        <a class="navbar-brand">DINE-IN TIME SUGGESTION</a>
+        {% block logo %}
+        {% endblock %}
         <ul class="nav justify-content-end">
           {% block navbar %}
           {% endblock %}
