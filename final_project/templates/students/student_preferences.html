@@ -2,6 +2,9 @@
 
 {% block activities %}
 <form action="{% url 'student_preferences' %}" method="POST" class="mx-auto col-10 col-md-8 col-lg-6 bootstrap">
+    <div class="w-60 text-center mx-auto mb-4">
+        Pilih rentang waktu yang ada inginkan dibawah ini
+    </div>
     {% csrf_token %}
     <div class="form-row">
         <div>
