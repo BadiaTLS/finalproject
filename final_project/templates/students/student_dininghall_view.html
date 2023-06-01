@@ -58,7 +58,7 @@
       <div class="row w-50 mx-auto bg-body-secondary p-3">
         <form action="confirm" method="post">
           {% csrf_token %}
-          <p class="w-50 text-center mx-auto">Waktu yang disarankan untuk anda adalah <strong class="h3">{{ time_suggested }}</strong></p>
+          <p class="w-50 text-center mx-auto">Waktu yang disarankan untuk anda adalah <strong class="h3">{{ time_suggested|default_if_none:"-" }}</strong></p>
           <input type="hidden" name="time_suggested" value="{{ time_suggested }}">
           <fieldset class="form-group p-3">
             <legend class="w-auto px-2">Apakah anda ingin mengambil jam yang ditawarkan?</legend>

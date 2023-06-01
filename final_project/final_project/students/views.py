@@ -79,6 +79,7 @@ def confirm(request):
     current_hour = datetime.now().time()
     current_date = datetime.now().date()
     session, time_objects, current_date = get_session_and_time_objects(current_hour, current_date)
+    menu_object = table_menu.objects.filter(date=current_date, session=session).first()
     if request.method == 'POST':
         time_suggested = request.POST.get('time_suggested')
         choice = request.POST.get('choice')
@@ -97,7 +98,15 @@ def confirm(request):
             booking = table_booking_dininghall.objects.create(students_nim=student, vacancy=vacancy, time_booked=time_suggested, menu=menu)
             return redirect('dining_hall')
         else:
-            return render(request, 'students/student_preferences.html', {'current_hour':current_hour})
+            context = {
+                'time_objects': time_objects,
+                'menu_object': menu_object,
+                'time_suggested': time_suggested,
+                'session': session,
+                'date': current_date,
+                'current_hour': current_hour,
+            }
+            return render(request, 'students/student_preferences.html', context)
         
     return render(request, 'students/student_dininghall_view.html')
 
@@ -112,7 +121,19 @@ def student_preferences(request):
         if take_value != 'take':
             return redirect('dining_hall')
         else:
-            pass
+            current_hour = datetime.now().time()
+            current_date = datetime.now().date()
+            session, time_objects, current_date = get_session_and_time_objects(current_hour, current_date)
+            menu_object = table_menu.objects.filter(date=current_date, session=session).first()
+            time_suggested = time(17, 30, 0)
+            context = {
+                'time_objects': time_objects,
+                'menu_object': menu_object,
+                'time_suggested': time_suggested,
+                'session': session,
+                'date': current_date,
+            }
+            return render(request, 'students/student_dininghall_view.html', context)
 
 def not_student(request):
     messages.error(request, 'You are not authorized to access student resources. You need the Student role.')
