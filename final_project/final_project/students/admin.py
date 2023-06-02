@@ -12,10 +12,9 @@ class table_students_information_admin(admin.ModelAdmin):
 
 @admin.register(table_classes)
 class table_classes_admin(admin.ModelAdmin):
-    list_display = ("class_code", "class_name", "class_date", "class_start", "class_end", "display_attendees")
-    search_fields = ("class_code", "class_name", "class_date", "class_start", "class_end")
-    list_filter = ("class_date", "class_start", "class_end")
-    ordering = ("class_date",)
+    list_display = ("class_code", "class_name", "class_day", "class_start_time", "class_end_time", "display_attendees")
+    search_fields = ("class_code", "class_name", "class_day", "class_start_time", "class_end_time")
+    list_filter = ("class_day", "class_start_time", "class_end_time")
     def display_attendees(self, obj):
         return ', '.join([str(attendee) for attendee in obj.attendees.all()])
     display_attendees.short_description = "Attendees"
