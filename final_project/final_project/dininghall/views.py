@@ -1,28 +1,31 @@
 from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.http import HttpResponseRedirect
-from .models import table_menu
 from .forms import MenuForm
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import user_passes_test
 from django.db import transaction
+from .utils import *
+
+def check_dininghall_role(user):
+    return user.role == 'dininghall'
 
 @login_required(login_url='login')
-@user_passes_test(lambda u: u.role == 'dininghall', login_url='not_dininghall')
+@user_passes_test(check_dininghall_role, login_url='not_dininghall')
 def dininghall_index(request):
-    menu_objects = table_menu.objects.all()
+    menu_objects = get_all_menu_objects()
     context = {"menu_objects": menu_objects}
     return render(request, "dininghall/dininghall_index.html", context)
 
 @login_required(login_url='login')
-@user_passes_test(lambda u: u.role == 'dininghall', login_url='not_dininghall')
+@user_passes_test(check_dininghall_role, login_url='not_dininghall')
 @transaction.atomic
 def add_menu(request):
     submitted = False
     if request.method == "POST":
         form = MenuForm(request.POST)
         if form.is_valid():
-            form.save()
+            save_menu(form)
             return HttpResponseRedirect("add_menu?submitted=True")
     else:
         form = MenuForm()
@@ -31,23 +34,22 @@ def add_menu(request):
     return render(request, "dininghall/add_menu.html", {"form": form, "submitted": submitted})
 
 @login_required(login_url='login')
-@user_passes_test(lambda u: u.role == 'dininghall', login_url='not_dininghall')
+@user_passes_test(check_dininghall_role, login_url='not_dininghall')
 @transaction.atomic
 def edit_menu(request, menu_id):
-    menu = table_menu.objects.get(pk=menu_id)
+    menu = get_menu_by_id(menu_id)
     form = MenuForm(request.POST or None, instance=menu)
     if form.is_valid():
-        form.save()
+        update_menu(form)
         return redirect('dininghall_index')
-
     return render(request, 'dininghall/edit_menu.html', {'menu': menu, 'form': form})
 
 @login_required(login_url='login')
-@user_passes_test(lambda u: u.role == 'dininghall', login_url='not_dininghall')
+@user_passes_test(check_dininghall_role, login_url='not_dininghall')
 @transaction.atomic
 def delete_menu(request, menu_id):
-    menu = table_menu.objects.get(pk=menu_id)
-    menu.delete()
+    menu = get_menu_by_id(menu_id)
+    delete_menu_object(menu)
     return redirect('dininghall_index')
 
 def not_dininghall(request):
