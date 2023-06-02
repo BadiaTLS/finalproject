@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
-from datetime import datetime, time, timedelta
-from final_project.dininghall.models import table_time, table_menu, table_booking_dininghall
+from final_project.dininghall.models import table_booking_dininghall
 from final_project.accounts.models import CustomUser
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import user_passes_test
@@ -38,7 +37,7 @@ def students_home_view_laboratorium(request):
 def confirm_take_choice(request, current_hour, current_date, session, time_objects, menu_object):
     time_suggested = request.POST.get('time_suggested')
     student = CustomUser.objects.get(username=request.user.username)
-    menu = table_menu.objects.get(date=current_date, session=session)
+    menu = get_menu_based_date_and_session(current_date, session)
 
     if request.method == 'POST':
         choice = request.POST.get('choice')
@@ -93,5 +92,9 @@ def student_preferences(request):
 def confirm(request):
     current_hour, current_date = get_current_hour_and_current_date()
     session, time_objects = get_session_and_time_objects(current_hour)
-    menu_object = table_menu.objects.filter(date=current_date, session=session).first()
+    menu_object = get_menu_based_date_and_session(current_date, session)
     return confirm_take_choice(request, current_hour, current_date, session, time_objects, menu_object)
+
+def not_student(request):
+    messages.error(request, 'You are not authorized to access student resources. You need the Student role.')
+    return redirect('dininghall_index')

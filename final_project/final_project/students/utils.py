@@ -1,7 +1,6 @@
 from django.shortcuts import redirect
 from datetime import datetime, time, timedelta
 from final_project.dininghall.models import table_time, table_menu, table_booking_dininghall
-from django.contrib import messages
 
 def create_booking(student, menu, vacancy, time_suggested):
     booking = table_booking_dininghall.objects.create(
@@ -22,6 +21,10 @@ def get_latest_booking(user):
     latest_booking = table_booking_dininghall.objects.filter(students_nim=user).latest('created_at')
     return latest_booking
 
+def get_menu_based_date_and_session(date, session):
+    menu = table_menu.objects.filter(date=date, session=session).first()
+    return menu
+
 def is_within_restricted_range(booked_suggestion_time, current_hour):
     return (
         (time(7, 0, 0) <= booked_suggestion_time <= time(8, 59, 59) and current_hour < time(9, 0, 0) or current_hour > time(19, 0, 0))
@@ -32,9 +35,10 @@ def is_within_restricted_range(booked_suggestion_time, current_hour):
 def get_student_dininghall_context(request):
     current_hour, current_date = get_current_hour_and_current_date()
     session, time_objects = get_session_and_time_objects(current_hour)
-    menu_object = table_menu.objects.filter(date=current_date, session=session).first()
+    menu_object = get_menu_based_date_and_session(current_date, session)
     suggestion_time = get_suggestion_time().strftime('%H:%M:%S')
     has_booked = table_booking_dininghall.objects.filter(students_nim=request.user).exists()
+    can_book = True
 
     if has_booked:
         latest_booking = get_latest_booking(request.user)
@@ -44,15 +48,16 @@ def get_student_dininghall_context(request):
         booked_session = menu.session
 
         if is_within_restricted_range(booked_suggestion_time, current_hour):
+            can_book = False
             context = {
                 'session': booked_session,
                 'menu_object': booked_menu,
                 'time_suggested': booked_suggestion_time.strftime('%H:%M:%S'),
-                'has_booked': has_booked,
                 'day': current_date.strftime('%A'),
+                'can_booking': can_book
             }
             return context
-
+    
     context = {
         'time_objects': time_objects,
         'menu_object': menu_object,
@@ -60,17 +65,9 @@ def get_student_dininghall_context(request):
         'session': session,
         'date': current_date,
         'day': current_date.strftime('%A'),
-        'has_booked': has_booked,
+        'can_booking': can_book
     }
     return context
-
-def get_menu_based_date_and_session(date, session):
-    menu = table_menu.objects.filter(date=date, session=session).first()
-    return menu
-
-def not_student(request):
-    messages.error(request, 'You are not authorized to access student resources. You need the Student role.')
-    return redirect('dininghall_index')
 
 def get_current_hour_and_current_date():
     current_hour = datetime.now().time()
@@ -80,7 +77,7 @@ def get_current_hour_and_current_date():
     return current_hour, current_date
 
 def get_suggestion_time():
-    suggestion_time = time(8,0,0)
+    suggestion_time = time(7,30,0)
     return suggestion_time
 
 def get_session_and_time_objects(current_hour):

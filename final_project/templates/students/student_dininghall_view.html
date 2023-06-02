@@ -26,7 +26,7 @@
 
 {% block template %}
 <div class="wrap">
-  {% if has_booked %}
+  {% if not can_booking %}
     <div class="row w-50 mx-auto bg-body-secondary p-3">
       <p class="text-center mx-auto">You have already booked for {{ session }} session at {{ time_suggested }} with menu {{ menu_object }}</p>
     </div>
