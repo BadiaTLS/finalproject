@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
     ]
     name = models.CharField(max_length=150)
     nim = models.IntegerField(null=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, null=True, default=None)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, null=True)
 
     class Meta:
         # Remove 'groups' and 'user_permissions' fields

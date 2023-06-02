@@ -34,19 +34,23 @@
                     <th scope="col">Day</th>
                     <th scope="col">Session</th>
                     <th scope="col">Menu</th>
-                    <th scope="col">Total Available</th>
-                    <th scope="col">Seat Taken</th>
+                    <th scope="col">Available</th>
+                    <th scope="col">Limit</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for obj in menu_objects %}
                 <tr>
-                    <td>{{ obj.date }}</td>
+                    <td>{{ obj.date|date:"l" }}</td>
                     <td>{{ obj.session }}</td>
                     <td>{{ obj.menu }}</td>
-                    <td>100</td>
-                    <td>50</td>
+                    {% if obj.available == None %}
+                        <td>{{ obj.limit }}</td>
+                    {% else %}
+                        <td>{{ obj.available }}</td>
+                    {% endif %}
+                    <td>{{ obj.limit }}</td>
                     <td>
                         <a href="{% url 'edit_menu' obj.id %}" class="btn btn-primary">Edit</a>
                         <a href="{% url 'delete_menu' obj.id %}" class="btn btn-danger">Delete</a>
