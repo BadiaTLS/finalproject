@@ -74,6 +74,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'final_project.wsgi.application'
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.AllowAllUsersModelBackend',
+    'final_project.accounts.backends.EmailBackend',
+]
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -85,6 +91,11 @@ DATABASES = {
     }
 }
 
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

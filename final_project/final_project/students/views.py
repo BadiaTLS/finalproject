@@ -1,6 +1,4 @@
 from django.shortcuts import render, redirect
-from final_project.dininghall.models import table_booking_dininghall
-from final_project.accounts.models import CustomUser
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import user_passes_test
 from django.db import transaction
@@ -36,13 +34,13 @@ def students_home_view_laboratorium(request):
 @transaction.atomic
 def confirm_take_choice(request, current_hour, current_date, session, time_objects, menu_object):
     time_suggested = request.POST.get('time_suggested')
-    student = CustomUser.objects.get(username=request.user.username)
+    student = get_student_based_username(username=request.user.username)
     menu = get_menu_based_date_and_session(current_date, session)
 
     if request.method == 'POST':
         choice = request.POST.get('choice')
         if choice == 'take':
-            booking = table_booking_dininghall.objects.filter(menu=menu)
+            booking = get_menu_based_menu(menu)
             if booking.exists():
                 latest_booking = get_latest_booking_for_menu(menu)
                 vacancy = latest_booking.available - 1
@@ -54,7 +52,7 @@ def confirm_take_choice(request, current_hour, current_date, session, time_objec
 
             booking = create_booking(student, menu, vacancy, time_suggested)
             return redirect('dining_hall')
-
+    
     context = {
         'time_objects': time_objects,
         'menu_object': menu_object,
@@ -62,6 +60,7 @@ def confirm_take_choice(request, current_hour, current_date, session, time_objec
         'session': session,
         'date': current_date,
         'current_hour': current_hour,
+        'can_booking': True
     }
     return render(request, 'students/student_preferences.html', context)
 
@@ -79,16 +78,25 @@ def student_preferences(request):
             current_hour, current_date = get_current_hour_and_current_date()
             session, time_objects = get_session_and_time_objects(current_hour)
             menu_object = get_menu_based_date_and_session(current_date, session)
-            time_suggested = time(7, 45, 0).strftime('%H:%M:%S')
+            time_suggested = time(12, 30, 0).strftime('%H:%M:%S')
+            menus = get_menu_based_date(current_date)
+            breakfast, lunch, dinner = return_menus_for_each_session_in_one_date(menus)
             context = {
                 'time_objects': time_objects,
                 'menu_object': menu_object,
                 'time_suggested': time_suggested,
                 'session': session,
                 'date': current_date,
+                'day': current_date.strftime('%A'),
+                'breakfast': breakfast,
+                'lunch': lunch,
+                'dinner': dinner,
+                'can_booking': True
             }
             return render(request, 'students/student_dininghall_view.html', context)
 
+@login_required(login_url='login')
+@user_passes_test(check_student_role, login_url='not_student')
 def confirm(request):
     current_hour, current_date = get_current_hour_and_current_date()
     session, time_objects = get_session_and_time_objects(current_hour)

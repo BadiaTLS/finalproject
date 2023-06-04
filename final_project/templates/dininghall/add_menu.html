@@ -11,15 +11,15 @@
             Your Menu Submitted Successfully
         </div>
     {% else %}
-    <form action="" method="POST" class="mx-auto col-5 col-md-4 col-lg-3 bootstrap">
-        {% csrf_token %}
-        <div class="form-row">
-            <div>
-                {{ form.as_p }}
-                <input type="submit" value="Submit" class="btn btn-primary">
+        <form action="" method="POST" class="mx-auto col-5 col-md-4 col-lg-3 bootstrap">
+            {% csrf_token %}
+            <div class="form-row">
+                <div>
+                    {{ form.as_p }}
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
             </div>
-        </div>
-    </form>
-    {% endif %}    
+        </form>
+    {% endif %}
 </div>
 {% endblock %}
