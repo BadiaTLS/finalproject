@@ -5,7 +5,7 @@ from .models import table_menu, table_booking_dininghall, table_time
 
 @admin.register(table_menu)
 class table_menu_admin(admin.ModelAdmin):
-    list_display = ("date", "session", "menu", "limit")
+    list_display = ("date", "session", "menu", "available", "limit")
     search_fields = ("date", "session", "menu")
     list_filter = ("date", "session")
     ordering = ("date",)

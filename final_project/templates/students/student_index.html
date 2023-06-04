@@ -8,46 +8,103 @@
 
 {% block styles %}
 <style>
-.card {
-  border:0;
+body {
+  background-color: #E9E3E6;
 }
-
-/* card group aka PRIMARY */
-.card-group .card-primary:hover {
-  box-shadow: 0 40px 60px -20px rgba(12, 5, 62, 0.15);
-  z-index: 100;
+.box{
+    background: linear-gradient(180deg, #e52d27 0%, #b31217 100%);
+    font-family: 'Nanum Gothic', sans-serif;
+    border-radius: 25px 0;
+    position: relative;
+    overflow: hidden;
 }
-.card-group .card-primary:hover .card-title{
-  color: #4e22d0;
+.box:before,
+.box:after,
+.box .box-content:before,
+.box .box-content:after{
+    content: "";
+    background: #E9E3E6;
+    width: 50%;
+    height: 4px;
+    transform: scaleX(0);
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 1;
+    transition: all 600ms ease;
 }
-.card-group .card-primary .card-img-top{
-  width:264px;
-  height:264px;
-  margin: 80px auto 32px;
+.box:after{
+    top: auto;
+    bottom: 15px;
+    left: auto;
+    right: 15px;
 }
-.card-group .card-primary .card-body > .badge {
-  margin-bottom: 24px;
+.box .box-content:before,
+.box .box-content:after{
+    width: 4px;
+    height: 50%;
+    transform: scaleY(0);
 }
-.card-group .card-primary .card-body {
-  padding: 0 32px;
+.box .box-content:after{
+    left: auto;
+    right: 15px;
+    top: auto;
+    bottom: 15px;
 }
-.card-group .card-primary .card-title {
-  color: #261c6a;
-  font-size: 26px;
-  line-height: 1.54;
-  font-weight: 900;
-  margin-bottom: 24px;
+.box:hover:before,
+.box:hover:after,
+.box:hover .box-content:before,
+.box:hover .box-content:after{
+    transform: scale(1);
 }
-.card-group .card-primary .card-text {
-  color: #261c6a;
-  font-size: 16px;
-  line-height: 1.5;
-  font-weight: 400;
+.box img{
+    width: 100%;
+    height: auto;
+    transform: scale3d(1.1, 1.1, 1);
+    transition: all 0.25s linear;
 }
-.card-group .card-primary .card-footer {
-  padding: 48px 0 56px;
-  background: transparent;
-  border:0;
+.box:hover img{
+    opacity: 0.25;
+    transform: scale(1.25);
+}
+.box .inner-content{
+    color: #E9E3E6;
+    text-align: center;
+    width: 70%;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50%);
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transition: all 600ms ease;
+}
+.box:hover .inner-content{
+    opacity: 1;
+    top: 50%;
+}
+.box .title{
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0 0 3px;
+}
+.box a{
+    color: #E9E3E6;
+    font-size: 18px;
+    line-height: 32px;
+    border: 2px solid #E9E3E6;
+    border-radius: 10px 0 10px 0;
+    display: block;
+    transition: all 0.3s;
+}
+.box a:hover{
+    color: #b31217;
+    background: #E9E3E6;
+    border-radius: 0 10px 0 10px;
+}
+@media only screen and (max-width:990px){
+    .box { margin: 0 0 30px; }
 }
 </style>
 {% endblock %}
@@ -58,36 +115,45 @@
 
 {% block message %}
   {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-danger" role="alert">
-          {{ message }}
-        </div>
-      {% endfor %}
+    {% for message in messages %}
+      <div class="alert alert-danger" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
   {% endif %}
 {% endblock %}
 
 {% block template %}
-<div class="card-group">
-  <a href="{% url 'dining_hall' %}" class="card card-primary text-center">
-    <div class="card-body">
-      <div class="badge badge-primary badge-sm">DINING HALL</div>
-      <div class="card-title">DINING HALL</div>
-      <p class="card-text">DINING HALL</p>
+<div class="row">
+    <div class="col-md-4 col-sm-6">
+        <div class="box">
+            <img src="https://calvin.ac.id/wp-content/uploads/2021/11/dh1-scaled.jpg">
+            <div class="box-content">
+                <div class="inner-content">
+                    <h3 class="title"><a href="{% url 'dining_hall' %}">Dining Hall</a></h3>
+                </div>
+            </div>
+        </div>
     </div>
-  </a>
-  <a href="{% url 'library' %}" class="card card-primary text-center">
-    <div class="card-body">
-      <div class="badge badge-primary badge-sm">LIBRARY</div>
-      <div class="card-title">LIBRARY</div>
-      <p class="card-text">LIBRARY</p>
+    <div class="col-md-4 col-sm-6">
+        <div class="box">
+            <img src="https://1.bp.blogspot.com/-l6T2aA_0DU0/XV0l5LYhxHI/AAAAAAAALUU/sfQ3Q_2f0LgNZ9w5zKP0awWGbpHOEDE-ACLcBGAs/s1600/Calvin%2BInstitute%2Bof%2BTechnology%2BLibrary.jpg">
+            <div class="box-content">
+                <div class="inner-content">
+                    <h3 class="title"><a href="{% url 'library' %}">Library</a></h3>
+                </div>
+            </div>
+        </div>
     </div>
-  </a>
-  <a href="{% url 'laboratorium' %}" class="card card-primary text-center">
-    <div class="card-body">
-      <div class="badge badge-primary badge-sm">LABORATORIUM</div>
-      <div class="card-title">LABORATORIUM</div>
-      <p class="card-text">LABORATORIUM</p>
-    </div>
-  </a>
+    <div class="col-md-4 col-sm-6">
+      <div class="box">
+          <img src="https://bsd.calvin.ac.id/wp-content/uploads/2021/01/DSC02713.jpg">
+          <div class="box-content">
+              <div class="inner-content">
+                  <h3 class="title"><a href="{% url 'laboratorium' %}">Laboratorium</a></h3>
+              </div>
+          </div>
+      </div>
+  </div>
 </div>
 {% endblock %}

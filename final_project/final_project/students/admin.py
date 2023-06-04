@@ -16,5 +16,5 @@ class table_classes_admin(admin.ModelAdmin):
     search_fields = ("class_code", "class_name", "class_day", "class_start_time", "class_end_time")
     list_filter = ("class_day", "class_start_time", "class_end_time")
     def display_attendees(self, obj):
-        return ', '.join([str(attendee) for attendee in obj.attendees.all()])
+        return ', '.join([str(attendes) for attendes in obj.attendees.all()])
     display_attendees.short_description = "Attendees"
