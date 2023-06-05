@@ -8,9 +8,9 @@
     {% block links %}
     {% endblock %}
 
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
     {% block styles %}
-      {% load static %}
-      <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
     {% endblock %}
   </head>
   <body class="d-flex flex-column min-vh-100">
