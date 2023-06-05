@@ -1,7 +1,171 @@
+body {
+    background-color: #E9E3E6;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+
 .footer {
     margin-top: auto;
 }
 
 .container {
-width: 90%;
+    width: 90%;
+}
+
+/*student index*/
+.divider:after,
+.divider:before {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #eee;
+}
+
+.h-custom {
+  height: calc(100% - 73px);
+}
+
+@media (max-width: 450px) {
+  .h-custom {
+    height: 100%;
+  }
+}
+
+.box{
+    background: linear-gradient(180deg, #e52d27 0%, #b31217 100%);
+    font-family: 'Nanum Gothic', sans-serif;
+    border-radius: 25px 0;
+    position: relative;
+    overflow: hidden;
+}
+.box:before,
+.box:after,
+.box .box-content:before,
+.box .box-content:after{
+    content: "";
+    background: #E9E3E6;
+    width: 50%;
+    height: 4px;
+    transform: scaleX(0);
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 1;
+    transition: all 600ms ease;
+}
+.box:after{
+    top: auto;
+    bottom: 15px;
+    left: auto;
+    right: 15px;
+}
+.box .box-content:before,
+.box .box-content:after{
+    width: 4px;
+    height: 50%;
+    transform: scaleY(0);
+}
+.box .box-content:after{
+    left: auto;
+    right: 15px;
+    top: auto;
+    bottom: 15px;
+}
+.box:hover:before,
+.box:hover:after,
+.box:hover .box-content:before,
+.box:hover .box-content:after{
+    transform: scale(1);
+}
+.box img{
+    width: 100%;
+    height: auto;
+    transform: scale3d(1.1, 1.1, 1);
+    transition: all 0.25s linear;
+}
+.box:hover img{
+    opacity: 0.25;
+    transform: scale(1.25);
+}
+.box .inner-content{
+    color: #E9E3E6;
+    text-align: center;
+    width: 70%;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50%);
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transition: all 600ms ease;
+}
+.box:hover .inner-content{
+    opacity: 1;
+    top: 50%;
+}
+.box .title{
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0 0 3px;
+}
+.box a{
+    color: #E9E3E6;
+    font-size: 18px;
+    line-height: 32px;
+    border: 2px solid #E9E3E6;
+    border-radius: 10px 0 10px 0;
+    display: block;
+    transition: all 0.3s;
+}
+.box a:hover{
+    color: #b31217;
+    background: #E9E3E6;
+    border-radius: 0 10px 0 10px;
+}
+@media only screen and (max-width:990px){
+    .box { margin: 0 0 30px; }
+}
+
+/*student preferences table time*/
+.responsive-table li {
+    border-radius: 25px 0;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.responsive-table {
+.table-header {
+    background-color: #95A5A6;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    text-align: center;
+}
+.table-row {
+    background-color: #ffffff;
+    box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+@media all and (max-width: 767px) {
+    li {
+    display: block;
+    }
+    .col {
+    flex-basis: 100%;
+    }
+    .col {
+    display: flex;
+    padding: 10px 0;
+    &:before {
+        color: #6C7A89;
+        padding-right: 10px;
+        content: attr(data-label);
+        flex-basis: 50%;
+        text-align: right;
+    }
+    }
+}
 }

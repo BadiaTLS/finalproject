@@ -5,77 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-  <style>
-    .divider:after,
-    .divider:before {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: #eee;
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'styles/styles_login.css' %}">
+</head>
+<body>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-warning" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+  <main>
+    <figure>
+      <img src="{% static 'images/cit.jpg' %}" alt="CIT" />
+    </figure>
+    <form action="" method="POST">
+      {% csrf_token %}
+      <span>
+        <label for="email" class="text-small-uppercase">Email</label>
+        <input class="text-body" id="email" name="email" type="email" required>
+      </span>
+      <span class="password-wrapper">
+        <label for="password" class="text-small-uppercase password-label">Password</label>
+        <input class="text-body" id="password" name="password" type="password" required>
+        <i class="fas fa-eye-slash password-toggle"></i>
+      </span>             
+      <input class="text-small-uppercase" id="submit" type="submit" value="Login">
+    </form>
+  </main>
+
+  <script>
+    var inputs = document.querySelectorAll('input[type=text], input[type=email], input[type=password]');
+    for (var i = 0; i < inputs.length; i++) {
+      var inputEl = inputs[i];
+      if (inputEl.value.trim() !== '') {
+        inputEl.parentNode.classList.add('input--filled');
+      }
+      inputEl.addEventListener('focus', onFocus);
+      inputEl.addEventListener('blur', onBlur);
     }
 
-    .h-custom {
-      height: calc(100% - 73px);
+    function onFocus(ev) {
+      var parent = ev.target.parentNode;
+      parent.classList.add('inputs--filled');
     }
 
-    @media (max-width: 450px) {
-      .h-custom {
-        height: 100%;
+    function onBlur(ev) {
+      var parent = ev.target.parentNode;
+      if (ev.target.value.trim() === '') {
+        parent.classList.remove('inputs--filled');
+      } else if (ev.target.checkValidity() == false) {
+        parent.classList.add('inputs--invalid');
+      } else if (ev.target.checkValidity() == true) {
+        parent.classList.remove('inputs--invalid');
       }
     }
 
-    .custom-container {
-      max-width: 80%;
+    var submitBtn = document.querySelector('input[type=submit]');
+    submitBtn.addEventListener('click', onSubmit);
+
+    function onSubmit(ev) {
+      var inputsWrappers = ev.target.parentNode.querySelectorAll('span');
+      for (var i = 0; i < inputsWrappers.length; i++) {
+        var input = inputsWrappers[i].querySelector('input[type=text], input[type=email], input[type=password]');
+        if (input.checkValidity() == false) {
+          inputsWrappers[i].classList.add('inputs--invalid');
+        } else if (input.checkValidity() == true) {
+          inputsWrappers[i].classList.remove('inputs--invalid');
+        }
+      }
     }
-  </style>
-</head>
-<body>
-<div class="container">
-  {% if messages %}
-  {% for message in messages %}
-  <div class="alert alert-warning" role="alert">
-    {{ message }}
-  </div>
-  {% endfor %}
-  {% endif %}
-  <section class="vh-100">
-    <div class="container-fluid h-custom">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col-md-9 col-lg-6 col-xl-5">
-          <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" class="img-fluid" alt="Sample image">
-        </div>
-        <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-          <form action="" method="POST">
-            {% csrf_token %}
-            <!-- Email input -->
-            <div class="form-outline mb-4">
-              <input type="username" id="form3Example3" name="email" class="form-control form-control-lg" placeholder="Enter a valid email address" />
-              <label class="form-label" for="form3Example3">Email address</label>
-            </div>
 
-            <!-- Password input -->
-            <div class="form-outline mb-3">
-              <input type="password" id="form3Example4" name="password" class="form-control form-control-lg" placeholder="Enter password" />
-              <label class="form-label" for="form3Example4">Password</label>
-            </div>
+    var passwordToggle = document.querySelector('.password-toggle');
+    passwordToggle.addEventListener('click', togglePasswordVisibility);
 
-            <div class="d-flex justify-content-between align-items-center">
-              <!-- Checkbox -->
-              <div class="form-check mb-0">
-                <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-                <label class="form-check-label" for="form2Example3">Remember me</label>
-              </div>
-              <a href="#!" class="text-body">Forgot password?</a>
-            </div>
-
-            <div class="text-center text-lg-start mt-4 pt-2">
-              <input type="submit" value="Login" class="btn btn-primary" style="padding-left: 2.5rem; padding-right: 2.5rem;">
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
+    function togglePasswordVisibility(ev) {
+      var passwordInput = ev.target.previousElementSibling;
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        ev.target.classList.remove('fa-eye-slash');
+        ev.target.classList.add('fa-eye');
+      } else {
+        passwordInput.type = 'password';
+        ev.target.classList.remove('fa-eye');
+        ev.target.classList.add('fa-eye-slash');
+      }
+    }
+  </script>
 </body>
 </html>

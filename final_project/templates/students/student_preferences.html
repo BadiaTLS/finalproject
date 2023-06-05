@@ -1,29 +1,30 @@
 {% extends "../students/student_dininghall_view.html" %}
 
+{% block styles %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/styles.css' %}">
+{% endblock %}
+
 {% block activities %}
 <div class="row">
   <div class="col-md-6">
-    <div class="table-responsive">
-      <table class="table table-striped-columns text-center mx-auto mt-3">
-        <thead>
-          <tr>
-            <th scope="col">Time Range</th>
-            <th scope="col">Available Capacity</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for hour in time_objects %}
-          <tr>
-            <td>{{ hour }}</td>
-            <td>10</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="container">
+      <ul class="responsive-table">
+        <li class="table-header">
+          <div class="col">Time</div>
+          <div class="col">Available Seat</div>
+        </li>
+        {% for hour in time_objects %}
+        <li class="table-row">
+          <div class="col">{{ hour }}</div>
+          <div class="col">10</div>
+        </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
   <div class="col-md-6">
-    <form action="{% url 'student_preferences' %}" method="POST" class="mx-auto mt-3 col-10 col-md-8 col-lg-6 bootstrap">
+    <form action="{% url 'student_preferences' %}" method="POST" class="mx-auto col-10 col-md-8 col-lg-6 bootstrap">
       <div class="text-center mx-auto mb-4">
         Pilih rentang waktu yang ada inginkan dibawah ini
       </div>
