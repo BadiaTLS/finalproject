@@ -1,0 +1,40 @@
+body {
+    background: #9c9c9c;
+}
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    text-transform: uppercase;
+    background-image: linear-gradient(
+        -225deg,
+        #231557 0%,
+        #44107a 25%,
+        #ff1361 35%,
+        #ff9900 50%,
+        #ff1361 75%,
+        #44107a 90%,
+        #231557 100%
+    );
+    background-size: auto auto;
+    background-clip: border-box;
+    background-size: 200% auto;
+    color: #fff;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textclip 2s linear infinite;
+}
+.center p {
+    font-size: 36px;
+    font-family: 'Nanum Gothic', sans-serif;
+    font-weight: 800;
+}
+
+@keyframes textclip {
+  to {
+    background-position: 200% center;
+  }
+}

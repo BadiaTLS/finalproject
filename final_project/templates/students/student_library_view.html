@@ -2,7 +2,14 @@
 
 {% block title %} Welcome To Library User {% endblock %}
 
+
+{% block styles %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/styles_not_available.css' %}">
+{% endblock %}
+
 {% block template %}
-SORRY, CURRENTLY PAGE FOR LIBRARY STILL IN CONSTRUCTION.
-STAY TUNE FOR THE UPDATE
+<div class="center">
+    <p>NOT AVAILABLE<br>WAITING FOR UPDATE</p>
+</div>
 {% endblock %}
