@@ -1,5 +1,9 @@
 from django.db import models
 from datetime import time
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Create your models here.
 class table_students_information(models.Model):
@@ -29,4 +33,4 @@ class table_classes(models.Model):
     class_day = models.CharField(max_length=9, choices=days, default=monday)
     class_start_time = models.TimeField(default=time(9,0))
     class_end_time = models.TimeField(default=time(9,0))
-    attendes = models.ForeignKey(table_students_information, on_delete=models.CASCADE)
+    attendees = models.ForeignKey(User, on_delete=models.CASCADE)

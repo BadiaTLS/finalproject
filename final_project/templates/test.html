@@ -1,0 +1,32 @@
+<section class="wrapper">
+    <!-- Row title -->
+    <main class="row title">
+      <ul>
+        <li>Date</li>
+        <li>Day</li>
+        <li>Session</li>
+        <li>Menu</li>
+      </ul>
+    </main>
+    {% for obj in menu_objects %}
+    <article class="row mlb">
+      <ul>
+        <li>{{ obj.date }}</li>
+        <li>${{ obj.date|date:"l" }}</li>
+        <li>{{ obj.session }}</li>
+        <li>{{ obj.menu }}</li>
+      </ul>
+      <ul class="more-content">
+        {% for time in times_object %}
+        <li>{{ time.time }}</li>
+            {% if time.available_seat is None %}
+            <li>{{ time.limit_seat }}</li>
+            {% else %}
+            <li>{{ time.available_seat }}</li>
+            {% endif %}
+        <li>{{ time.limit_seat }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+    {% endfor %}
+  </section>

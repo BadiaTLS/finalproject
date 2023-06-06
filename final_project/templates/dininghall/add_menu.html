@@ -1,21 +1,22 @@
 {% extends "../dininghall/dininghall_index.html" %}
 
-{% block title %} Add Menu {% endblock %}
+{% block title %} Add Session {% endblock %}
 
 {% block template %}
 <div class="wrap">
-    <h4 class="text-center m-2">ADD NEW MENU</h4>
+    <h4 class="text-center m-2">ADD NEW SESSION</h4>
 
     {% if submitted %}
         <div class="alert alert-success" role="alert">
-            Your Menu Submitted Successfully
+            Your Session Submitted Successfully
         </div>
     {% else %}
         <form action="" method="POST" class="mx-auto col-5 col-md-4 col-lg-3 bootstrap">
             {% csrf_token %}
             <div class="form-row">
                 <div>
-                    {{ form.as_p }}
+                    {{ form_session.as_p }}
+                    {{ form_time.as_p }}
                     <input type="submit" value="Submit" class="btn btn-primary">
                 </div>
             </div>

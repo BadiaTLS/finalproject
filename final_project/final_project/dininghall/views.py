@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
-from .forms import MenuForm
+from .forms import SessionForm, TimeForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import user_passes_test
@@ -13,43 +13,50 @@ def check_dininghall_role(user):
 @login_required(login_url='login')
 @user_passes_test(check_dininghall_role, login_url='not_dininghall')
 def dininghall_index(request):
-    menu_objects = get_all_menu_objects()
-    context = {"menu_objects": menu_objects}
+    session_objects = get_all_session_objects()
+    time_objects = get_time_objects(session_objects)
+    context = {"session_objects": session_objects, "time_objects":time_objects}
     return render(request, "dininghall/dininghall_index.html", context)
 
 @login_required(login_url='login')
 @user_passes_test(check_dininghall_role, login_url='not_dininghall')
 @transaction.atomic
-def add_menu(request):
+@login_required(login_url='login')
+@user_passes_test(check_dininghall_role, login_url='not_dininghall')
+@transaction.atomic
+def add_session(request):
     submitted = False
     if request.method == "POST":
-        form = MenuForm(request.POST)
-        if form.is_valid():
-            save_menu(form)
-            return HttpResponseRedirect("add_menu?submitted=True")
+        form_session = SessionForm(request.POST)
+        form_time = TimeForm(request.POST)
+        if form_session.is_valid() and form_time.is_valid():
+            save_session_and_times(form_session, form_time)
+            return redirect("add_menu?submitted=True")
     else:
-        form = MenuForm()
+        form_session = SessionForm()
+        form_time = TimeForm()
         if "submitted" in request.GET:
             submitted = True
-    return render(request, "dininghall/add_menu.html", {"form": form, "submitted": submitted})
+    return render(request, "dininghall/add_menu.html", {"form_session": form_session, "form_time": form_time, "submitted": submitted})
+
 
 @login_required(login_url='login')
 @user_passes_test(check_dininghall_role, login_url='not_dininghall')
 @transaction.atomic
-def edit_menu(request, menu_id):
-    menu = get_menu_by_id(menu_id)
-    form = MenuForm(request.POST or None, instance=menu)
+def edit_session(request, session_id):
+    session = get_session_by_id(session_id)
+    form = SessionForm(request.POST or None, instance=session)
     if form.is_valid():
-        update_menu(form)
+        update_session(form)
         return redirect('dininghall_index')
-    return render(request, 'dininghall/edit_menu.html', {'menu': menu, 'form': form})
+    return render(request, 'dininghall/edit_menu.html', {'menu': session, 'form': form})
 
 @login_required(login_url='login')
 @user_passes_test(check_dininghall_role, login_url='not_dininghall')
 @transaction.atomic
-def delete_menu(request, menu_id):
-    menu = get_menu_by_id(menu_id)
-    delete_menu_object(menu)
+def delete_session(request, session_id):
+    session = get_session_by_id(session_id)
+    delete_session_object(session)
     return redirect('dininghall_index')
 
 def not_dininghall(request):

@@ -31,6 +31,7 @@
         <table class="table table-striped-columns w-auto text-center mx-auto mt-3">
             <thead>
                 <tr>
+                    <th scope="col">Date</th>
                     <th scope="col">Day</th>
                     <th scope="col">Session</th>
                     <th scope="col">Menu</th>
@@ -40,8 +41,9 @@
                 </tr>
             </thead>
             <tbody>
-                {% for obj in menu_objects %}
+                {% for obj in session_objects %}
                 <tr>
+                    <td>{{ obj.date }}</td>
                     <td>{{ obj.date|date:"l" }}</td>
                     <td>{{ obj.session }}</td>
                     <td>{{ obj.menu }}</td>
