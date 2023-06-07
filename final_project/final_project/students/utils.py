@@ -4,7 +4,6 @@ from final_project.dininghall.models import table_time, table_session, table_boo
 from final_project.algorithm.dijkstra import get_recommended_time
 
 def get_current_hour_and_current_date():
-<<<<<<< HEAD
     # Setup Manual
     current_hour = time(11,0,0) #datetime.now().time()
     current_date = datetime(2023,6,6) #datetime.now().date()
@@ -12,10 +11,7 @@ def get_current_hour_and_current_date():
     # Automatic
     # current_hour = datetime.now().time()
     # current_date = datetime.now().date()
-=======
-    current_hour = datetime.now().time()
-    current_date = datetime.now().date()
->>>>>>> a51ed7bcaa9686717ce413b61f5348160ad5da0b
+
     if time(20, 0) <= current_hour <= time(23, 59, 59):
         current_date += timedelta(days=1)
     return current_hour, current_date
@@ -70,10 +66,6 @@ def update_available_seats(time):
 def get_menu_based_date(date):
     menus = table_session.objects.filter(date=date)
     return menus
-
-def get_student_based_username(username):
-    student = CustomUser.objects.get(username=username)
-    return student
 
 def return_menus_for_each_session_in_one_date(menus):
     breakfast = None
@@ -137,16 +129,21 @@ def get_session_id(date, name):
 def get_student_dininghall_context(request):
     current_hour, current_date = get_current_hour_and_current_date()
     session, time_objects = get_session_and_time_objects(current_hour)
-    session_id = get_session_id_based_date_and_session_name(current_date, session)
+    # session_id = get_session_id_based_date_and_session_name(current_date, session)
     
     # ALGORITHM START HERE #
-    session_id = get_session_id(current_date, session)
-    session_info = get_session_time_and_seat(session_id)
-    
-    start = '11:00'
-    end = '13:30'
+    try: 
+        session_id = get_session_id(current_date, session)
+        session_info = get_session_time_and_seat(session_id)
+        start = '11:00'
+        end = '13:30'
+        suggestion_time = get_recommended_time(session_info, start, end)
 
-    suggestion_time = get_recommended_time(session_info, start, end)
+    except: 
+        session_id = False
+        session_info = None
+        suggestion_time = None
+
     # ALGORITHM END HERE #
 
 
@@ -171,7 +168,7 @@ def get_student_dininghall_context(request):
                 'day': current_date.strftime('%A'),
                 'can_booking': can_book
             }
-            return context
+        return context
     
     context = {
         'time_objects': time_objects,

@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime
 
 def _dijkstra_max_seats(graph, start, end):
     # Create a dictionary to store the maximum number of seats available from the start node to each node

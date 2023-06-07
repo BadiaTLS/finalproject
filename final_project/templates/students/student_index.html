@@ -10,6 +10,13 @@
 <a class="navbar-brand" href="{% url 'student_index' %}">DINE-IN TIME SUGGESTION</a>
 {% endblock %}
 
+{% block navbar %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'student_index' %}">Home</a>
+</li>
+{% endblock %}
+
+
 {% block message %}
   {% if messages %}
     {% for message in messages %}

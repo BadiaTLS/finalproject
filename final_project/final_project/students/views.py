@@ -23,7 +23,10 @@ def student_required(view_func):
 
 @student_required
 def students_index(request):
-    return render(request, "students/student_index.html")
+    fullname = {'fullname': request.user.name}
+    print(fullname)
+
+    return render(request, "students/student_index.html", fullname )
 
 @student_required
 def students_home_view_dininghall(request):
@@ -43,7 +46,6 @@ def students_home_view_laboratorium(request):
 def confirm_action(request, current_hour, current_date, session_name, time_objects, session_id):
     context = None
     time_suggested = request.POST.get('time_suggested')
-    student = get_student_based_username(username=request.user.username)
     session_id = get_session_id_based_date_and_session_name(current_date, session_name)
     choice = request.POST.get('choice')
 
