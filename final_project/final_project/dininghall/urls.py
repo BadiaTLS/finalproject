@@ -9,4 +9,5 @@ urlpatterns = [
     path('not_dininghall/', views.not_dininghall, name='not_dininghall'),
     path('edit_dropdown/<int:time_id>', views.edit_time, name='edit_dropdown'),
     path('delete_dropdown/<int:time_id>', views.delete_time, name='delete_dropdown'),
+    path('export_order_record', views.export_order_record, name='export_order_record'),
 ]

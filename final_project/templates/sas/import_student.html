@@ -1,0 +1,15 @@
+{% extends "../sas/sas_index.html" %}
+
+{% block title %} Import Student {% endblock %}
+
+{% block template %}
+    <h2>ADD USER</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="excel_file">Select Excel File:</label>
+            <input type="file" class="form-control-file" id="excel_file" name="excel_file" accept=".xlsx">
+        </div>
+        <button type="submit" class="btn btn-primary">Import</button>
+    </form>
+{% endblock %}

@@ -3,8 +3,10 @@ from .forms import SessionForm, TimeForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import user_passes_test
+from django.http import HttpResponse
 from django.db import transaction
 from .utils import *
+import os
 
 def check_dininghall_role(user):
     return user.role == 'dininghall'
@@ -23,9 +25,6 @@ def dininghall_index(request):
     return render(request, "dininghall/dininghall_index.html", context)
 
 
-@login_required(login_url='login')
-@user_passes_test(check_dininghall_role, login_url='not_dininghall')
-@transaction.atomic
 @login_required(login_url='login')
 @user_passes_test(check_dininghall_role, login_url='not_dininghall')
 @transaction.atomic
@@ -81,6 +80,28 @@ def delete_time(request, time_id):
     session = get_time_by_id(time_id)
     delete_time_object(session)
     return redirect('dininghall_index')
+
+@login_required(login_url='login')
+@user_passes_test(check_dininghall_role, login_url='not_dininghall')
+def export_order_record(request):
+    # File path where the Excel file will be saved
+    file_path = "order_record.xlsx"
+
+    # Export data to the Excel file
+    export_data_to_excel(file_path)
+
+    # Open the file in binary mode and read its contents
+    with open(file_path, 'rb') as file:
+        file_data = file.read()
+
+    # Set the appropriate response headers for file download
+    response = HttpResponse(file_data, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="order_record.xlsx"'
+
+    # Delete the file from the server
+    os.remove(file_path)
+
+    return response
 
 def not_dininghall(request):
     messages.error(request, 'You are not authorized to access dining hall resources. You need the Dining Hall role.')
