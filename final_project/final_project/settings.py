@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'final_project.dininghall',
     'final_project.students',
     'final_project.accounts',
+    'final_project.sas',
     'bootstrap5',
 ]
 

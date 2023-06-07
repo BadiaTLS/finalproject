@@ -9,7 +9,7 @@ def login_user(request):
         user = authenticate(request, email=email, password=password)
         
         if user is not None:
-            if user.role == 'student' or user.role == 'dininghall':
+            if user.role == 'student' or user.role == 'dininghall' or user.role == 'sas':
                 login(request, user)
                 return redirect('/' + user.role)
         else:

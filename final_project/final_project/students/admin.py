@@ -1,4 +1,5 @@
 from django.contrib import admin
+<<<<<<< HEAD
 from .models import table_students_information, table_classes
 from django.contrib.auth import get_user_model
 
@@ -27,3 +28,13 @@ from django.contrib.auth import get_user_model
 #         if db_field.name == "attendees":
 #             kwargs["queryset"] = User.objects.filter(role="student")
 #         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+=======
+from .models import table_students_information
+
+@admin.register(table_students_information)
+class table_students_information_admin(admin.ModelAdmin):
+    list_display = ("nim", "name", "study_program", "batch_year", "username")
+    search_fields = ("nim", "name", "study_program", "batch_year", "username")
+    list_filter = ("study_program", "batch_year")
+    ordering = ("name",)
+>>>>>>> bbf3fd10fdfd41207865ad43da77659cc236caf3
