@@ -11,7 +11,7 @@
             Your Session Submitted Successfully
         </div>
     {% else %}
-        <form action="" method="POST" class="mx-auto col-5 col-md-4 col-lg-3 bootstrap">
+    <form action="{% url 'add_menu' %}?submitted={{ request.GET.submitted }}" method="POST" class="mx-auto col-5 col-md-4 col-lg-3 bootstrap">
             {% csrf_token %}
             <div class="form-row">
                 <div>

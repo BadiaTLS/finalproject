@@ -1,0 +1,25 @@
+<div class="container">
+  <h2>Responsive Tables Using LI <small>Triggers on 767px</small></h2>
+  <ul class="responsive-table">
+    <li class="table-header">
+      <div class="col col-1">Date</div>
+      <div class="col col-2">Day</div>
+      <div class="col col-3">Session</div>
+      <div class="col col-4">Menu</div>
+      <div class="col col-5">Action</div>
+    </li>
+    {% for session in session_objects %}
+    <li class="table-row">
+      <div class="col col-1" data-label="Job Id">{{ session.date }}</div>
+      <div class="col col-2" data-label="Customer Name">{{ session.date|date:"l". }}</div>
+      <div class="col col-3" data-label="Amount">{{ session.session }}</div>
+      <div class="col col-4" data-label="Payment Status">{{ session.menu }}</div>
+      <div class="col col-5" data-label="Payment Status">
+        <a href="#" class="btn btn-primary">Show More</a>
+        <a href="{% url 'edit_menu' obj.id %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'delete_menu' obj.id %}" class="btn btn-danger">Delete</a>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>

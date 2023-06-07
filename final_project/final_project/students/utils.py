@@ -3,8 +3,8 @@ from final_project.accounts.models import CustomUser
 from final_project.dininghall.models import table_time, table_session, table_booking_dininghall
 
 def get_current_hour_and_current_date():
-    current_hour = time(11,0,0) #datetime.now().time()
-    current_date = datetime(2023,6,6) #datetime.now().date()
+    current_hour = datetime.now().time()
+    current_date = datetime.now().date()
     if time(20, 0) <= current_hour <= time(23, 59, 59):
         current_date += timedelta(days=1)
     return current_hour, current_date

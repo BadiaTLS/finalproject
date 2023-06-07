@@ -15,7 +15,7 @@ class SessionForm(ModelForm):
 class TimeForm(ModelForm):
     class Meta:
         model = table_time
-        fields = "seat_limit",
+        fields = ["seat_limit"]
         widgets = {
             "seat_limit": forms.NumberInput(attrs={"class":"form-control"})
         }

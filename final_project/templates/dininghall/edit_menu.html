@@ -9,8 +9,7 @@
     {% csrf_token %}
     <div class="form-row">
       <div>
-        {{ form_session.as_p }}
-        {{ form_time.as_p }}
+        {{ form.as_p }}
         <input type="submit" value="Submit" class="btn btn-primary">
       </div>
     </div>
