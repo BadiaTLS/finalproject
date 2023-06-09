@@ -23,7 +23,7 @@
         <a class="nav-link" href="{% url 'sas_index' %}">Home</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'import_student' %}">Import Student</a>
+        <a class="nav-link" href="{% url 'import_user' %}">Import User</a>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="{% url 'import_class' %}">Import Class</a>
@@ -33,7 +33,7 @@
 {% block message %}
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-danger" role="alert">
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
                 {{ message }}
             </div>
         {% endfor %}
@@ -99,4 +99,4 @@
     </table>
 </div>
 </div>
-{% endblock %}  
+{% endblock %}

@@ -12,25 +12,22 @@
 {% endblock %}
 
 {% block navbar %}
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'dininghall_index' %}">Home</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'add_menu' %}">Add Menu</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'export_order_record' %}">Export</a>
-</li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'dininghall_index' %}">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'add_menu' %}">Add Menu</a>
+    </li>
 {% endblock %}
 
 {% block message %}
-{% if messages %}
-{% for message in messages %}
-<div class="alert alert-danger" role="alert">
-    {{ message }}
-</div>
-{% endfor %}
-{% endif %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}
 
 {% block template %}

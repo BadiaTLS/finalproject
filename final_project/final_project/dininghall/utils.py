@@ -1,11 +1,13 @@
-from .models import table_session, table_time
 from datetime import time
 import openpyxl
+from django.http import HttpResponse
+import os
+from .models import table_session, table_time
 
-def get_all_session_objects():
+def fetch_all_session_objects():
     return table_session.objects.all()
 
-def get_time_objects(session_id):
+def fetch_time_objects(session_id):
     session = table_session.objects.get(id=session_id)
     return session.table_time_set.all()
 
@@ -17,46 +19,39 @@ def get_time_by_id(time_id):
 
 def update_session(form_session):
     form_session.save()
-    
-def delete_session_object(menu_id):
-    menu_id.delete()
+
+def delete_session_object(session_id):
+    session_id.delete()
 
 def delete_time_object(time_id):
     time_id.delete()
 
 def export_data_to_excel(file_path):
-    # Create a new Excel workbook
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
 
-    # Write headers
     headers = ["Date", "Name", "Time", "Available", "Limit", "Menu"]
     for col_num, header in enumerate(headers, 1):
         worksheet.cell(row=1, column=col_num, value=header)
 
-    # Fetch data from the models
-    sessions = table_session.objects.all()
+    sessions = fetch_all_session_objects()
     for session in sessions:
-        times = table_time.objects.filter(session_id=session.id)
+        times = fetch_time_objects(session.id)
 
-        for time in times:
-            # Get the session data
+        for time_obj in times:
             date = session.date
             name = session.get_name_display()
             menu = session.menu
 
-            # Get the time data
-            time_value = time.time
-            available = time.available_seat
-            limit = time.seat_limit
+            time_value = time_obj.time
+            available = time_obj.available_seat
+            limit = time_obj.seat_limit
 
-            # Write data to Excel
             row_data = [date, name, time_value, available, limit, menu]
             row_num = worksheet.max_row + 1
             for col_num, value in enumerate(row_data, 1):
                 worksheet.cell(row=row_num, column=col_num, value=value)
 
-    # Save the workbook
     workbook.save(file_path)
 
 def save_session_and_times(form_session, form_time):
@@ -98,4 +93,12 @@ def save_session_and_times(form_session, form_time):
             seat_limit=form_time.cleaned_data["seat_limit"],
         )
 
+def download_file_response(file_path):
+    with open(file_path, 'rb') as file:
+        file_data = file.read()
 
+    response = HttpResponse(file_data, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="order_record.xlsx"'
+
+    os.remove(file_path)
+    return response

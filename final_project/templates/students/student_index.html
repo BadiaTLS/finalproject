@@ -10,6 +10,13 @@
 <a class="navbar-brand" href="{% url 'student_index' %}">DINE-IN TIME SUGGESTION</a>
 {% endblock %}
 
+{% block navbar %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'student_index' %}">Home</a>
+</li>
+{% endblock %}
+
+
 {% block message %}
   {% if messages %}
     {% for message in messages %}
@@ -23,7 +30,7 @@
 {% block template %}
 <div class="row">
     <div class="col-md-4 col-sm-6">
-        <div class="box">
+        <div class="box active">
             <img src="https://calvin.ac.id/wp-content/uploads/2021/11/dh1-scaled.jpg">
             <div class="box-content">
                 <div class="inner-content">
