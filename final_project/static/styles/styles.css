@@ -1,5 +1,5 @@
 body {
-    background-color: #E9E3E6;
+    background-color: #f7f7f7;
     font-family: 'Nanum Gothic', sans-serif;
 }
 
@@ -17,7 +17,7 @@ body {
   content: "";
   flex: 1;
   height: 1px;
-  background: #eee;
+  background: #f7f7f7;
 }
 
 .h-custom {
@@ -59,7 +59,7 @@ body {
 .box .box-content:before,
 .box .box-content:after{
     content: "";
-    background: #E9E3E6;
+    background: #f7f7f7;
     width: 50%;
     height: 4px;
     transform: scaleX(0);

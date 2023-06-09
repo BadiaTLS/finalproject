@@ -23,10 +23,13 @@ def student_required(view_func):
 
 @student_required
 def students_index(request):
-    fullname = {'fullname': request.user.name}
-    print(fullname)
-
-    return render(request, "students/student_index.html", fullname )
+    time_ordered, session = get_order_time(request.user.id)
+    context = {
+        'fullname': request.user.name,
+        'time_ordered' : time_ordered,
+        'session' : session
+    }
+    return render(request, "students/student_index.html", context )
 
 @student_required
 def students_home_view_dininghall(request):
@@ -70,7 +73,8 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
     print(time_object)
     if time_object is not None: 
         update_available_seats(time_object)
-    # create_booking()
+        user_object = get_userobject_by_id(request.user.id)
+        create_booking(user_object, session_id, time_suggested)
     # update_seat_availability(time_suggested, new_availability_seat)
 
     return redirect('dining_hall') 

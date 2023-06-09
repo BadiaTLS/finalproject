@@ -1,7 +1,6 @@
 from datetime import datetime, time, timedelta
 from final_project.accounts.models import CustomUser
 from final_project.dininghall.models import table_time, table_session, table_booking_dininghall
-from final_project.sas.models import table_classes
 from final_project.algorithm.dijkstra import get_recommended_time
 
 # CHECK
@@ -99,82 +98,54 @@ def get_session_time_and_seat(session_id):
     return session_time_and_seat
 
 def get_session_id(date, name):
-    session = table_session.objects.filter(date=date, name=name).first()
-    if session:
-        return session.id
-    else:
-        return None
-
-def get_classes_by_day(day):
-    list_class = table_classes.objects.filter(class_day = day)
-    print(list_class)
-    return list_class
-
-def get_start_end_for_algorithm(user_id, day):
-    # Check classes for today
-
-    # Check if user is in the class
-
-    # Get the classes that has user
-
-    # check classes start and end
-
-    # if classes start < session start and classes end > session end: Rejected 
-
-    # if classes end < session end
-
-    start = None
-    end = None
-    
-    return start, end
-
+    session = table_session.objects.get(date=date, name=name)
+    return session.id
 
 def get_student_dininghall_context(request):
     current_hour, current_date = get_current_hour_and_current_date()
     session, time_objects = get_session_and_time_objects(current_hour)
     
     # ALGORITHM START HERE #
-
-    session_id = get_session_id(current_date, session)
-    if session_id:
+    try: 
+        session_id = get_session_id(current_date, session)
         session_info = get_session_time_and_seat(session_id)
+        start, end  = list(session_info.keys())[0], list(session_info.keys())[-1]
 
-        #Need to get start time and end time from table class:
-        session_start, session_end  = list(session_info.keys())[0], list(session_info.keys())[-1]
-        user_id = request.user.id
-        day = current_date.strftime('%A')
-        start, end = get_start_end_for_algorithm(user_id, day, session_start, session_end)
-        
-        
         suggestion_time = get_recommended_time(session_info, start, end)
-    else:
-        day = current_date.strftime('%A')
-        get_classes_by_day(day)
+
+    except: 
+        session_id = False
         session_info = None
         suggestion_time = None
 
     # ALGORITHM END HERE #
+
+
+    print(is_time_booked(request))
     
-    latest_booking = get_latest_booking(request.user)
-    if latest_booking:
+    has_booked = table_booking_dininghall.objects.filter(user_id=request.user).exists()
+    menus = get_menu_based_date(current_date)
+    breakfast, lunch, dinner = return_menus_for_each_session_in_one_date(menus)
+    can_book = True
+
+    if has_booked:
+        latest_booking = get_latest_booking(request.user)
         booked_suggestion_time = latest_booking.recommended_time
         menu = latest_booking.session_id
         booked_menu = menu.menu
         booked_session = menu.name
 
         if is_within_restricted_range(booked_suggestion_time, current_hour):
+            can_book = False
             context = {
                 'session': booked_session,
                 'session_id': booked_menu,
                 'time_suggested': booked_suggestion_time.strftime('%H:%M:%S'),
                 'day': current_date.strftime('%A'),
-                'can_booking': False
+                'can_booking': can_book
             }
-            return context
+        return context
     
-    menus = get_menu_based_date(current_date)
-    breakfast, lunch, dinner = return_menus_for_each_session_in_one_date(menus)
-
     context = {
         'time_objects': time_objects,
         'session_id': session_id,
@@ -185,21 +156,20 @@ def get_student_dininghall_context(request):
         'breakfast': breakfast,
         'lunch': lunch,
         'dinner': dinner,
-        'can_booking': True,
+        'can_booking': can_book,
         'current_session' : session.upper()
         
     }
     return context
 
-
-# NON GET and CHECK
+# NON GET
 def create_booking(user_id, session_id, time_suggested):
     booking = table_booking_dininghall.objects.create(
         user_id=user_id,
         session_id=session_id,
         recommended_time=time_suggested,
     )
-    booking.save()
+    session_id.save()
     return booking
 
 def translate_day(day):
@@ -217,15 +187,32 @@ def translate_day(day):
 def update_available_seats(time):
     if time.available_seat == 0:
         raise ValueError("Not enough available seats")
-    time.available_seat = (time.available_seat or time.seat_limit) - 1
-    time.save()
+    if time.available_seat == None: 
+        time.available_seat = time.seat_limit -1
+        time.save()
+    else: 
+        time.available_seat -= 1 
+        time.save()
     return time 
 
 def return_menus_for_each_session_in_one_date(menus):
-    meals = {}
-    for meal_name in ["Breakfast", "Lunch", "Dinner"]:
-        if not menus.filter(name=meal_name):
-            meals[meal_name] = f"Tidak ada {meal_name.lower()}"
-        else:
-            meals[meal_name] = menus.filter(name=meal_name).first().menu
-    return meals["Breakfast"], meals["Lunch"], meals["Dinner"]
+    breakfast = None
+    lunch = None
+    dinner = None
+
+    if not menus.filter(name="Breakfast"):
+        breakfast = "Tidak ada breakfast"
+    else:
+        breakfast = menus.filter(name="Breakfast").first().menu
+    
+    if not menus.filter(name="Lunch"):
+        lunch = "Tidak ada lunch"
+    else:
+        lunch = menus.filter(name="Lunch").first().menu
+
+    if not menus.filter(name="Dinner"):
+        dinner = "Tidak ada dinner"
+    else:
+        dinner = menus.filter(name="Dinner").first().menu
+    
+    return breakfast, lunch, dinner

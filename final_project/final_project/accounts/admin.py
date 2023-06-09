@@ -25,7 +25,7 @@ class UserAdmin(BaseUserAdmin):
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
-    list_display = ('username', 'email', 'name', 'role')
+    list_display = ('id', 'username', 'email', 'name', 'role')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'role')
     search_fields = ('username', 'email', 'name')
     ordering = ('username',)

@@ -25,7 +25,7 @@ class table_classes(models.Model):
     ]
     class_code = models.CharField(max_length=10, primary_key=True)
     class_name = models.CharField(max_length=75)
-    class_day = models.CharField(max_length=9, choices=days, default=monday)
+    class_day = models.CharField(max_length=9, choices=days, default="")
     class_start_time = models.TimeField(default=time(9, 0))
     class_end_time = models.TimeField(default=time(9, 0))
     attendees = models.ManyToManyField(Attendee)

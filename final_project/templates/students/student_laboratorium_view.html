@@ -8,7 +8,13 @@
 {% endblock %}
 
 {% block template %}
-<div class="center">
-    <p>NOT AVAILABLE<br>WAITING FOR UPDATE</p>
+<div id= 'center' class="center">
+    <p>NOT AVAILABLE<br>Click to go back</p>
 </div>
+
+<script>
+    document.getElementById('center').addEventListener('click', function() {
+        window.history.back();
+    });
+</script>
 {% endblock %}

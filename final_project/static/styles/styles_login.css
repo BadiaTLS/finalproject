@@ -1,10 +1,14 @@
+:root{
+    --main-font: 'Nanum Gothic', sans-serif;
+}
+
 img {
 height: auto;
 width: 100%;
 }
 
 input[type=submit] {
-background: linear-gradient(180deg, #e52d27 0%, #b31217 100%);
+background: linear-gradient(180deg, #660c0c 0%, #660c0c 100%);
 height: 2.75rem;
 margin: 1em auto auto;
 }
@@ -39,7 +43,7 @@ width: 90%;
 
 @media (min-width: 768px) {
     input[type=submit] {
-        background: linear-gradient(180deg, #e52d27 0%, #b31217 100%);
+        background: linear-gradient(180deg, #660c0c 0%, #660c0c 100%);
         bottom: 2.75rem;
         left: 2.55rem;
         height: 2.75rem;
@@ -77,8 +81,10 @@ padding: 0;
 }
 
 body {
+/* background: #E9E3E6; */
 background: #E9E3E6;
-font: 700 16px 'Nanum Gothic', sans-serif;
+
+font: 700 16px --main-font;
 }
 
 input[type=email],
@@ -103,11 +109,12 @@ background: linear-gradient(180deg, #e52d27 0%, #b31217 100%);
 border: none;
 color: #fff;
 padding: 0 2rem;
+border-radius: 0.5rem;
 }
 
 input[type=submit]:hover,
 input[type=submit]:focus {
-background: linear-gradient(180deg, #e16561 0%, #dbb8ba 100%);
+background: linear-gradient(180deg, #b21515 0%, #330606 100%);
 cursor: pointer;
 outline: none;
 }
@@ -168,18 +175,18 @@ color: #342f2f;
 
 main {
 background: #f9f6ed;
-border-radius: 0.25rem;
+border-radius: 2rem;
 box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
 }
 
 .text-body {
 color: #354c58;
-font: 700 16px 'Nanum Gothic', sans-serif;
+font: 700 16px var(--main-font);
 }
 
 .text-small-uppercase {
-color: #E9E3E6;
-font: 700 .75rem 'Nanum Gothic', sans-serif;
+color: #817e7e;
+font: 700 .75rem var(--main-font);
 letter-spacing: .08rem;
 text-transform: uppercase;
 }
