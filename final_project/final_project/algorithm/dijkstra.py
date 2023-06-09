@@ -59,7 +59,7 @@ def get_recommended_time(session, start : str, end : str):
 
     session_start, session_end  = list(session.keys())[0], list(session.keys())[-1]
 
-    print(session, start, end)
+    # print(session, start, end)
     # print(type(start), type(end))
     # print(type(session_start), type(session_end))
 
@@ -91,7 +91,7 @@ def get_recommended_time(session, start : str, end : str):
         position = val_list.index(max_seats)
         recommended_time = key_list[position].strftime("%H:%M")
 
-        print(f"The maximum number of seats available between {start} and {end} is {max_seats}, and the time is {recommended_time}")
+        # print(f"The maximum number of seats available between {start} and {end} is {max_seats}, and the time is {recommended_time}")
     except:
         print(AssertionError)
 

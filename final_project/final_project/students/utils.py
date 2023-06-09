@@ -56,9 +56,10 @@ def get_latest_booking_for_menu(menu):
     latest_booking_for_menu = table_booking_dininghall.objects.filter(session_id=menu).latest('id')
     return latest_booking_for_menu
 
-def get_latest_booking(user):
+def get_latest_booking(user_id):
+    # This will return the object
     try: 
-        latest_booking = table_booking_dininghall.objects.filter(user_id=user).latest('created_at')
+        latest_booking = table_booking_dininghall.objects.filter(user_id=user_id).latest('created_at')
         return latest_booking
     except:
         return False
@@ -110,10 +111,24 @@ def get_session_id(date, name):
 
 def get_classes_by_day(day):
     list_class = table_classes.objects.filter(class_day = day)
-    print(list_class)
     return list_class
 
-def get_start_end_for_algorithm(user_id, day, session_start, session_end):
+def get_classes_by_email(email, class_list):
+    classes_that_email_is_in = []
+
+    for class_object in class_list:
+        if class_object.attendees.filter(email=email).exists():
+            classes_that_email_is_in.append(class_object)
+
+    return classes_that_email_is_in
+
+
+def is_between(time, time_range):
+    if time_range[1] < time_range[0]:
+        return time >= time_range[0] or time < time_range[1]
+    return time_range[0] <= time < time_range[1]
+
+def get_start_end_for_algorithm(email, day, session_times):
     # Check classes for today
 
     # Check if user is in the class
@@ -126,11 +141,40 @@ def get_start_end_for_algorithm(user_id, day, session_start, session_end):
 
     # if classes end < session end
 
-    start = None
-    end = None
+    class_list = get_classes_by_day(day)
+    class_list_by_email = get_classes_by_email(email, class_list)
+
+    # Get The classes for the day
+    for i in class_list_by_email:
+        for session_time in session_times:
+            if is_between(session_time, (i.class_start_time, i.class_end_time)):
+                session_times[session_time] = 0
+                # print(session_times[session_time])
+                # print(f"{session_time} is between {i.class_start_time} and {i.class_end_time}")
+            else:
+                pass
+                # print(f"{session_time} is not between {i.class_start_time} and {i.class_end_time}")    
+
+    start = class_list_by_email[0].class_start_time
+    end = class_list_by_email[0].class_end_time
     
     return start, end
 
+def delete_booking_and_update_available_seat_by_user_id(user_id):
+    try: 
+        booking_object = table_booking_dininghall.objects.filter(user_id=user_id).latest('created_at')
+        print(booking_object)
+        
+        session_id = booking_object.session_id
+        recommended_time = booking_object.recommended_time
+
+        booked_time_object = table_time.objects.get(session_id=session_id, time = recommended_time)
+        print(booked_time_object)
+        booked_time_object.available_seat += 1
+        booking_object.delete()
+        return "Success" 
+    except: 
+        return "Nothing Happened"
 
 def get_student_dininghall_context(request):
     current_hour, current_date = get_current_hour_and_current_date()
@@ -144,17 +188,22 @@ def get_student_dininghall_context(request):
 
         #Need to get start time and end time from table class:
         session_start, session_end  = list(session_info.keys())[0], list(session_info.keys())[-1]
-        user_id = request.user.id
-        day = current_date.strftime('%A')
 
-        start, end = list(session_info.keys())[0], list(session_info.keys())[-1]
-        # start, end = get_start_end_for_algorithm(user_id, day, session_start, session_end)
-        
+        email = request.user.email
+        day = current_date.strftime('%A')
+        day = translate_day(day)
+
+        # get_start_end_for_algorithm(email, day="Sabtu", session_start=session_start, session_end=session_end)
+        # start, end = get_start_end_for_algorithm(email, day, session_info)
+
+        try: 
+            start, end = get_start_end_for_algorithm(email, day, session_info)
+        except:
+            start, end = list(session_info.keys())[0], list(session_info.keys())[-1]
         
         suggestion_time = get_recommended_time(session_info, start, end)
     else:
         day = current_date.strftime('%A')
-        get_classes_by_day(day)
         session_info = None
         suggestion_time = None
 

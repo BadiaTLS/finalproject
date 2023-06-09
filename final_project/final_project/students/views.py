@@ -76,8 +76,17 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
         user_object = get_userobject_by_id(request.user.id)
         create_booking(user_object, session_id, time_suggested)
     # update_seat_availability(time_suggested, new_availability_seat)
+    messages.success(request, "Booking Success", extra_tags="success")
+    return redirect('student_index') 
 
-    return redirect('dining_hall') 
+@student_required
+@transaction.atomic
+def cancel_order(request):
+    user_id = request.user.id
+    # DELETE and UPDATE Database
+    message = delete_booking_and_update_available_seat_by_user_id(user_id)
+    messages.success(request, message, extra_tags="success")
+    return redirect("student_index")
 
 
 @student_required

@@ -19,13 +19,13 @@
 
  
 {% block message %}
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-danger" role="alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}
 
 {% block template %}
@@ -55,7 +55,7 @@
     </header>
     <div class="tags">
         {% if time_ordered != None %}
-        <a href="#">CANCEL ORDER</a>
+        <a href="{% url 'cancel_order' %}">CANCEL ORDER</a>
         {% else %}
         <a href="{% url 'dining_hall' %}">CHECK MENU</a>
         <a href="{% url 'dining_hall' %}">ORDER NOW</a>
@@ -75,9 +75,9 @@
     <!-- <article class="card"></article> -->
 
     <script>
-        document.getElementById('dininghall').addEventListener('click', function() {
-            window.location.href = "{% url 'dining_hall' %}";
-        });
+        // document.getElementById('dininghall').addEventListener('click', function() {
+        //     window.location.href = "{% url 'dining_hall' %}";
+        // });
 
         document.getElementById('lab').addEventListener('click', function() {
             window.location.href = "{% url 'laboratorium' %}";

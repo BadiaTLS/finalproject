@@ -115,8 +115,4 @@ if __name__=="__main__":
     end = '12:33'
 
     ## CHECK START AND END BEFORE PUT IN
-<<<<<<< HEAD
     print(get_recommended_time(session, round_time_down(start), round_time_down(end)))
-=======
-    print(get_recommended_time(session, round_time_down(start), round_time_down(end)))
->>>>>>> 6bec310b8e779aa3ec73fa8967080e76ac69c41a

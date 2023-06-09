@@ -1,4 +1,12 @@
 /*student preferences table time*/
+.container-2{
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .responsive-table li {
     border-radius: 25px 0;
     padding: 15px 20px;
