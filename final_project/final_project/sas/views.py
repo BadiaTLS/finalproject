@@ -66,7 +66,7 @@ def import_class(request):
             workbook = openpyxl.load_workbook(excel_file)
             worksheet = workbook.active
 
-            for row in worksheet.iter_rows(min_row=5, values_only=True):
+            for row in worksheet.iter_rows(min_row=2, values_only=True):
                 class_code = row[0]
                 class_name = row[1]
                 class_day = row[2]

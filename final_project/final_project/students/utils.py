@@ -57,8 +57,11 @@ def get_latest_booking_for_menu(menu):
     return latest_booking_for_menu
 
 def get_latest_booking(user):
-    latest_booking = table_booking_dininghall.objects.filter(user_id=user).latest('created_at')
-    return latest_booking
+    try: 
+        latest_booking = table_booking_dininghall.objects.filter(user_id=user).latest('created_at')
+        return latest_booking
+    except:
+        return False
 
 def get_session_id_based_date_and_session_name(date, session_name):
     session_id = table_session.objects.filter(date=date, name=session_name).first()
@@ -110,7 +113,7 @@ def get_classes_by_day(day):
     print(list_class)
     return list_class
 
-def get_start_end_for_algorithm(user_id, day):
+def get_start_end_for_algorithm(user_id, day, session_start, session_end):
     # Check classes for today
 
     # Check if user is in the class
@@ -143,7 +146,9 @@ def get_student_dininghall_context(request):
         session_start, session_end  = list(session_info.keys())[0], list(session_info.keys())[-1]
         user_id = request.user.id
         day = current_date.strftime('%A')
-        start, end = get_start_end_for_algorithm(user_id, day, session_start, session_end)
+
+        start, end = list(session_info.keys())[0], list(session_info.keys())[-1]
+        # start, end = get_start_end_for_algorithm(user_id, day, session_start, session_end)
         
         
         suggestion_time = get_recommended_time(session_info, start, end)
@@ -155,6 +160,7 @@ def get_student_dininghall_context(request):
 
     # ALGORITHM END HERE #
     
+    # print(table_booking_dininghall.objects.filter(user_id=request.user).latest('created_at'))
     latest_booking = get_latest_booking(request.user)
     if latest_booking:
         booked_suggestion_time = latest_booking.recommended_time
