@@ -17,11 +17,7 @@
 </li>
 {% endblock %}
 
-<<<<<<< HEAD
  
-=======
-
->>>>>>> 6bec310b8e779aa3ec73fa8967080e76ac69c41a
 {% block message %}
   {% if messages %}
     {% for message in messages %}
@@ -33,7 +29,6 @@
 {% endblock %}
 
 {% block template %}
-<<<<<<< HEAD
 <h2 class="center">Welcome {{fullname}}!</h2>
 <section class="card-list">
     <article class="card" id="library">
@@ -65,28 +60,6 @@
         <a href="{% url 'dining_hall' %}">CHECK MENU</a>
         <a href="{% url 'dining_hall' %}">ORDER NOW</a>
         {% endif %}"
-=======
-<div class="row">
-    <div class="col-md-4 col-sm-6">
-        <div class="box active">
-            <img src="https://calvin.ac.id/wp-content/uploads/2021/11/dh1-scaled.jpg">
-            <div class="box-content">
-                <div class="inner-content">
-                    <h3 class="title"><a href="{% url 'dining_hall' %}">Dining Hall</a></h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 col-sm-6">
-        <div class="box">
-            <img src="https://1.bp.blogspot.com/-l6T2aA_0DU0/XV0l5LYhxHI/AAAAAAAALUU/sfQ3Q_2f0LgNZ9w5zKP0awWGbpHOEDE-ACLcBGAs/s1600/Calvin%2BInstitute%2Bof%2BTechnology%2BLibrary.jpg">
-            <div class="box-content">
-                <div class="inner-content">
-                    <h3 class="title"><a href="{% url 'library' %}">Library</a></h3>
-                </div>
-            </div>
-        </div>
->>>>>>> 6bec310b8e779aa3ec73fa8967080e76ac69c41a
     </div>
     </article>
 

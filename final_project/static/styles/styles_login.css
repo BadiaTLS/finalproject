@@ -201,7 +201,6 @@ width: 90%;
     }
     
     main {
-<<<<<<< HEAD
         height: 21.25rem;
         left: 50%;
         margin: auto;
@@ -329,22 +328,3 @@ font: 700 .75rem var(--main-font);
 letter-spacing: .08rem;
 text-transform: uppercase;
 }
-=======
-    background: #f9f6ed;
-    border-radius: 0.25rem;
-    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
-    }
-    
-    .text-body {
-    color: #354c58;
-    font: 700 16px 'Nanum Gothic', sans-serif;
-    }
-    
-    .text-small-uppercase {
-    color: #E9E3E6;
-    font: 700 .75rem 'Nanum Gothic', sans-serif;
-    letter-spacing: .08rem;
-    text-transform: uppercase;
-    }
-    
->>>>>>> 6bec310b8e779aa3ec73fa8967080e76ac69c41a
