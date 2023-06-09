@@ -170,7 +170,7 @@ def get_student_dininghall_context(request):
                 'day': current_date.strftime('%A'),
                 'can_booking': False
             }
-            return context
+        return context
     
     menus = get_menu_based_date(current_date)
     breakfast, lunch, dinner = return_menus_for_each_session_in_one_date(menus)
