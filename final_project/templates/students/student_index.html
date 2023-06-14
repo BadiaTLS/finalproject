@@ -2,55 +2,101 @@
 
 {% block title %} Welcome User {% endblock %}
 
-{% block links %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+{% block styles %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/styles_card.css' %}">
 {% endblock %}
 
 {% block logo %}
 <a class="navbar-brand" href="{% url 'student_index' %}">DINE-IN TIME SUGGESTION</a>
 {% endblock %}
 
+{% block navbar %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'student_index' %}">Home</a>
+</li>
+{% endblock %}
+
+ 
 {% block message %}
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-danger" role="alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}
 
 {% block template %}
-<div class="row">
-    <div class="col-md-4 col-sm-6">
-        <div class="box">
-            <img src="https://calvin.ac.id/wp-content/uploads/2021/11/dh1-scaled.jpg">
-            <div class="box-content">
-                <div class="inner-content">
-                    <h3 class="title"><a href="{% url 'dining_hall' %}">Dining Hall</a></h3>
-                </div>
-            </div>
-        </div>
+<h2 class="center">Welcome {{fullname}}!</h2>
+<section class="card-list">
+    <article class="card" id="library">
+    <img src="https://1.bp.blogspot.com/-l6T2aA_0DU0/XV0l5LYhxHI/AAAAAAAALUU/sfQ3Q_2f0LgNZ9w5zKP0awWGbpHOEDE-ACLcBGAs/s1600/Calvin%2BInstitute%2Bof%2BTechnology%2BLibrary.jpg">
+    <header class="card-header">
+        <p>Sep 11th 2020</p>
+        <h2>LIBRARY </h2></br>
+        <h3>Not Available</h3>
+    </header>
+    </article>
+
+    <article class="card active" id="dininghall">
+    <img src="https://calvin.ac.id/wp-content/uploads/2021/11/dh1-scaled.jpg">
+    <header class="card-header">
+        <p>Sep 11th 2020</p>
+        <h2>DINING HALL</h2>
+        {% if time_ordered != None %}
+        <h3>TIME ORDERED: {{time_ordered}}</h3>
+        <h3>SESSION: {{session}}</h3>
+        {% else %}
+        <h3>No time has been ordered. Please place an order!</h3>
+        {% endif %}"
+        
+    </header>
+    <div class="tags">
+        {% if time_ordered != None %}
+        <a href="{% url 'cancel_order' %}">CANCEL ORDER</a>
+        {% else %}
+        <a href="{% url 'dining_hall' %}">CHECK MENU</a>
+        <a href="{% url 'dining_hall' %}">ORDER NOW</a>
+        {% endif %}"
     </div>
-    <div class="col-md-4 col-sm-6">
-        <div class="box">
-            <img src="https://1.bp.blogspot.com/-l6T2aA_0DU0/XV0l5LYhxHI/AAAAAAAALUU/sfQ3Q_2f0LgNZ9w5zKP0awWGbpHOEDE-ACLcBGAs/s1600/Calvin%2BInstitute%2Bof%2BTechnology%2BLibrary.jpg">
-            <div class="box-content">
-                <div class="inner-content">
-                    <h3 class="title"><a href="{% url 'library' %}">Library</a></h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 col-sm-6">
-      <div class="box">
-          <img src="https://bsd.calvin.ac.id/wp-content/uploads/2021/01/DSC02713.jpg">
-          <div class="box-content">
-              <div class="inner-content">
-                  <h3 class="title"><a href="{% url 'laboratorium' %}">Laboratorium</a></h3>
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
+    </article>
+
+    <article class="card" id="lab">
+    <img src="https://bsd.calvin.ac.id/wp-content/uploads/2021/01/DSC02713.jpg">
+    <header class="card-header">
+        <p>Sep 11th 2020</p>
+        <h2>LABORATORIUM</h2>
+        <h3>Not Available</h3>
+    </header>
+    </article>
+
+    <!-- <article class="card"></article> -->
+
+    <script>
+        // document.getElementById('dininghall').addEventListener('click', function() {
+        //     window.location.href = "{% url 'dining_hall' %}";
+        // });
+
+        document.getElementById('lab').addEventListener('click', function() {
+            window.location.href = "{% url 'laboratorium' %}";
+        });
+
+        document.getElementById('library').addEventListener('click', function() {
+            window.location.href = "{% url 'library' %}";
+        });
+
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('clicked');
+                });
+            });
+        }
+
+    </script>
+</section>
 {% endblock %}

@@ -1,3 +1,24 @@
+.suggestions-text {
+    font-size: 24px;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 20 20 20px;
+
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin: 0 0 3px;
+    margin-bottom: 40px;
+}
+
+.suggestions-text .h3{
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0 0 3px;
+}
+
 .box:before,
 .box:after,
 .box .box-content:before,
@@ -34,7 +55,8 @@
 }
 .box img{
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     transform: scale3d(1.1, 1.1, 1);
     transition: all 0.25s linear;
     opacity: 0.25;

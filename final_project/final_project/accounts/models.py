@@ -11,7 +11,6 @@ class CustomUser(AbstractUser):
     ]
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=150)
-    nim = models.IntegerField(null=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, null=True)
 
     class Meta:

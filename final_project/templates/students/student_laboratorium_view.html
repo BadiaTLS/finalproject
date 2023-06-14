@@ -2,7 +2,19 @@
 
 {% block title %} Welcome To Laboratorium User {% endblock %}
 
+{% block styles %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/styles_not_available.css' %}">
+{% endblock %}
+
 {% block template %}
-SORRY, CURRENTLY PAGE FOR LABORATORIUM STILL IN CONSTRUCTION.
-STAY TUNE FOR THE UPDATE
+<div id= 'center' class="center">
+    <p>NOT AVAILABLE<br>Click to go back</p>
+</div>
+
+<script>
+    document.getElementById('center').addEventListener('click', function() {
+        window.history.back();
+    });
+</script>
 {% endblock %}
