@@ -1,7 +1,14 @@
 body {
-  background-color: #E9E3E6;
+  background-color: #f7f7f7;
   font-family: 'Nanum Gothic', sans-serif;
-  align-items: center;
+}
+
+.footer {
+  margin-top: auto;
+}
+
+.container {
+  width: 90%;
 }
 
 h2 {

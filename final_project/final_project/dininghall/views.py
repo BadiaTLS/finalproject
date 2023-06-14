@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import user_passes_test
 from django.db import transaction
 from .utils import *
+from datetime import time
 
 def check_dininghall_role(user):
     return user.role == 'dininghall'
@@ -91,6 +92,76 @@ def export_order_record(request):
     export_data_to_excel(file_path)
     messages.success(request, "Export Data Succesfully", extra_tags='success')
     return download_file_response(file_path)
+
+@login_required(login_url='login')
+@user_passes_test(check_dininghall_role, login_url='not_dininghall')
+def import_session(request):
+    if request.method == 'POST':
+        excel_file = request.FILES['excel_file']
+
+        if excel_file.name.endswith('.xlsx'):
+            workbook = openpyxl.load_workbook(excel_file)
+            worksheet = workbook.active
+
+            for row in worksheet.iter_rows(min_row=2, values_only=True):
+                date = row[0]
+                name = row[1]
+                menu = row[2]
+                seat_limit = row[3]  # Retrieve the seat_limit value from the Excel file
+
+                # Retrieve or create the table_session instance
+                session, _ = table_session.objects.get_or_create(
+                    date=date,
+                    name=name,
+                    defaults={
+                        'menu': menu,
+                    }
+                )
+
+                # Add rows in table_time based on session name
+                if session.name == "Breakfast":
+                    times = [
+                        time(7, 0),
+                        time(7, 30),
+                        time(8, 0),
+                        time(8, 30),
+                        time(9, 0),
+                    ]
+                elif session.name == "Lunch":
+                    times = [
+                        time(11, 0),
+                        time(11, 30),
+                        time(12, 0),
+                        time(12, 30),
+                        time(13, 0),
+                        time(13, 30),
+                    ]
+                elif session.name == "Dinner":
+                    times = [
+                        time(17, 0),
+                        time(17, 30),
+                        time(18, 0),
+                        time(18, 30),
+                        time(19, 0),
+                        time(19, 30),
+                    ]
+
+                for t in times:
+                    # Create table_time instance for each time
+                    table_time.objects.create(
+                        time=t,
+                        session_id=session,
+                        seat_limit=seat_limit,  # Set the seat_limit value from the Excel file
+                        available_seat=None,  # Set the appropriate available seat value
+                    )
+
+            messages.success(request, 'Sessions and times imported successfully.', extra_tags='success')
+            return redirect('dininghall_index')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
+            return redirect('import_session')
+    else:
+        return render(request, 'dininghall/import_session.html')
 
 def not_dininghall(request):
     messages.error(request, 'You are not authorized to access dining hall resources. You need the Dining Hall role.', extra_tags='error')
