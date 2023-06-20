@@ -1,330 +1,80 @@
-:root{
+:root {
     --main-font: 'Nanum Gothic', sans-serif;
 }
 
-img {
-height: auto;
-width: 100%;
-}
-
-input[type=submit] {
-background: linear-gradient(180deg, #660c0c 0%, #660c0c 100%);
-height: 2.75rem;
-margin: 1em auto auto;
-}
-
-input[type=email],
-input[type=text],
-input[type=password] {
-height: 1.5rem;
-margin: 0 0 1.15rem;
-width: 100%;
-}
-
-figure {
-overflow: hidden;
-position: relative;
-width: 100%;
-}
-
-form {
-overflow: hidden;
-padding: 10%;
-position: relative;
-width: 80%;
-}
-
-main {
-margin: 30px auto auto;
-overflow: hidden;
-position: relative;
-width: 90%;
-}
-
-@media (min-width: 768px) {
-    input[type=submit] {
-        background: linear-gradient(180deg, #660c0c 0%, #660c0c 100%);
-        bottom: 2.75rem;
-        left: 2.55rem;
-        height: 2.75rem;
-        padding: 0 3rem;
-        position: absolute;
-    }
-    
-    figure {
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-    }
-    
-    form {
-    overflow: hidden;
-    padding: 10%;
-    position: relative;
-    width: 80%;
-    }
-    
-    main {
-    margin: 30px auto auto;
-    overflow: hidden;
-    position: relative;
-    width: 90%;
-    }
-    
-    @media (min-width: 768px) {
-        input[type=submit] {
-            background: linear-gradient(180deg, #e52d27 0%, #b31217 100%);
-            bottom: 2.75rem;
-            left: 2.55rem;
-            height: 2.75rem;
-            padding: 0 3rem;
-            position: absolute;
-        }
-        figure {
-            float: left;
-            height: 100%;
-            position: relative;
-            width: 50%;
-        }
-        form {
-            float: left;
-            height: 78%;
-            padding: 6%;
-            width: 38%;
-        }
-        main {
-            height: 21.25rem;
-            left: 50%;
-            margin: auto;
-            position: absolute;
-            transform: translate(-50%, -50%);
-            top: 50%;
-            width: 42.5rem;
-        }
-    }
-    
-    /* Skin */
-    
-    * {
-    margin: 0;
-    padding: 0;
-    }
-    
-    body {
-    background: #E9E3E6;
-    font: 700 16px 'Nanum Gothic', sans-serif;
-    }
-    
-    input[type=email],
-    input[type=text],
-    input[type=password] {
-    background: none;
-    border: none;
-    border-bottom: 2px solid #342f2f;
-    box-sizing: border-box;
-    outline: none;
-    }
-    
-    input[type=email]:required,
-    input[type=text]:required,
-    input[type=password]:required {
-    box-shadow: none;
-    outline: none;
-    }
-    
-    input[type=submit] {
-    background: linear-gradient(180deg, #e52d27 0%, #b31217 100%);
-    border: none;
-    color: #fff;
-    padding: 0 2rem;
-    }
-    
-    input[type=submit]:hover,
-    input[type=submit]:focus {
-    background: linear-gradient(180deg, #e16561 0%, #dbb8ba 100%);
-    cursor: pointer;
-    outline: none;
-    }
-    
-    .inputs--filled label,
-    .inputs--filled input[type=password] + label,
-    .inputs--filled input[type=email] + label {
-    color: #342f2f;
-    transform: translate(0, 0);
-    }
-    
-    .inputs--invalid input,
-    .inputs--invalid input[type=password] {
-    animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
-    border-bottom: 2px solid #f37b56;
-    box-shadow: none;
-    color: #f37b56;
-    transform: translate3d(0, 0, 0);
-    }
-    
-    @keyframes shake {
-        0%, 100% {
-            transform: translate3d(0, 0, 0);
-        }
-    
-        33% {
-            transform: translate3d(-6px, 0, 0);
-        }
-    
-        66% {
-            transform: translate3d(6px, 0, 0);
-        }
-    }
-    
-    .inputs--invalid label,
-    .inputs--invalid .password-label {
-    color: #f37b56;
-    }
-    
-    .password-wrapper {
-    position: relative;
-    }
-    
-    .password-toggle {
-    position: absolute;
-    right: 0.5rem;
-    top: 70%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    }
-    
-    label {
-    display: inline-block;
-    transform: translate(0, 1.25rem);
-    transition: 0.15s;
-    color: #342f2f;
-    }
-    
-    main {
-        height: 21.25rem;
-        left: 50%;
-        margin: auto;
-        position: absolute;
-        transform: translate(-50%, -50%);
-        top: 50%;
-        width: 42.5rem;
-    }
-}
-
-/* Skin */
-
-* {
-margin: 0;
-padding: 0;
-}
-
 body {
-/* background: #E9E3E6; */
-background: #E9E3E6;
-
-font: 700 16px --main-font;
+    overflow: hidden;
 }
 
-input[type=email],
-input[type=text],
-input[type=password] {
-background: none;
-border: none;
-border-bottom: 2px solid #342f2f;
-box-sizing: border-box;
-outline: none;
+
+/* Login Body Start */
+.the-login-body {
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    object-fit: cover;
+    background-image: url(https://calvin.ac.id/wp-content/uploads/2021/08/lightouse-photo-compressed.jpg);
+    background-color: rgba(41, 41, 41, 0.5);
+    filter: blur(5px);
+    animation: pulse 5s infinite;
+    overflow: hidden;
 }
 
-input[type=email]:required,
-input[type=text]:required,
-input[type=password]:required {
-box-shadow: none;
-outline: none;
-}
-
-input[type=submit] {
-background: linear-gradient(180deg, #e52d27 0%, #b31217 100%);
-border: none;
-color: #fff;
-padding: 0 2rem;
-border-radius: 0.5rem;
-}
-
-input[type=submit]:hover,
-input[type=submit]:focus {
-background: linear-gradient(180deg, #b21515 0%, #330606 100%);
-cursor: pointer;
-outline: none;
-}
-
-.inputs--filled label,
-.inputs--filled input[type=password] + label,
-.inputs--filled input[type=email] + label {
-color: #342f2f;
-transform: translate(0, 0);
-}
-
-.inputs--invalid input,
-.inputs--invalid input[type=password] {
-animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
-border-bottom: 2px solid #f37b56;
-box-shadow: none;
-color: #f37b56;
-transform: translate3d(0, 0, 0);
-}
-
-@keyframes shake {
-    0%, 100% {
-        transform: translate3d(0, 0, 0);
+@keyframes pulse {
+    0% {
+        transform: scale(1.03);
     }
 
-    33% {
-        transform: translate3d(-6px, 0, 0);
+    25% {
+        transform: scale(1.013);
     }
 
-    66% {
-        transform: translate3d(6px, 0, 0);
+    50% {
+        transform: scale(1.02);
+    }
+
+    75% {
+        transform: scale(1.013);
+    }
+
+    100% {
+        transform: scale(1.03);
     }
 }
 
-.inputs--invalid label,
-.inputs--invalid .password-label {
-color: #f37b56;
+.shadow-white {
+    box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.5);
+}
+/* Login Body End */
+
+/* Loading Start */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease;
 }
 
-.password-wrapper {
-position: relative;
+#loading-screen.fade-out {
+    opacity: 0;
 }
 
-.password-toggle {
-position: absolute;
-right: 0.5rem;
-top: 70%;
-transform: translateY(-50%);
-cursor: pointer;
+#welcome-message {
+    opacity: 1;
+    transition: opacity 0.5s ease;
 }
 
-label {
-display: inline-block;
-transform: translate(0, 1.25rem);
-transition: 0.15s;
-color: #342f2f;
+#welcome-message.hide {
+    opacity: 0;
 }
 
-main {
-background: #f9f6ed;
-border-radius: 2rem;
-box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
-}
-
-.text-body {
-color: #354c58;
-font: 700 16px var(--main-font);
-}
-
-.text-small-uppercase {
-color: #817e7e;
-font: 700 .75rem var(--main-font);
-letter-spacing: .08rem;
-text-transform: uppercase;
-}
+/* Loading End */

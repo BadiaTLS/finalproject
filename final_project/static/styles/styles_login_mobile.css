@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#loading-screen {
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    position: fixed;
+    width: 100%;
+    z-index: 9999;
+}
+
+#loading-screen h1 {
+    font-size: 2rem;
+}
+
+.the-login-body {
+    background-image: url('/static/images/cit.jpg');
+    background-size: cover;
+    height: 100vh;
+}
+
+main {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    left: 50%;
+	top :50%; 
+    max-width: 500px;
+    padding: 20px;
+    position:absolute; 
+	transform :translate(-50%,-50%); 
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.main form {
+    justify-content: center;
+
+}
+
+main form span {
+	display:block; 
+	width :100%; 
+}
+
+main figure {
+	text-align:center; 
+    align-items: center;
+    justify-content: center;
+}
+
+main figure img {
+	max-width :100%; 
+	border-radius :10px; 
+    border: 20px dotted #333;
+}
+
+
+main form span {
+	display:flex; 
+	width :100%; 
+}
+
+main form span label{
+	width :30%; 
+    border-width: 10px;
+    border-style: dashed;
+    border-color: red;
+}
+main form span input{
+	width :30%
+}
+
+main form input[type="submit"]:hover,
+main form input[type="submit"]:focus {
+	background-color:#b31217; 
+	outline:none; 
+}
+
+.password-wrapper {
+	display:flex; 
+	position:relative; 
+	width :100%;  
+}
+
+/* .password-input {
+	flex-grow :1;  
+} */
+
+.password-toggle {
+	margin-left :10px;  
+}

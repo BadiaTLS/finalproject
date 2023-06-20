@@ -86,7 +86,7 @@ footer .footer-elements {
     height: 4px;
     width: 100%;
     border-radius: 10px;
-    background: #0e2431;
+    background: white;
 }
 
 .nav-container .hamburger-lines .line1 {
@@ -103,12 +103,6 @@ footer .footer-elements {
     transition: transform 0.4s ease-in-out;
 }
 
-.logo {
-    font-size: 1.2rem;
-    color: #0e2431;
-    margin-left: 6.25rem;
-}
-
 .nav-container input[type="checkbox"]:checked ~ .hamburger-lines .line1 {
     transform: rotate(45deg);
 }
@@ -121,6 +115,12 @@ footer .footer-elements {
     transform: rotate(-45deg);
 }
 
+
+.logo {
+    font-size: 1.2rem;
+    color: #0e2431;
+    margin-left: 6.25rem;
+}
 .nav-container input[type="checkbox"]:checked ~ .logo{
     display: none;
 }

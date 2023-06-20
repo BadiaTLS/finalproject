@@ -24,6 +24,11 @@ def is_within_restricted_range(booked_suggestion_time, current_hour):
         or (time(17, 0, 0) <= booked_suggestion_time <= time(18, 59, 59) and current_hour < time(19, 0, 0))
     )
 
+def is_between(time, time_range):
+    if time_range[1] < time_range[0]:
+        return time >= time_range[0] or time < time_range[1]
+    return time_range[0] <= time < time_range[1]
+
 # GET
 def get_userobject_by_id(id):
     user_object = CustomUser.objects.get(id=id)
@@ -122,27 +127,17 @@ def get_classes_by_email(email, class_list):
 
     return classes_that_email_is_in
 
-
-def is_between(time, time_range):
-    if time_range[1] < time_range[0]:
-        return time >= time_range[0] or time < time_range[1]
-    return time_range[0] <= time < time_range[1]
-
 def get_start_end_for_algorithm(email, day, session_times):
-    # Check classes for today
-
-    # Check if user is in the class
-
-    # Get the classes that has user
-
-    # check classes start and end
-
-    # if classes start < session start and classes end > session end: Rejected 
-
-    # if classes end < session end
+    try: 
+        day = translate_day_to_en(day).lower()
+    except:
+        day = day.lower()
 
     class_list = get_classes_by_day(day)
     class_list_by_email = get_classes_by_email(email, class_list)
+
+    # print(f"Kelas Hari ini {day}: {class_list}\n Kelas yang dihadiri {email}: {class_list_by_email}")
+
 
     # Get The classes for the day
     for i in class_list_by_email:
@@ -155,77 +150,28 @@ def get_start_end_for_algorithm(email, day, session_times):
                 pass
                 # print(f"{session_time} is not between {i.class_start_time} and {i.class_end_time}")    
 
-    start = class_list_by_email[0].class_start_time
-    end = class_list_by_email[0].class_end_time
-    
-    return start, end
+    # start = class_list_by_email[0].class_start_time
+    # end = class_list_by_email[0].class_end_time
+    start, end = list(session_times.keys())[0], list(session_times.keys())[-1]
 
-def delete_booking_and_update_available_seat_by_user_id(user_id):
-    try: 
-        booking_object = table_booking_dininghall.objects.filter(user_id=user_id).latest('created_at')
-        print(booking_object)
-        
-        session_id = booking_object.session_id
-        recommended_time = booking_object.recommended_time
-
-        booked_time_object = table_time.objects.get(session_id=session_id, time = recommended_time)
-        print(booked_time_object)
-        booked_time_object.available_seat += 1
-        booking_object.delete()
-        return "Success" 
-    except: 
-        return "Nothing Happened"
+    # print(start, end, email, day, session_times)
+    return start, end, session_times
 
 def get_student_dininghall_context(request):
     current_hour, current_date = get_current_hour_and_current_date()
     session, time_objects = get_session_and_time_objects(current_hour)
     
-    # ALGORITHM START HERE #
-
     session_id = get_session_id(current_date, session)
     if session_id:
-        session_info = get_session_time_and_seat(session_id)
-
-        #Need to get start time and end time from table class:
-        session_start, session_end  = list(session_info.keys())[0], list(session_info.keys())[-1]
-
-        email = request.user.email
-        day = current_date.strftime('%A')
-        day = translate_day(day)
-
-        # get_start_end_for_algorithm(email, day="Sabtu", session_start=session_start, session_end=session_end)
-        # start, end = get_start_end_for_algorithm(email, day, session_info)
-
-        try: 
-            start, end = get_start_end_for_algorithm(email, day, session_info)
-        except:
-            start, end = list(session_info.keys())[0], list(session_info.keys())[-1]
-        
-        suggestion_time = get_recommended_time(session_info, start, end)
+        suggestion_time = get_suggestion_time(session_id, request.user.email, current_date)
     else:
-        day = current_date.strftime('%A')
-        session_info = None
         suggestion_time = None
 
-    # ALGORITHM END HERE #
-    
-    # print(table_booking_dininghall.objects.filter(user_id=request.user).latest('created_at'))
     latest_booking = get_latest_booking(request.user)
     if latest_booking:
-        booked_suggestion_time = latest_booking.recommended_time
-        menu = latest_booking.session_id
-        booked_menu = menu.menu
-        booked_session = menu.name
-
-        if is_within_restricted_range(booked_suggestion_time, current_hour):
-            context = {
-                'session': booked_session,
-                'session_id': booked_menu,
-                'time_suggested': booked_suggestion_time.strftime('%H:%M:%S'),
-                'day': current_date.strftime('%A'),
-                'can_booking': False
-            }
-        return context
+        context = get_context_from_latest_booking(latest_booking, current_hour, current_date)
+        if context:
+            return context
     
     menus = get_menu_based_date(current_date)
     breakfast, lunch, dinner = return_menus_for_each_session_in_one_date(menus)
@@ -246,6 +192,34 @@ def get_student_dininghall_context(request):
     }
     return context
 
+def get_suggestion_time(session_object, email, current_date):
+    session_info = get_session_time_and_seat(session_object)
+
+    day = current_date.strftime('%A')
+    day = translate_day(day)
+
+    start, end, session_info = get_start_end_for_algorithm(email, day, session_info)
+    suggestion_time = get_recommended_time(session_info, start, end)
+    
+    return suggestion_time
+
+def get_context_from_latest_booking(latest_booking, current_hour, current_date):
+    booked_suggestion_time = latest_booking.recommended_time
+    menu = latest_booking.session_id
+    booked_menu = menu.menu
+    booked_session = menu.name
+
+
+    if is_within_restricted_range(booked_suggestion_time, current_hour):
+        context = {
+            'session': booked_session,
+            'session_id': booked_menu,
+            'date' : menu.date,
+            'time_suggested': booked_suggestion_time.strftime('%H:%M'),
+            'day': current_date.strftime('%A'),
+            'can_booking': False
+        }
+        return context
 
 # NON GET and CHECK
 def create_booking(user_id, session_id, time_suggested):
@@ -269,6 +243,18 @@ def translate_day(day):
     }
     return days.get(day)
 
+def translate_day_to_en(day):
+    days = {
+        "Senin": "Monday",
+        "Selasa": "Tuesday",
+        "Rabu": "Wednesday",
+        "Kamis": "Thursday",
+        "Jumat": "Friday",
+        "Sabtu": "Saturday",
+        "Minggu": "Sunday"
+    }
+    return days.get(day)
+
 def update_available_seats(time):
     if time.available_seat == 0:
         raise ValueError("Not enough available seats")
@@ -284,3 +270,18 @@ def return_menus_for_each_session_in_one_date(menus):
         else:
             meals[meal_name] = menus.filter(name=meal_name).first().menu
     return meals["Breakfast"], meals["Lunch"], meals["Dinner"]
+
+def delete_booking_and_update_available_seat_by_user_id(user_id):
+    try: 
+        booking_object = table_booking_dininghall.objects.filter(user_id=user_id).latest('created_at')
+        
+        session_id = booking_object.session_id
+        recommended_time = booking_object.recommended_time
+
+        booked_time_object = table_time.objects.get(session_id=session_id, time = recommended_time)
+        booked_time_object.available_seat += 1
+        booked_time_object.save()
+        booking_object.delete()
+        return "Success" 
+    except: 
+        return "Nothing Happened"

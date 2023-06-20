@@ -9,5 +9,6 @@ urlpatterns = [
     path('dining_hall/confirm', views.confirm, name="confirm_dininghall_booking"),
     path('dining_hall/student_preferences', views.student_preferences, name="student_preferences"),
     path('not_student/', views.not_student, name='not_student'),
-    path('cancel_order', views.cancel_order, name="cancel_order")
+    path('cancel_order', views.cancel_order, name="cancel_order"),
+    path('menu', views.menu, name='menu')
 ]
