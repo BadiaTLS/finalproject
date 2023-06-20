@@ -1,0 +1,83 @@
+{% extends "../students/student_dininghall_view.html" %}
+
+{% block styles %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/style_preferences.css' %}">
+{% endblock %}
+
+{% block activities %}
+<div class="row">
+  <div class="col-md-6">
+    <div class="container-2">
+      <ul class="responsive-table">
+        <li class="table-header">
+          <div class="col">Time</div>
+          <div class="col">Available Seat</div>
+        </li>
+        {% for hour in time_objects %}
+        <li class="table-row">
+          <div class="col">{{ hour }}</div>
+          <div class="col">10</div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <form action="{% url 'student_preferences' %}" method="POST" class="mx-auto col-10 col-md-8 col-lg-6 bootstrap">
+      <div class="text-center mx-auto mb-4">
+        Pilih rentang waktu yang ada inginkan dibawah ini
+      </div>
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="col-12">
+          <input class="form-check-input" type="radio" name="take" id="take" value="take" checked>
+          <label class="form-check-label" for="take">
+            Makan
+          </label>
+        </div>
+        <div class="col-12">
+          <label for="start_range">Start Range</label>
+          <input type="time" class="form-control" id="start_range" placeholder="{{ current_hour }}" name="start_range" required>
+        </div>
+        <div class="col-12">
+          <label for="end_range">End Range</label>
+          <input type="time" class="form-control" id="end_range" name="end_range" required>
+        </div>
+        <div class="col-12">
+          <input class="form-check-input" type="radio" name="take" id="nottake" value="nottake">
+          <label class="form-check-label" for="nottake">
+            Tidak Makan
+          </label>
+        </div>
+      </div>
+      <br/>
+      <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  // Get the radio buttons and time input fields
+  const takeRadio = document.getElementById("take");
+  const nottakeRadio = document.getElementById("nottake");
+  const startRangeInput = document.getElementById("start_range");
+  const endRangeInput = document.getElementById("end_range");
+
+  // Add event listeners to the radio buttons
+  takeRadio.addEventListener("change", toggleTimeInputs);
+  nottakeRadio.addEventListener("change", toggleTimeInputs);
+
+  // Function to toggle the disabled attribute of time inputs
+  function toggleTimeInputs() {
+    const isTakeChecked = takeRadio.checked;
+    startRangeInput.disabled = !isTakeChecked;
+    endRangeInput.disabled = !isTakeChecked;
+  }
+
+  // Call the function initially to set the initial state
+  toggleTimeInputs();
+</script>
+{% endblock %}

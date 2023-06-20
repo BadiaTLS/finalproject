@@ -6,16 +6,23 @@
 {% load static %}
 {% endblock %}
 
+<!-- Logo Start -->
+{% block logo %}
+<a href="{% url 'student_index' %}" class="navbar-brand p-0">
+    <h1 class="text-primary m-0"><img src="/static/images/logo.jpg" alt="logo"></h1>
+</a>
+{% endblock %}
+
 <!-- Navbar Start -->
 {% block navbar %}
-<!-- <li class="nav-item">
-    <a class="nav-link" href="{% url 'student_index' %}">Home</a>
-</li> -->
 <li class="nav-item">
-    <a class="nav-link" href="#about">About</a>
+    <a class="nav-link active" href="{% url 'student_index' %}">Home</a>
 </li>
 <li class="nav-item">
     <a class="nav-link" href="#service">Service</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#about">About</a>
 </li>
 {% endblock %}
 <!-- Navbar End -->
@@ -26,14 +33,18 @@
         <div class="row align-items-center g-5">
             <div class="col-lg-6 text-center text-lg-start">
                 <h1 class="display-3 text-white animated slideInLeft">Enjoy Meals<br>Without Wasting Time</h1>
-                <p class="text-white animated slideInLeft mb-4 pb-0">Secure your spot for a delicious meal at our Dining Hall. Click the button to reserve your table now.</p>
-                <p class="text-white animated slideInLeft mb-4 pb-0"><strong>Now Available</strong> Personalized Time Recommendations for the Dining Hall Reservation</p>
+                <p class="text-white animated slideInLeft mb-4 pb-0">Secure your spot for a delicious meal at our Dining
+                    Hall. Click the button to reserve your table now.</p>
+                <p class="text-white animated slideInLeft mb-4 pb-0"><strong>Now Available</strong> Personalized Time
+                    Recommendations for the Dining Hall Reservation</p>
                 <a href="{% url 'dining_hall' %}"
                     class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Reserve Now</a>
             </div>
             <div class="col-lg-6 text-center text-lg-end overflow-hidden">
                 <!-- <img class="img-fluid" src="../static/images/hero.png" alt=""> -->
-                <img class="img-fluid rounded w-100 wow zoomIn img-swipes" src="https://calvin.ac.id/wp-content/uploads/2021/11/DN21-2.jpg" data-wow-delay="0.1s" style="width: 300px;height: 300px;object-fit: cover;" alt="Dining Hall Images">
+                <img class="img-fluid rounded w-100 wow zoomIn img-swipes"
+                    src="https://calvin.ac.id/wp-content/uploads/2021/11/DN21-2.jpg" data-wow-delay="0.1s"
+                    style="width: 300px;height: 300px;object-fit: cover;" alt="Dining Hall Images">
             </div>
         </div>
     </div>
@@ -45,9 +56,10 @@
 <!-- Service Start -->
 <div id="service" class="container-xxl py-1 text-white" style="height: 30%; padding: auto; margin: auto">
     <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Our Services</h5>
+        </div>
         <div class="row g-4 justify-content-center"> <!-- Added 'justify-content-center' class -->
-            <h5 class="section-title ff-secondary text-start text-primary fw-normal">Services</h5>
-
             <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s"
                 style="background-image: url('../../static/images/library.jpg'); background-size: cover; background-position: center;">
                 <!-- Adjusted column width -->
@@ -55,7 +67,11 @@
                     <div class="p-4">
                         <i class="fa fa-3x fa-book text-primary mb-4"></i>
                         <h5 class="text-white">Library</h5>
-                        <p>The library houses a vast collection of books, journals, and other resources to support academic research and learning. The library staff is always available to assist with finding and accessing materials. The library also provides a quiet and comfortable space for studying and reading.</p>
+                        <p>The library houses a vast collection of books, journals, and other resources to support
+                            academic research and learning. The library staff is always available to assist with
+                            finding
+                            and accessing materials. The library also provides a quiet and comfortable space for
+                            studying and reading.</p>
                     </div>
                 </div>
             </div>
@@ -66,8 +82,12 @@
                     <div class="p-4">
                         <i class="fa fa-3x fa-utensils text-primary mb-4"></i>
                         <h5 class="text-white">Dining Hall</h5>
-                        <p>The dining hall offers a wide variety of delicious and nutritious meals to cater to different dietary needs and preferences. 
-                            The dining hall staff takes pride in providing excellent service and ensuring that everyone has a pleasant dining experience.
+                        <p>The dining hall offers a wide variety of delicious and nutritious meals to cater to
+                            different
+                            dietary needs and preferences.
+                            The dining hall staff takes pride in providing excellent service and ensuring that
+                            everyone
+                            has a pleasant dining experience.
 
                         </p>
                     </div>
@@ -80,8 +100,13 @@
                     <div class="p-4">
                         <i class="fa fa-3x fa-flask text-primary mb-4"></i>
                         <h5 class="text-white">Laboratorium</h5>
-                        <p>The laboratory is equipped with state-of-the-art instruments and tools to support cutting-edge research and experimentation. The laboratory staff is highly trained and always available to assist with setting up experiments and ensuring that all safety protocols are followed.
-                            
+                        <p>The laboratory is equipped with state-of-the-art instruments and tools to support
+                            cutting-edge research and experimentation. The laboratory staff is highly trained and
+                            always
+                            available to assist with setting up experiments and ensuring that all safety protocols
+                            are
+                            followed.
+
                         </p>
                     </div>
                 </div>
@@ -139,7 +164,9 @@
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s"> <!-- Adjusted column width -->
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="https://media.licdn.com/dms/image/D5603AQG6QwK6HgoBnQ/profile-displayphoto-shrink_800_800/0/1673778777751?e=2147483647&v=beta&t=SpNL3T748BPaNUcT8Wmv4_o1Tj5rmD4UI_E2Kvx6GK4" alt=""style="width: 300px;height: 300px;object-fit: cover;">
+                        <img class="img-fluid"
+                            src="https://media.licdn.com/dms/image/D5603AQG6QwK6HgoBnQ/profile-displayphoto-shrink_800_800/0/1673778777751?e=2147483647&v=beta&t=SpNL3T748BPaNUcT8Wmv4_o1Tj5rmD4UI_E2Kvx6GK4"
+                            alt="" style="width: 300px;height: 300px;object-fit: cover;">
                     </div>
                     <h5 class="mb-0">Badia Tuahman</h5>
                     <small>Student</small>
@@ -157,7 +184,8 @@
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s"> <!-- Adjusted column width -->
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="../static/images/team-2.jpg" alt=""style="width: 300px;height: 300px;object-fit: cover;">
+                        <img class="img-fluid" src="../static/images/team-2.jpg" alt=""
+                            style="width: 300px;height: 300px;object-fit: cover;">
                     </div>
                     <h5 class="mb-0">Elson Sutrisno</h5>
                     <small>Student</small>
@@ -174,7 +202,9 @@
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s"> <!-- Adjusted column width -->
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="https://calvin.ac.id/wp-content/uploads/2023/03/ERWIN-ANGGADJAYA-Square-300x300.jpg" alt="" style="width: 300px;height: 300px;object-fit: cover;">
+                        <img class="img-fluid"
+                            src="https://calvin.ac.id/wp-content/uploads/2023/03/ERWIN-ANGGADJAYA-Square-300x300.jpg"
+                            alt="" style="width: 300px;height: 300px;object-fit: cover;">
                     </div>
                     <h5 class="mb-0">Erwin Anggadjaja, S.Kom., M.E.St., Ph.D.</h5>
                     <small>Supervisor</small>
@@ -204,7 +234,7 @@
     setInterval(function () {
         document.querySelector('.img-swipes').src = images[index];
         index = (index + 1) % images.length;
-}, 2500);
+    }, 2500);
 </script>
 
 {% endblock %}

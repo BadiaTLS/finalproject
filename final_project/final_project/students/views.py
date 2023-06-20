@@ -97,14 +97,22 @@ def cancel_order(request):
 @transaction.atomic
 def student_preferences(request):
     if request.method == 'POST':
-        take_value = request.POST.get('take')
-        start_time = request.POST.get('start_range')
-        end_time = request.POST.get('end_range')
-        if take_value != 'take':
-            return redirect('dining_hall')
-        else:
+        is_take = request.POST.get('take')
+        if is_take:
+
+            start_time = request.POST.get('start_range')
+            end_time = request.POST.get('end_range')
+
+            session_pref = request.POST.get('session_pref')
+            date_pref = request.POST.get('date_pref')
+            date_pref = datetime.strptime(date_pref, "%Y-%m-%d").date()
+
             current_hour, current_date = get_current_hour_and_current_date()
             session, time_objects = get_session_and_time_objects(current_hour)
+
+            session = session_pref
+            current_date = date_pref
+
             session_id = get_session_id_based_date_and_session_name(current_date, session)
             session_info = get_session_time_and_seat(get_session_id(current_date, session))
             suggested_time = get_recommended_time(session_info, start_time, end_time)
@@ -122,10 +130,11 @@ def student_preferences(request):
                 'dinner': dinner,
                 'can_booking': True,
                 'current_session' : session.upper()
-
             }
-            return render(request, 'students/student_dininghall_view.html', context)
-
+            return render(request, 'students/student_preferences.html', context)
+        
+    return render(request, 'students/student_preferences.html')
+    
 @student_required
 def confirm(request):
     current_hour, current_date = get_current_hour_and_current_date()

@@ -3,6 +3,7 @@ from final_project.accounts.models import CustomUser
 from final_project.dininghall.models import table_time, table_session, table_booking_dininghall
 from final_project.sas.models import table_classes
 from final_project.algorithm.dijkstra import get_recommended_time
+import json
 
 # CHECK
 def is_time_booked(request):
@@ -80,6 +81,70 @@ def get_time_by_session_id_and_suggested_time(time, session_id):
 def get_menu_based_date(date):
     menus = table_session.objects.filter(date=date)
     return menus
+
+def get_week_dates(date_str):
+    # parse the input date string
+    if type(date_str) == str:
+        date = datetime.strptime(date_str, '%Y-%m-%d')
+    else:
+        date = date_str
+
+    # calculate the start of the week (Monday)
+    start_of_week = date - timedelta(days=date.weekday())
+
+    # generate a list of dates for the entire week
+    week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
+
+    # format the dates as strings
+    # week_dates_str = [date.strftime('%Y-%m-%d') for date in week_dates]
+
+    return week_dates
+
+def generate_menu_data(meal_name, date, menu):
+    day_name = date.strftime('%A')
+    return {
+        'day': day_name,
+        'date': f'{menu}'  ,
+        'imgSrc': f'img/{meal_name.lower()}-{day_name.lower()}.jpg',
+        'altText': '',
+        'name': f'{day_name} {meal_name.capitalize()}',
+        'price': '$115',
+        'description': f'{date}'
+    }
+
+def get_menu_this_week(date):
+
+    # example usage
+    week_dates = get_week_dates(date)
+    print(week_dates)
+
+    breakfast = []
+    lunch = []
+    dinner = []
+
+    for date in week_dates:
+        menus = get_menu_based_date(date)
+        b, l, d = return_menus_for_each_session_in_one_date(menus)
+        breakfast.append(b)
+        lunch.append(l)
+        dinner.append(d)
+    # print(breakfast, lunch, dinner)
+    
+    tabs_data = {
+        'tab-1': [],
+        'tab-2': [],
+        'tab-3': []
+    }
+    for i, date in enumerate(week_dates):
+        tabs_data['tab-1'].append(generate_menu_data('breakfast', date, breakfast[i]))
+        tabs_data['tab-2'].append(generate_menu_data('lunch', date, lunch[i]))
+        tabs_data['tab-3'].append(generate_menu_data('dinner', date, dinner[i]))
+
+    print(tabs_data)
+    # convert the tabs_data dictionary to a JSON string
+    menu_data_json = json.dumps(tabs_data)
+
+    return menu_data_json
 
 def get_session_and_time_objects(current_hour):
     if time(20, 0) <= current_hour <= time(23, 59, 59) or time(0, 0) <= current_hour <= time(9, 59):
@@ -175,6 +240,7 @@ def get_student_dininghall_context(request):
     
     menus = get_menu_based_date(current_date)
     breakfast, lunch, dinner = return_menus_for_each_session_in_one_date(menus)
+    menu_this_week = get_menu_this_week(current_date)
 
     context = {
         'time_objects': time_objects,
@@ -187,8 +253,9 @@ def get_student_dininghall_context(request):
         'lunch': lunch,
         'dinner': dinner,
         'can_booking': True,
-        'current_session' : session.upper()
-        
+        'current_session' : session.upper(),
+        # Here we can add more... Like Menus
+        'menu_this_week' : menu_this_week
     }
     return context
 

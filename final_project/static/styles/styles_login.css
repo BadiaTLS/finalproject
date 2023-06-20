@@ -5,8 +5,6 @@
 body {
     overflow: hidden;
 }
-
-
 /* Login Body Start */
 .the-login-body {
     height: 100vh;
@@ -47,6 +45,12 @@ body {
     box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.5);
 }
 /* Login Body End */
+
+.center {
+    justify-content: center;
+    align-items: center;
+    
+}
 
 /* Loading Start */
 #loading-screen {

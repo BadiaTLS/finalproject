@@ -70,9 +70,11 @@
         <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
           <span class="fa fa-bars"></span>
         </button> -->
+        {% block logo %}
         <a href="" class="navbar-brand p-0">
-          <h1 class="text-primary m-0"><img src="/static/images/logo.jpg" alt="logo"></h1>
+          <h1 class="text-primary m-0"><img src="/static/images/logo.jpg" alt="logo"></h1>  
         </a>
+        {% endblock %}
         <div> </div>
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <div class="navbar-nav ms-auto py-0 pe-4">
