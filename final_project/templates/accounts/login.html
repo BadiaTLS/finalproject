@@ -1,98 +1,59 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{% endblock %}</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'styles/styles_login.css' %}">
+
+  <!-- Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap"
+    rel="stylesheet">
+
+  <!-- Customized Bootstrap Stylesheet -->
+  <link href="/static/styles/bootstrap.min.css" rel="stylesheet">
+
+
+  <!-- Template Stylesheet -->
+  <link href="/static/styles/style.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="static/styles/styles_login_mobile.css">
+  <link rel="stylesheet" href="static/styles/styles_login.css">
+
 </head>
+
 <body>
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-warning" role="alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-  <main>
+  <div id="loading-screen">
+    <h1 id="welcome-message">WELCOME TO CALVIN INSTITUTE OF TECHNOLOGY</h1>
+  </div>
+
+  <div class="the-login-body"></div>
+  <main style="display: none;" class="shadow-white">
     <figure>
-      <img src="{% static 'images/cit.jpg' %}" alt="CIT" />
+        <img src="/static/images/cit.jpg" alt="CIT" />
     </figure>
     <form action="" method="POST">
-      {% csrf_token %}
-      <span>
-        <label for="email" class="text-small-uppercase">Email</label>
-        <input class="text-body" id="email" name="email" type="email" required>
-      </span>
-      <span class="password-wrapper">
-        <label for="password" class="text-small-uppercase password-label">Password</label>
-        <input class="text-body" id="password" name="password" type="password" required>
-        <i class="fas fa-eye-slash password-toggle"></i>
-      </span>             
-      <input class="text-small-uppercase" id="submit" type="submit" value="Login">
+        <div class="center">
+          {% csrf_token %}
+            <span>
+                <input placeholder="Email" class="text-body" id="email" name="email" type="email" required>
+            </span>
+            <span class="password-wrapper">
+                <input placeholder="Password" class="text-body password-input fa-eye" id="password" name="password" type="password" required>
+                <i class="fas fa-eye-slash password-toggle"></i>
+            </span>
+            <input class="text-small-uppercase" id="submit" type="submit" value="Login">
+        </div>  
     </form>
-  </main>
+</main>
 
-  <script>
-    var inputs = document.querySelectorAll('input[type=text], input[type=email], input[type=password]');
-    for (var i = 0; i < inputs.length; i++) {
-      var inputEl = inputs[i];
-      if (inputEl.value.trim() !== '') {
-        inputEl.parentNode.classList.add('input--filled');
-      }
-      inputEl.addEventListener('focus', onFocus);
-      inputEl.addEventListener('blur', onBlur);
-    }
-
-    function onFocus(ev) {
-      var parent = ev.target.parentNode;
-      parent.classList.add('inputs--filled');
-    }
-
-    function onBlur(ev) {
-      var parent = ev.target.parentNode;
-      if (ev.target.value.trim() === '') {
-        parent.classList.remove('inputs--filled');
-      } else if (ev.target.checkValidity() == false) {
-        parent.classList.add('inputs--invalid');
-      } else if (ev.target.checkValidity() == true) {
-        parent.classList.remove('inputs--invalid');
-      }
-    }
-
-    var submitBtn = document.querySelector('input[type=submit]');
-    submitBtn.addEventListener('click', onSubmit);
-
-    function onSubmit(ev) {
-      var inputsWrappers = ev.target.parentNode.querySelectorAll('span');
-      for (var i = 0; i < inputsWrappers.length; i++) {
-        var input = inputsWrappers[i].querySelector('input[type=text], input[type=email], input[type=password]');
-        if (input.checkValidity() == false) {
-          inputsWrappers[i].classList.add('inputs--invalid');
-        } else if (input.checkValidity() == true) {
-          inputsWrappers[i].classList.remove('inputs--invalid');
-        }
-      }
-    }
-
-    var passwordToggle = document.querySelector('.password-toggle');
-    passwordToggle.addEventListener('click', togglePasswordVisibility);
-
-    function togglePasswordVisibility(ev) {
-      var passwordInput = ev.target.previousElementSibling;
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        ev.target.classList.remove('fa-eye-slash');
-        ev.target.classList.add('fa-eye');
-      } else {
-        passwordInput.type = 'password';
-        ev.target.classList.remove('fa-eye');
-        ev.target.classList.add('fa-eye-slash');
-      }
-    }
-  </script>
+  <script src="/static/js/login.js"></script>
 </body>
+
 </html>

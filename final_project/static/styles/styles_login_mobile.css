@@ -1,0 +1,114 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#loading-screen {
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    position: fixed;
+    width: 100%;
+    z-index: 9999;
+}
+
+#loading-screen h1 {
+    font-size: 2rem;
+}
+
+.the-login-body {
+    background-image: url('/static/images/cit.jpg');
+    background-size: cover;
+    height: 100vh;
+}
+
+main {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    display: absolute;
+    left: 50%;
+    top: 50%;
+    min-width: 400px;
+    max-width: 500px;
+    padding: 20px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+main figure img {
+    max-width: 100%;
+    /* border-radius :10px; 
+    border: 20px dotted #333; */
+}
+
+main form span {
+    display: flex;
+    width: 100%;
+}
+
+main form span label {
+    padding: 0.5rem 0.5rem;
+    margin: 0.3rem 0.5rem;
+    width: 40%;
+}
+
+main form span input {
+    padding: 0.5rem 0.5rem;
+    margin: 0.3rem 0.5rem;
+    width: 90%;
+    border: none;
+    border-bottom: #22222241 0.2rem solid;
+}
+
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    outline: 2px solid rgb(0, 205, 255);
+    box-shadow: 0 0 10px rgb(0, 205, 255);
+    border-bottom: transparent 0.2rem solid;
+}
+
+
+input[type=submit] {
+    background: linear-gradient(180deg, #e52d27 0%, #b31217 100%);
+    border: rgba(151, 0, 0, 0.582);
+    color: #fff;
+    margin: 2rem 0;
+    padding: 0.5rem 4rem;
+    border-radius: 0.5rem;
+    box-shadow: 5px 5px 5px #22222241;
+}
+
+input[type=submit]:hover,
+input[type=submit]:focus {
+    background: linear-gradient(180deg, #b21515 0%, #330606 100%);
+    cursor: pointer;
+    outline: none;
+}
+
+
+main form input[type="submit"]:hover,
+main form input[type="submit"]:focus {
+    background-color: #b31217;
+    outline: none;
+}
+
+.password-wrapper {
+    display: flex;
+    position: relative;
+    width: 100%;
+}
+
+.password-toggle {
+    margin-left: 0.3rem;
+    padding: 1.25rem 0 0.52vw;
+}

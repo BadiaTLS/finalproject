@@ -86,10 +86,13 @@ def get_recommended_time(session, start : str, end : str):
     try: 
         graph = _create_graph(session)
         max_seats = _dijkstra_max_seats(graph, round_time_down(start), round_time_down(end))
-    
 
         position = val_list.index(max_seats)
         recommended_time = key_list[position].strftime("%H:%M")
+        if max_seats == 0:
+            return False
+        else: 
+            pass
 
         # print(f"The maximum number of seats available between {start} and {end} is {max_seats}, and the time is {recommended_time}")
     except:

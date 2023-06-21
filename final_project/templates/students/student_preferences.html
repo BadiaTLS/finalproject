@@ -1,83 +1,160 @@
-{% extends "../students/student_dininghall_view.html" %}
+{% extends "../students/student_index.html" %}
 
-{% block styles %}
-{% load static %}
-<link rel="stylesheet" href="{% static 'styles/style_preferences.css' %}">
+{% block title %} Service Dining Hall Preferences Page{% endblock %}
+
+{% block style %}
 {% endblock %}
 
-{% block activities %}
-<div class="row">
-  <div class="col-md-6">
-    <div class="container-2">
-      <ul class="responsive-table">
-        <li class="table-header">
-          <div class="col">Time</div>
-          <div class="col">Available Seat</div>
-        </li>
-        {% for hour in time_objects %}
-        <li class="table-row">
-          <div class="col">{{ hour }}</div>
-          <div class="col">10</div>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
-  <div class="col-md-6">
-    <form action="{% url 'student_preferences' %}" method="POST" class="mx-auto col-10 col-md-8 col-lg-6 bootstrap">
-      <div class="text-center mx-auto mb-4">
-        Pilih rentang waktu yang ada inginkan dibawah ini
-      </div>
-      {% csrf_token %}
-      <div class="form-row">
-        <div class="col-12">
-          <input class="form-check-input" type="radio" name="take" id="take" value="take" checked>
-          <label class="form-check-label" for="take">
-            Makan
-          </label>
-        </div>
-        <div class="col-12">
-          <label for="start_range">Start Range</label>
-          <input type="time" class="form-control" id="start_range" placeholder="{{ current_hour }}" name="start_range" required>
-        </div>
-        <div class="col-12">
-          <label for="end_range">End Range</label>
-          <input type="time" class="form-control" id="end_range" name="end_range" required>
-        </div>
-        <div class="col-12">
-          <input class="form-check-input" type="radio" name="take" id="nottake" value="nottake">
-          <label class="form-check-label" for="nottake">
-            Tidak Makan
-          </label>
-        </div>
-      </div>
-      <br/>
-      <input type="submit" value="Submit" class="btn btn-primary">
-    </form>
+{% block navbar %}
+<a class="nav-item nav-link" href="{% url 'student_index' %}">Home</a>
+<a class="nav-item nav-link" href="{% url 'dining_hall' %}">Dining Hall</a>
+<a class="nav-item nav-link active" href="#pref">Preferences</a>
+{% endblock %}
+
+{% block home %}
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+  <div class="container text-center my-0 pt-5 pb-4">
+    <h1 class="display-3 text-white mb-3 animated slideInDown">Preferences</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center text-uppercase">
+        <li class="breadcrumb-item"><a class="text-white" href="{% url 'student_index' %}">Home</a></li>
+        <li class="breadcrumb-item"><a class="text-white" href="{% url 'dining_hall' %}">Dining Hall</a></li>
+        <li class="breadcrumb-item text-primary active" aria-current="page">Preferences</li>
+      </ol>
+    </nav>
   </div>
 </div>
 {% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock %}
+
+
+{% block template %}
+<div id="pref" class="container-xxl bg-white p-0" style="max-width: 1320px;"></div>
+
+<!-- Reservation Start -->
+<div class="container-xxl px-0 wow fadeInUp" data-wow-delay="0.1s">
+  <div class="row g-0">
+    <div class="col-md-6 bg-dark d-flex align-items-center" style="height: 100vh;">
+      <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+        <h5 class="section-title ff-secondary text-start text-primary fw-normal">Set Preferences</h5>
+        <h1 class="text-white mb-4 text-center">When would you like to make a reservation? </h1>
+        <form action="{% url 'student_preferences' %}" method="POST">
+          {% csrf_token %}
+
+          <div class="row g-3">
+            <!-- Pick Date -->
+            <div class="col-md-6">
+              <div class="form-floating date" id="date3" data-target-input="nearest">
+                <!-- <input type="date" class="form-control datetimepicker-input" id="datepicker" name="date_pref"  required> -->
+                <input type="date" class="form-control" name="date_pref" required>
+                <label for="datetime">Date & Time</label>
+              </div>
+            </div>
+            <!-- Pick Session -->
+            <div class="col-md-6">
+              <div class="form-floating">
+                <select class="form-select" id="select1" name="session_pref">
+                  <option value="Breakfast">Breakfast</option>
+                  <option value="Lunch">Lunch</option>
+                  <option value="Dinner">Dinner</option>
+                </select>
+                <label for="select1">Sessions</label>
+              </div>
+            </div>
+            <!-- Pick Start Time -->
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="time" class="form-control" id="start_range" placeholder="{{ current_hour }}"
+                  name="start_range" required>
+                <label for="select1">Beginning</label>
+              </div>
+            </div>
+            <!-- Pick End -->
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="time" class="form-control" id="end_range" name="end_range" required>
+                <label for="select1">Finish</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <input type="hidden" name="take" value=True>
+              <button onclick=scrollIntoRes() class="btn btn-primary w-100 py-3" type="submit">Search For
+                Availability</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="reserve" class="col-md-6 bg-primary d-flex align-items-center" style="height: 100vh;">
+      <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+        {% if time_suggested != False%}
+        {% if time_suggested != "NotSearched" %}
+        <h1 class="text-white mb-0 text-center">
+          Reserve {{session| default_if_none:"-"}} for {{date | default_if_none:"-"}} at {{time_suggested | default_if_none:"-" }} for the best experience</h1>
+        <!-- Button will appear if time_suggested is there -->
+        <form action="confirm" method="POST">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-12">
+              <input type="hidden" name="time_suggested" value="{{ time_suggested }}">
+              <button class="btn btn-white bg-dark text-primary  w-100 py-3" type="submit">Reserve Now</button>
+            </div>
+          </div>
+        </form>
+        {% else %}
+        <h1 class="text-white mb-4 text-center">“First things first, let us know your preferences. Then, with just a click of a button, you can secure your reservation time!”</h1>
+        {% endif %}
+        {% else %}
+        <h5 class="text-white section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
+        <a href="{% url 'dining_hall' %}">
+          <h1 class="text-white mb-4 text-center">No Available Spot To Reserve<br></h1>
+          <button class="btn btn-white bg-dark text-primary w-100 py-3" type="submit">Back to Home</button>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Reservation End -->
+
+{% endblock %}
+
 {% block script %}
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
-  // Get the radio buttons and time input fields
-  const takeRadio = document.getElementById("take");
-  const nottakeRadio = document.getElementById("nottake");
-  const startRangeInput = document.getElementById("start_range");
-  const endRangeInput = document.getElementById("end_range");
 
-  // Add event listeners to the radio buttons
-  takeRadio.addEventListener("change", toggleTimeInputs);
-  nottakeRadio.addEventListener("change", toggleTimeInputs);
-
-  // Function to toggle the disabled attribute of time inputs
-  function toggleTimeInputs() {
-    const isTakeChecked = takeRadio.checked;
-    startRangeInput.disabled = !isTakeChecked;
-    endRangeInput.disabled = !isTakeChecked;
+  function scrollToPref() {
+    // Scroll to Pref
+    document.getElementById("pref").scrollIntoView({ behavior: "smooth" });
+    $('html, body').animate({
+      scrollTop: $('#pref').offset().top
+    }, 1000);
   }
 
-  // Call the function initially to set the initial state
-  toggleTimeInputs();
+  function scrollToRes() {
+    //Scroll to Reservation  
+    document.getElementById("reserve").scrollIntoView({ behavior: "smooth" });
+
+    $('html, body').animate({
+      scrollTop: $('#reserve').offset().top
+    }, 1000);
+  }
+
+  var time_suggested = '{{time_suggested}}';
+  if (time_suggested) {
+    scrollToPref()
+  } else {
+    scrollToRes()
+  }
+
+  $(function () {
+    $("#datepicker").datepicker();
+  });
 </script>
+
+
 {% endblock %}

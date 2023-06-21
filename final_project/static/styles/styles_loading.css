@@ -1,0 +1,27 @@
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#loading-screen.fade-out {
+  opacity: 0;
+}
+
+#welcome-message {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#welcome-message.hide {
+  opacity: 0;
+}

@@ -1,142 +1,190 @@
 {% extends "../students/student_index.html" %}
 
-{% block title %} Welcome To Dining Hall User {% endblock %}
+{% block title %} Service Dining Hall Page{% endblock %}
 
-{% block styles %}
-{% load static %}
-<link rel="stylesheet" href="{% static 'styles/styles_student_dh_view.css' %}">
+{% block style %}
 {% endblock %}
 
-{% block message %}
-  {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-danger" role="alert">
-          {{ message }}
-        </div>
-      {% endfor %}
-  {% endif %}
+{% block navbar %}
+<a href="{% url 'student_index' %}" class="nav-item nav-link">Home</a>
+<a href="#" class="nav-item nav-link active">Dining Hall</a>
+<a href="{% url 'library' %}" class="nav-item nav-link">Library</a>
+<a href="{% url 'laboratorium' %}" class="nav-item nav-link">Lab</a>
+
+<div class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+  <div class="dropdown-menu m-0">
+    <a href="#" class="dropdown-item">Dining Hall</a>
+    <a href="#menu" class="dropdown-item">Menu</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block home %}
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+  <div class="container text-center my-0 pt-5 pb-4">
+    <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center text-uppercase">
+        <li class="breadcrumb-item"><a class="text-white" href="{% url 'student_index' %}">Home</a></li>
+        <li class="breadcrumb-item text-primary active " aria-current="page">Dining Hall</li>
+      </ol>
+    </nav>
+  </div>
+</div>
 {% endblock %}
 
 {% block template %}
-<div class="wrap mt-3">
-  {% if not can_booking %}
-    <div class="row w-50 mx-auto bg-body-secondary p-3">
-      <p class="text-center mx-auto">You have already booked for {{ session }} session at {{ time_suggested }} with menu {{ session_id }}</p>
-    </div>
-  {% else %}
-    {% block activities %}
-    {% load static %}
-    <!-- <p class="suggestions-text">Pemesanan untuk Hari {{day}} Tanggal {{date}} Sesi {{session}}</p> -->
-    <p class="suggestions-text">Order {{session}} for {{day}}, {{date}}</p>
-    <div class="row">
-        <div class="col-md-4 col-sm-6">
-            <!-- Add the active class to the box element if it is in the current session -->
-            <div class="box {% if current_session == 'BREAKFAST' %}active{% endif %}">
-                <img src="{% static 'images/breakfast.jpg' %}" alt="breakfast">
-                <div class="box-content">
-                    <div class="inner-content">
-                        <h3 class="menu_title">BREAKFAST</h3>
-                        <h3 class="menu_list">{{ breakfast }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-sm-6">
-            <!-- Add the active class to the box element if it is in the current session -->
-            <div class="box {% if current_session == 'LUNCH' %}active{% endif %}">
-                <img src="{% static 'images/lunch.jpg' %}" alt="lunch">
-                <div class="box-content">
-                    <div class="inner-content">
-                        <h3 class="menu_title">LUNCH</h3>
-                        <h3 class="menu_list">{{ lunch }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-sm-6">
-            <!-- Add the active class to the box element if it is in the current session -->
-            <div class="box {% if current_session == 'DINNER' %}active{% endif %}">
-                <img src="{% static 'images/dinner.jpg' %}" alt="dinner">
-                <div class="box-content">
-                    <div class="inner-content">
-                        <h3 class="menu_title">DINNER</h3>
-                        <h3 class="menu_list">{{ dinner }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% if time_suggested == False %}
-    <div class="row w-50 mx-auto bg-body-secondary p-3">
-      <p class="text-center mx-auto">Maaf tidak ada waktu tersedia.</p>
-    </div>
-    {% else %}
+<!-- Reservation Start -->
+<div class="container-xxl bg-white p-0" style="max-width: 1320px;">
+  <h1 class="mb-4 text-center">Order {{session}} for {{day}}, {{date}}</h1>
 
-      {% if session_id %}
-        <div class="row w-50 mx-auto p-3">
-          <form action="confirm" method="post">
+  <div class="container-xxl py-0 px-0 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="row g-0">
+      <div class="col-md-6">
+        <div class="video">
+          <button type="button" class="btn-play" data-bs-toggle="modal"
+            data-src="https://www.youtube.com/embed/4nY0yg_yicY" data-bs-target="#videoModal">
+            <span></span>
+          </button>
+        </div>
+      </div>
+      <div class="col-md-6 bg-dark d-flex align-items-center">
+        <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+          {% if can_booking %}
+          <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
+          <h1 class="text-white mb-4 text-center">Reserve at {{time_suggested | default_if_none:"-"}} for the Best
+            Dining Experience! </h1>
+          <form id="myForm" action="confirm" method="POST">
             {% csrf_token %}
-            <input type="hidden" name="time_suggested" value="{{ time_suggested }}">
-            <fieldset class="form-group p-3">
-              <p class="suggestions-text">Jam Makan Terbaik: <strong class="suggestion-text h3">{{ time_suggested|default_if_none:"-" }}</strong></p>
-              <legend class="w-auto px-2">Apakah anda ingin mengambil jam yang ditawarkan?</legend>
-              <!-- <div class="vote-btn">
-                <input class="form-check-input" type="radio" name="choice" id="take" value="take" checked>
-                <label class="form-check-label" for="take"><strong>Ambil</strong></label>
+            <div class="row g-3">
+              <div class="col-12">
+                <input type="hidden" name="time_suggested" value="{{ time_suggested }}">
+                <button onclick="submitForm(event)" class="btn btn-primary w-100 py-3" type="submit" value="yes"
+                  name="choice">Reserve Now</button>
               </div>
-              <div class="vote-btn">
-                <input class="form-check-input" type="radio" name="choice" id="nottake" value="nottake">
-                <label class="form-check-label" for="nottake"><strong>Tidak</strong></label>
-              </div> -->
-              <div>
-                <input type="radio" class="btn-check" name="choice" id="success-outlined" autocomplete="off" value="yes">
-                <label class="btn btn-outline-success" for="success-outlined">Ya</label>
-                
-                <input type="radio" class="btn-check" name="choice" id="danger-outlined" autocomplete="off" value="no">
-                <label class="btn btn-outline-danger" for="danger-outlined">Tidak</label>
-              </div>
-            </fieldset>
-            <div class="form-group row text-center">
-              <div class="col">
-                <button type="submit" class="btn btn-primary btn-customized" id="submit-btn" disabled>KIRIM</button>
+              <div class="col-12">
+                <button class="btn btn-primary w-100 py-3" type="submit" value="no" name="choice">Choose Another
+                  Time</button>
               </div>
             </div>
           </form>
-        </div>
-      {% else %}
-        <div class="row w-50 mx-auto bg-body-secondary p-3">
-          <p class="text-center mx-auto">Tidak bisa memesan karena tidak ada menu.</p>
-        </div>
-      {% endif %}
-    {% endif %}
-    
+          {% else %}
 
-    {% endblock %}
-  {% endif %}
+          <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
+          <h1 class="text-white mb-4 text-center">You’ve already reserved {{session}} for {{day}}, {{date}} at
+            {{time_suggested | default_if_none:"-" }} 😊</h1>
+            <a href="{% url 'student_preferences' %}">
+            <button class="btn btn btn-primary bg-primary text-white  w-100 py-3 mb-3" type="submit">Reserve for Later</button>
+            </a>
+
+          <p class="breadcrumb-item text-center"><a href="{% url 'cancel_order' %}">Cancel Reservation</a></p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-0">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- 16:9 aspect ratio -->
+          <div class="ratio ratio-16x9">
+            <iframe class="embed-responsive-item" src="" id="video" allowfullscreen allowscriptaccess="always"
+              allow="autoplay"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+<!-- Reservation End -->
+
+<div id="menu" class="container-xxl py-5 mt-5">
+</div>
+
+<!-- Menu Start -->
+<div class="container-xxl py-5 mt-5">
+  <div class="container">
+    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+      <h5 class="section-title ff-secondary text-center text-primary fw-normal">Food Menu</h5>
+      <h1 class="mb-5">Weekly Menu: A Culinary Delight 🍽️</h1>
+    </div>
+    <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
+      <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
+        <li class="nav-item">
+          <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" data-bs-toggle="pill" href="#tab-1">
+            <i class="fa fa-coffee fa-2x text-primary"></i>
+            <div class="ps-3">
+              <small class="text-body">Delectable</small>
+              <h6 class="mt-n1 mb-0">Breakfast</h6>
+            </div>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-2">
+            <i class="fa fa-hamburger fa-2x text-primary"></i>
+            <div class="ps-3">
+              <small class="text-body">Exquisite </small>
+              <h6 class="mt-n1 mb-0">Launch</h6>
+            </div>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill" href="#tab-3">
+            <i class="fa fa-utensils fa-2x text-primary"></i>
+            <div class="ps-3">
+              <small class="text-body">Sumptuous</small>
+              <h6 class="mt-n1 mb-0">Dinner</h6>
+            </div>
+          </a>
+        </li>
+      </ul>
+      <div class="tab-content" value="{{ menu_this_week }}">
+        <div id="tab-1" class="tab-pane fade show p-0 active"></div>
+        <div id="tab-2" class="tab-pane fade show p-0"></div>
+        <div id="tab-3" class="tab-pane fade show p-0"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Menu End -->
 {% endblock %}
 
 {% block script %}
 <script>
-  // get references to the radio buttons and submit button
-  const radioButtons = document.querySelectorAll('input[type="radio"][name="choice"]');
-  const submitButton = document.querySelector('#submit-btn');
+  const tabsData = JSON.parse('{{ menu_this_week|safe }}');
 
-  // function to check if any radio button is checked
-  const isAnyChecked = () => [...radioButtons].some(radio => radio.checked);
+  Object.entries(tabsData).forEach(([tabId, menuItems]) => {
+    let menuHTML = '<div class="row g-4">';
 
-  // function to update the disabled state of the submit button
-  const updateSubmitButtonState = () => {
-    submitButton.disabled = !isAnyChecked();
-  };
+    menuItems.forEach(item => {
+      menuHTML += `
+    <div class="col-lg-6">
+    <div class="d-flex align-items-center">
+    <div class="w-100 d-flex flex-column text-start ps-4">
+      <h5 class="d-flex justify-content-between border-bottom pb-2">
+        <span>${item.day}</span>
+        <span class="text-primary">${item.date}</span>
+      </h5>
+      <small class="fst-italic">${item.description}</small>
+    </div>
+    </div>
+    </div>`;
+    });
 
-  // update the submit button state initially
-  updateSubmitButtonState();
+    menuHTML += '</div>';
 
-  // add event listeners to the radio buttons to update the submit button state when changed
-  radioButtons.forEach(radio => {
-    radio.addEventListener('change', updateSubmitButtonState);
+    // insert the generated HTML into the corresponding tab element
+    document.getElementById(tabId).innerHTML = menuHTML;
   });
-
 </script>
+
+<script src="/static/js/index_loading.js"></script>
 {% endblock %}
