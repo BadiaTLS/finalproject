@@ -116,7 +116,7 @@ def get_menu_this_week(date):
 
     # example usage
     week_dates = get_week_dates(date)
-    print(week_dates)
+    # print(week_dates)
 
     breakfast = []
     lunch = []
@@ -140,7 +140,7 @@ def get_menu_this_week(date):
         tabs_data['tab-2'].append(generate_menu_data('lunch', date, lunch[i]))
         tabs_data['tab-3'].append(generate_menu_data('dinner', date, dinner[i]))
 
-    print(tabs_data)
+    # print(tabs_data)
     # convert the tabs_data dictionary to a JSON string
     menu_data_json = json.dumps(tabs_data)
 
@@ -271,6 +271,8 @@ def get_suggestion_time(session_object, email, current_date):
     return suggestion_time
 
 def get_context_from_latest_booking(latest_booking, current_hour, current_date):
+    print(latest_booking, current_hour, current_date)
+
     booked_suggestion_time = latest_booking.recommended_time
     menu = latest_booking.session_id
     booked_menu = menu.menu
@@ -284,7 +286,8 @@ def get_context_from_latest_booking(latest_booking, current_hour, current_date):
             'date' : menu.date,
             'time_suggested': booked_suggestion_time.strftime('%H:%M'),
             'day': current_date.strftime('%A'),
-            'can_booking': False
+            'can_booking': False,
+            'menu_this_week': get_menu_this_week(current_date)
         }
         return context
 
@@ -349,6 +352,6 @@ def delete_booking_and_update_available_seat_by_user_id(user_id):
         booked_time_object.available_seat += 1
         booked_time_object.save()
         booking_object.delete()
-        return "Success" 
+        return "Success: Booking Deleted and Available Seat Updated" 
     except: 
-        return "Nothing Happened"
+        return "Failed: Booking Deleted and Available Seat Updated "

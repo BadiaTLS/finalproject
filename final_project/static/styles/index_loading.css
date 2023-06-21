@@ -1,0 +1,69 @@
+/* Add some style to the loading screen */
+body {
+    height: 100vh;
+    margin: 0;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.circle {
+    margin: 0 10px;
+    text-align: center;
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    border-width: 8px;
+    width: 80px;
+    height: 80px;
+}
+
+#loading>div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#loading {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    transition: opacity 1s;
+    opacity: 1;
+}
+
+/* Add some style to the loading circle */
+.loader {
+    margin: 0 10px;
+    text-align: center;
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    border-width: 8px;
+    width: 80px;
+    height: 80px;
+    animation: spin 2s linear infinite;
+}
+
+.loader,
+#loadingText {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+}

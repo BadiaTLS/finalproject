@@ -1,22 +1,25 @@
 {% extends "../students/student_index.html" %}
 
+{% block title %} Service Dining Hall Preferences Page{% endblock %}
+
 {% block style %}
 {% endblock %}
 
 {% block navbar %}
-<li class="nav-item">
-  <a class="nav-link" href="{% url 'student_index' %}">Home</a>
-</li>
+<a class="nav-item nav-link" href="{% url 'student_index' %}">Home</a>
+<a class="nav-item nav-link" href="{% url 'dining_hall' %}">Dining Hall</a>
+<a class="nav-item nav-link active" href="#pref">Preferences</a>
 {% endblock %}
 
 {% block home %}
 <div class="container-xxl py-5 bg-dark hero-header mb-5">
   <div class="container text-center my-0 pt-5 pb-4">
-    <h1 class="display-3 text-white mb-3 animated slideInDown">Booking</h1>
+    <h1 class="display-3 text-white mb-3 animated slideInDown">Preferences</h1>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-center text-uppercase">
-        <li class="breadcrumb-item"><a href="{% url 'student_index' %}">Home</a></li>
-        <li class="breadcrumb-item text-white active" aria-current="page">Booking</li>
+        <li class="breadcrumb-item"><a class="text-white" href="{% url 'student_index' %}">Home</a></li>
+        <li class="breadcrumb-item"><a class="text-white" href="{% url 'dining_hall' %}">Dining Hall</a></li>
+        <li class="breadcrumb-item text-primary active" aria-current="page">Preferences</li>
       </ol>
     </nav>
   </div>
@@ -29,99 +32,129 @@
 
 
 {% block template %}
-<div class="container-xxl bg-white p-0" style="max-width: 1320px;">
+<div id="pref" class="container-xxl bg-white p-0" style="max-width: 1320px;"></div>
 
-  <!-- Reservation Start -->
-  <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
-    <div class="row g-0">
-      <div class="col-md-6 bg-dark d-flex align-items-center" style="height: 100vh;">
-        <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
-          <h5 class="section-title ff-secondary text-start text-primary fw-normal">Set Preferences</h5>
-          <h1 class="text-white mb-4 text-center">When would you like to make a reservation? </h1>
-          <form action="{% url 'student_preferences' %}" method="POST">
-            {% csrf_token %}
+<!-- Reservation Start -->
+<div class="container-xxl px-0 wow fadeInUp" data-wow-delay="0.1s">
+  <div class="row g-0">
+    <div class="col-md-6 bg-dark d-flex align-items-center" style="height: 100vh;">
+      <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+        <h5 class="section-title ff-secondary text-start text-primary fw-normal">Set Preferences</h5>
+        <h1 class="text-white mb-4 text-center">When would you like to make a reservation? </h1>
+        <form action="{% url 'student_preferences' %}" method="POST">
+          {% csrf_token %}
 
-            <div class="row g-3">
-              <!-- Pick Date -->
-              <div class="col-md-6">
-                <div class="form-floating date" id="date3" data-target-input="nearest">
-                  <!-- <input type="date" class="form-control datetimepicker-input" id="datepicker" name="date_pref"  required> -->
-                  <input type="date" class="form-control" name="date_pref" required>
-                  <label for="datetime">Date & Time</label>
-                </div>
-              </div>
-              <!-- Pick Session -->
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <select class="form-select" id="select1" name="session_pref">
-                    <option value="Breakfast">Breakfast</option>
-                    <option value="Lunch">Lunch</option>
-                    <option value="Dinner">Dinner</option>
-                  </select>
-                  <label for="select1">Sessions</label>
-                </div>
-              </div>
-              <!-- Pick Start Time -->
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="time" class="form-control" id="start_range" placeholder="{{ current_hour }}"
-                    name="start_range" required>
-                  <label for="select1">Beginning</label>
-                </div>
-              </div>
-              <!-- Pick End -->
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="time" class="form-control" id="end_range" name="end_range" required>
-                  <label for="select1">Finish</label>
-                </div>
-              </div>
-              <div class="col-12">
-                <input type="hidden" name="take" value=True>
-                <button class="btn btn-primary w-100 py-3" type="submit">Search For Availability</button>
+          <div class="row g-3">
+            <!-- Pick Date -->
+            <div class="col-md-6">
+              <div class="form-floating date" id="date3" data-target-input="nearest">
+                <!-- <input type="date" class="form-control datetimepicker-input" id="datepicker" name="date_pref"  required> -->
+                <input type="date" class="form-control" name="date_pref" required>
+                <label for="datetime">Date & Time</label>
               </div>
             </div>
-          </form>
-        </div>
+            <!-- Pick Session -->
+            <div class="col-md-6">
+              <div class="form-floating">
+                <select class="form-select" id="select1" name="session_pref">
+                  <option value="Breakfast">Breakfast</option>
+                  <option value="Lunch">Lunch</option>
+                  <option value="Dinner">Dinner</option>
+                </select>
+                <label for="select1">Sessions</label>
+              </div>
+            </div>
+            <!-- Pick Start Time -->
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="time" class="form-control" id="start_range" placeholder="{{ current_hour }}"
+                  name="start_range" required>
+                <label for="select1">Beginning</label>
+              </div>
+            </div>
+            <!-- Pick End -->
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="time" class="form-control" id="end_range" name="end_range" required>
+                <label for="select1">Finish</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <input type="hidden" name="take" value=True>
+              <button onclick=scrollIntoRes() class="btn btn-primary w-100 py-3" type="submit">Search For
+                Availability</button>
+            </div>
+          </div>
+        </form>
       </div>
-      <div id="recommended-time" class="col-md-6 bg-primary d-flex align-items-center" style="height: 100vh;">
-        <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
-          <h5 class="text-white section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
-          {% if time_suggested == False %}
-          <a href="{% url 'dining_hall' %}">
-            <h1 class="text-white mb-4 text-center">Not available<br></h1>
-            <button class="btn btn-white bg-dark text-primary w-100 py-3" type="submit">Back to Home</button>
-          </a>
-          {% else %}
-          <h1 class="text-white mb-0 text-center">
-            Reserve {{session}} for {{date}} at {{time_suggested}} for the best experience</h1>
-          {% endif %}
-          <!-- Button will appear if time_suggested is there -->
-          {% if time_suggested %}
-          <form action="confirm" method="POST">
-            {% csrf_token %}
-            <div class="row g-3">
-              <div class="col-12">
-                <input type="hidden" name="time_suggested" value="{{ time_suggested }}">
-                <button class="btn btn-white bg-dark text-primary  w-100 py-3" type="submit">Reserve Now</button>
-              </div>
+    </div>
+    <div id="reserve" class="col-md-6 bg-primary d-flex align-items-center" style="height: 100vh;">
+      <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+        {% if time_suggested != False%}
+        {% if time_suggested != "NotSearched" %}
+        <h1 class="text-white mb-0 text-center">
+          Reserve {{session| default_if_none:"-"}} for {{date | default_if_none:"-"}} at {{time_suggested | default_if_none:"-" }} for the best experience</h1>
+        <!-- Button will appear if time_suggested is there -->
+        <form action="confirm" method="POST">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-12">
+              <input type="hidden" name="time_suggested" value="{{ time_suggested }}">
+              <button class="btn btn-white bg-dark text-primary  w-100 py-3" type="submit">Reserve Now</button>
             </div>
-          </form>
-          {% endif %}
-        </div>
+          </div>
+        </form>
+        {% else %}
+        <h1 class="text-white mb-4 text-center">“First things first, let us know your preferences. Then, with just a click of a button, you can secure your reservation time!”</h1>
+        {% endif %}
+        {% else %}
+        <h5 class="text-white section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
+        <a href="{% url 'dining_hall' %}">
+          <h1 class="text-white mb-4 text-center">No Available Spot To Reserve<br></h1>
+          <button class="btn btn-white bg-dark text-primary w-100 py-3" type="submit">Back to Home</button>
+        </a>
+        {% endif %}
       </div>
     </div>
   </div>
-  <!-- Reservation End -->
+</div>
+<!-- Reservation End -->
 
-  {% endblock %}
+{% endblock %}
 
-  {% block script %}
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script>
-    $(function () {
-      $("#datepicker").datepicker();
-    });
-  </script>
-  {% endblock %}
+{% block script %}
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+
+  function scrollToPref() {
+    // Scroll to Pref
+    document.getElementById("pref").scrollIntoView({ behavior: "smooth" });
+    $('html, body').animate({
+      scrollTop: $('#pref').offset().top
+    }, 1000);
+  }
+
+  function scrollToRes() {
+    //Scroll to Reservation  
+    document.getElementById("reserve").scrollIntoView({ behavior: "smooth" });
+
+    $('html, body').animate({
+      scrollTop: $('#reserve').offset().top
+    }, 1000);
+  }
+
+  var time_suggested = '{{time_suggested}}';
+  if (time_suggested) {
+    scrollToPref()
+  } else {
+    scrollToRes()
+  }
+
+  $(function () {
+    $("#datepicker").datepicker();
+  });
+</script>
+
+
+{% endblock %}

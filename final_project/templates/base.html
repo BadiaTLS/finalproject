@@ -37,28 +37,39 @@
   <!-- Template Stylesheet -->
   <link href="/static/styles/style.css" rel="stylesheet">
   {% block styles %}
+  <link href="/static/styles/index_loading.css" rel="stylesheet">
   {% endblock %}
+
+  <!-- Alert Stylesheet -->
+  <link rel="stylesheet" href="/static/styles/styles_alerts.css">
 </head>
 
 <body>
+  <!-- Loading Start -->
+  <div id="loading" style="display: none; height: 100vh; margin: 0; z-index: 10000; background-color: black;">
+    <div class="loader circle"></div>
+    <p id="loadingText">Loading...</p>
+  </div>
+  <!-- Loading End -->
+
   <!-- Curtain Menu -->
-  <div id="myNav" class="overlay" style="height: 100vh; z-index: 3000; display: none;">
+  <div id="myNav" class="overlay" style="height: 100vh; z-index: 9999; display: none;">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div class="overlay-content">
       {% block curtain %}
       {% endblock %}
-      <button class="dropdown-btn">Services +</button>
-      <div class="dropdown-container">
+      <button class="dropdown-btn text-primary">Services +</button>
+      <div class="dropdown-container text-primary">
         <a href="{% url 'dining_hall' %}">Dining Hall</a>
         <a href="{% url 'library' %}">Library</a>
         <a href="{% url 'laboratorium' %}">Lab</a>
       </div>
-      <a href="{% url 'logout' %}">Log Out</a>      
+      <a href="{% url 'logout' %}">Log Out</a>
     </div>
   </div>
 
-  <div class="container-xxl bg-white p-0">
 
+  <div class="container-xxl bg-white p-0">
     <!-- Navbar & Hero Start -->
     <div class="container-xxl position-relative p-0">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0  sticky-top shadow-sm">
@@ -72,7 +83,7 @@
         </button> -->
         {% block logo %}
         <a href="" class="navbar-brand p-0">
-          <h1 class="text-primary m-0"><img src="/static/images/logo.jpg" alt="logo"></h1>  
+          <h1 class="text-primary m-0"><img src="/static/images/logo.jpg" alt="logo"></h1>
         </a>
         {% endblock %}
         <div> </div>
@@ -81,7 +92,6 @@
             <!-- <a href="#home" class="nav-item nav-link active">Home</a>
             <a href="#service" class="nav-item nav-link">Service</a>
             <a href="#about" class="nav-item nav-link">About</a> -->
-
             {% block navbar %}
             {% endblock %}
             <a href="{% url 'logout' %}" class="nav-item nav-link">Log Out</a>
@@ -95,14 +105,31 @@
       </div>
     </div>
     <!-- Navbar & Hero End -->
-    {% block message %}
-    {% endblock %}
 
+    <!-- Alert Start -->
+    {% block message %}
+    {% if messages %}
+    {% for message in messages %}
+
+    <div id="alert-container">
+      <div class="alert-card alert alert-success pulse">
+        <div class="alert-card-title">ALERT</div>
+        <div class="alert-card-content">Content: <br>{{message}}</div>
+        <div class="alert-card-footer">This page will be closed in <div id="countdown">10</div>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close"><i class="fas"></i></button>
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endblock %}
+    <!-- Alert End -->
+
+    <!-- Contents start here -->
     {% block template %}
     {% endblock %}
     <div class="container">
     </div>
-
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -110,9 +137,15 @@
         <div class="row g-5">
           <div class="col-lg-3 col-md-6">
             <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Company</h4>
-            <a class="btn btn-link" href="#service">Services</a>
-            <a class="btn btn-link" href="#about">About Us</a>
-            <a class="btn btn-link" href="#team">Team</a>
+            {% block footer-link %}
+            <!-- <a class="btn btn-link" href="#service">Services</a>
+              <a class="btn btn-link" href="#about">About Us</a>
+              <a class="btn btn-link" href="#team">Team</a> -->
+            {% endblock %}
+            <a href="{% url 'student_index' %}" class="btn btn-link">Home</a>
+            <a href="{% url 'dining_hall' %}" class="btn btn-link">Dining Hall</a>
+            <a href="{% url 'library' %}" class="btn btn-link">Library</a>
+            <a href="{% url 'laboratorium' %}" class="btn btn-link">Lab</a>
           </div>
           <div class="col-lg-3 col-md-6">
             <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
@@ -177,37 +210,43 @@
 
     <!-- Template Javascript -->
     <script src="/static/js/index.js"></script>
+    <script src="/static/js/script_alerts.js"></script>
     <script>
       if (!window.matchMedia("only screen and (max-width: 760px)").matches) {
-      var dropdown = document.getElementsByClassName("dropdown-btn");
-      var i;
-      var btn = document.querySelector(".dropdown-btn");
+        var dropdown = document.getElementsByClassName("dropdown-btn");
+        var i;
+        var btn = document.querySelector(".dropdown-btn");
 
-      for (i = 0; i < dropdown.length; i++) {
-        dropdown[i].addEventListener("click", function () {
-          this.classList.toggle("active");
-          var dropdownContent = this.nextElementSibling;
-          if (dropdownContent.style.display === "block") {
-            dropdownContent.style.display = "none";
-            btn.innerHTML = "Services +";
-          } else {
-            btn.innerHTML = "Services -";
-            dropdownContent.style.display = "block";
-          }
-        });
-      }
-      function openNav() {
-        var curtain = document.getElementById("myNav");
-        curtain.style.display = "unset";
+        for (i = 0; i < dropdown.length; i++) {
+          dropdown[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var dropdownContent = this.nextElementSibling;
+            if (dropdownContent.style.display === "block") {
+              dropdownContent.style.display = "none";
+              btn.innerHTML = "Services +";
+            } else {
+              btn.innerHTML = "Services -";
+              dropdownContent.style.display = "block";
+            }
+          });
+        }
+        function openNav() {
+          var curtain = document.getElementById("myNav");
+          curtain.style.display = "unset";
 
-        curtain.style.height = "100%";
-      }
+          curtain.style.height = "100%";
+        }
 
-      function closeNav() {
-        document.getElementById("myNav").style.height = "0%";
-        curtain.style.display = "none";
+        function closeNav() {
+          document.getElementById("myNav").style.height = "0%";
+          curtain.style.display = "none";
+        }
       }
-    }
+    </script>
+
+    <script>
+      showLoading();
+      startCountdown();  
     </script>
     {% block script %}
 

@@ -15,19 +15,34 @@
 
 <!-- Navbar Start -->
 {% block navbar %}
-<li class="nav-item">
-    <a class="nav-link active" href="{% url 'student_index' %}">Home</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="#service">Service</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="#about">About</a>
-</li>
+<a class="nav-link active" href="#">Home</a>
+<a href="{% url 'dining_hall' %}" class="nav-item nav-link">Dining Hall</a>
+<a href="{% url 'library' %}" class="nav-item nav-link">Library</a>
+<a href="{% url 'laboratorium' %}" class="nav-item nav-link">Lab</a>
+<div class="nav-item dropdown">
+    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+    <div class="dropdown-menu m-0">
+        <a class="dropdown-item" href="#service">Service</a>
+        <a class="dropdown-item" href="#about">About</a>
+        <a class="dropdown-item" href="#team">Team</a>
+    </div>
+</div>
 {% endblock %}
 <!-- Navbar End -->
 
+<!-- Home Start -->
 {% block home %}
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+  <div class="container text-center my-0 pt-5 pb-4">
+    <h1 class="display-3 text-white mb-3 animated slideInDown">Welcome {{ fullname }}</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center text-uppercase">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item text-white"><a class="text-white" href="#"> </a></li>
+      </ol>
+    </nav>
+  </div>
+</div>
 <div id="home" class="container-xxl py-5 bg-dark hero-header mb-5">
     <div class="container my-5 py-5">
         <div class="row align-items-center g-5">
@@ -35,10 +50,20 @@
                 <h1 class="display-3 text-white animated slideInLeft">Enjoy Meals<br>Without Wasting Time</h1>
                 <p class="text-white animated slideInLeft mb-4 pb-0">Secure your spot for a delicious meal at our Dining
                     Hall. Click the button to reserve your table now.</p>
+                {% if can_booking %}
                 <p class="text-white animated slideInLeft mb-4 pb-0"><strong>Now Available</strong> Personalized Time
-                    Recommendations for the Dining Hall Reservation</p>
+                    Recommendations for the Dining Hall Reservation </p>
                 <a href="{% url 'dining_hall' %}"
                     class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Reserve Now</a>
+                {% else %}
+                <p class="text-white animated slideInLeft mb-4 pb-0"><strong>You’ve already reserved {{session}} for
+                        {{time_suggested | default_if_none:"-" }} 😊</strong></p>
+                <a href="{% url 'student_preferences' %}"
+                    class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Reserve for Later</a>
+                <a href="{% url 'dining_hall' %}"
+                    class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Check Menu</a>
+                {% endif %}
+
             </div>
             <div class="col-lg-6 text-center text-lg-end overflow-hidden">
                 <!-- <img class="img-fluid" src="../static/images/hero.png" alt=""> -->
@@ -50,11 +75,15 @@
     </div>
 </div>
 {% endblock %}
+<!-- Home End -->
 
-
+<!-- Contents Star Here -->
 {% block template %}
+<div id="service" class="container-xxl pt-5 pb-3">
+</div>
+
 <!-- Service Start -->
-<div id="service" class="container-xxl py-1 text-white" style="height: 30%; padding: auto; margin: auto">
+<div class="container-xxl py-1 text-white" style="height: 30%; padding: auto; margin: auto">
     <div class="container">
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
             <h5 class="section-title ff-secondary text-center text-primary fw-normal">Our Services</h5>
@@ -153,8 +182,11 @@
 </div>
 <!-- About End -->
 
-<!-- Team Start -->
 <div id="team" class="container-xxl pt-5 pb-3">
+</div>
+
+<!-- Team Start -->
+<div class="container-xxl pt-5 pb-3">
     <div class="container">
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
             <h5 class="section-title ff-secondary text-center text-primary fw-normal">Team Members</h5>
@@ -222,6 +254,12 @@
     </div>
 </div>
 <!-- Team End -->
+{% endblock %}
+
+{% block footer-link %}
+<a class="btn btn-link" href="#service">Services</a>
+<a class="btn btn-link" href="#about">About Us</a>
+<a class="btn btn-link" href="#team">Team</a>
 {% endblock %}
 
 {% block script %}

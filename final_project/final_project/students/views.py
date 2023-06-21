@@ -24,11 +24,11 @@ def student_required(view_func):
 @student_required
 def students_index(request):
     time_ordered, session = get_order_time(request.user.id)
-    context = {
-        'fullname': request.user.name,
-        'time_ordered' : time_ordered,
-        'session' : session
-    }
+    context = get_student_dininghall_context(request)
+    context['fullname'] =  request.user.name
+    context['time_suggested'] : time_ordered
+    context['session'] : session
+    
     return render(request, "students/student_index.html", context )
 
 @student_required
@@ -91,6 +91,7 @@ def cancel_order(request):
     # DELETE and UPDATE Database
     message = delete_booking_and_update_available_seat_by_user_id(user_id)
     messages.success(request, message, extra_tags="success")
+    
     return redirect("student_index")
 
 @student_required
@@ -132,8 +133,30 @@ def student_preferences(request):
                 'current_session' : session.upper()
             }
             return render(request, 'students/student_preferences.html', context)
+    
+    if request.method == 'GET':
         
-    return render(request, 'students/student_preferences.html')
+        start_time = request.POST.get('start_range')
+        end_time = request.POST.get('end_range')
+
+        current_hour, current_date = get_current_hour_and_current_date()
+        session, time_objects = get_session_and_time_objects(current_hour)
+
+        session_id = get_session_id_based_date_and_session_name(current_date, session)
+        session_info = get_session_time_and_seat(get_session_id(current_date, session))
+
+        request.POST.get('time_suggested')
+        context = {
+                'time_objects': time_objects,
+                'session_id': session_id,
+                'time_suggested': "NotSearched",
+                'session': session,
+                'date': current_date,
+                'day': current_date.strftime('%A'),
+                'can_booking': True,
+                'current_session' : session.upper()
+            }
+        return render(request, 'students/student_preferences.html', context)
     
 @student_required
 def confirm(request):
