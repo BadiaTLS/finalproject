@@ -74,7 +74,7 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
         return render(request, 'students/student_preferences.html', context)
 
     time_object = get_time_by_session_id_and_suggested_time(time_suggested, session_object)
-    print("CONFIRM ACTION ", time_object, time_suggested, session_object, type(session_object))
+    # print("CONFIRM ACTION ", time_object, time_suggested, session_object, type(session_object))
     if time_object is not None: 
         update_available_seats(time_object)
         user_object = get_userobject_by_id(request.user.id)
@@ -107,13 +107,22 @@ def student_preferences(request):
     if request.method == 'POST':
         is_take = request.POST.get('take')
         if is_take:
-
             start_time = request.POST.get('start_range')
             end_time = request.POST.get('end_range')
 
             session = request.POST.get('session_pref')
             date_pref = request.POST.get('date_pref')
             current_date = datetime.strptime(date_pref, "%Y-%m-%d").date()
+
+            # latest_booking = get_latest_booking(request.user)
+            # if latest_booking:
+            #     context = get_context_from_latest_booking(latest_booking, current_hour, current_date)
+            #     if context:
+            #         return context
+
+            if is_booked_by_user_date_session(request.user.id, date_pref, session):
+                messages.success(request, f"You already booked {session} for {date_pref}.", extra_tags="danger")
+                return redirect('student_preferences')
 
             current_hour, _ = get_current_hour_and_current_date()
             _, time_objects = get_session_and_time_objects(current_hour)
@@ -122,6 +131,8 @@ def student_preferences(request):
             session_info = get_session_time_and_seat(get_session_id(current_date, session))
 
             suggested_time = get_recommended_time(session_info, start_time, end_time)
+
+
             menus = get_menu_based_date(current_date)
             breakfast, lunch, dinner = get_menu_b_l_d(menus)
             context = {

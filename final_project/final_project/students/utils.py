@@ -30,6 +30,23 @@ def is_between(time, time_range):
         return time >= time_range[0] or time < time_range[1]
     return time_range[0] <= time < time_range[1]
 
+def is_booked_by_user_date_session(user_id , date , session_name):
+    print(f"IS BOOKING: ", user_id,type(user_id), date,  type(date),session_name, type(session_name))
+    if type(user_id) == int and type(date) == str and type(session_name) == str: 
+        print(f"IS BOOKING: IF ", user_id,type(user_id), date,  type(datetime.strptime(date, "%Y-%M-%d")),session_name, type(session_name))
+
+        # session_object = table_session.objects.filter(name = session_name, date = datetime.strptime(date, "%Y-%M-%d"))
+        # print(session_object)
+        # date = datetime.strptime(date, "%Y-%M-%d")
+        booking = table_booking_dininghall.objects.filter(user_id = user_id, session_id__date = date)
+        print(f"IS BOOKED", booking)
+        if not booking.exists():
+            return False
+        return True
+    else: 
+        print("FALSE")
+        return False
+
 # GET
 def get_userobject_by_id(id):
     user_object = CustomUser.objects.get(id=id)
@@ -58,9 +75,9 @@ def get_current_hour_and_current_date():
         current_date += timedelta(days=1)
     return current_hour, current_date
 
-def get_latest_booking_for_menu(menu):
-    latest_booking_for_menu = table_booking_dininghall.objects.filter(session_id=menu).latest('id')
-    return latest_booking_for_menu
+def get_latest_booking_for_menu(session_object):
+    latest_booking_for_session_object = table_booking_dininghall.objects.filter(session_id=session_object).latest('id')
+    return latest_booking_for_session_object
 
 def get_latest_booking(user_id):
     # This will return the object

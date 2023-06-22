@@ -31,7 +31,7 @@ class table_time_admin(admin.ModelAdmin):
 
 @admin.register(table_booking_dininghall)
 class table_booking_dininghall_admin(admin.ModelAdmin):
-    list_display = ['display_user_id', 'recommended_time', 'created_at']
+    list_display = ['display_user_id', 'session_id', 'recommended_time', 'created_at']
 
     def display_user_id(self, obj):
         return obj.user_id.username if obj.user_id else None

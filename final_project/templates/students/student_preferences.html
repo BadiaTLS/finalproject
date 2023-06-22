@@ -92,8 +92,7 @@
         {% if time_suggested != False%}
         {% if time_suggested != "NotSearched" %}
         <h1 class="text-white mb-0 text-center">
-          Reserve {{session| default_if_none:"-"}} for {{date | default_if_none:"-"}} at {{time_suggested |
-          default_if_none:"-" }} for the best experience</h1>
+          Reserve {{session| default_if_none:"-"}} for {{date | default_if_none:"-"}} at {{time_suggested |default_if_none:"-" }} for the best experience</h1>
         <!-- Button will appear if time_suggested is there -->
         <form action="confirm" method="POST">
           {% csrf_token %}

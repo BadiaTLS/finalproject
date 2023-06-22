@@ -97,7 +97,7 @@
                     {% if time_object.0 == session.id %}
                     {% for time in time_object.1 %}
                     <div class="time-object">
-                        <span class="seat-info">For {{ time.time|date:'H:i:s' }} Available Seats: {{time.available_seat|default:time.seat_limit }} / {{ time.seat_limit }}</span>
+                        <span class="seat-info">For {{ time.time|date:'H:i:s' }} Available Seats: {% if time.available_seat == None %} {{ time.seat_limit }} {% else %} {{time.available_seat}} {% endif %} / {{ time.seat_limit }}</span>
                         <a href="{% url 'edit_dropdown' time.id %}" class="btn btn-primary">Edit</a>
                         <a href="{% url 'delete_dropdown' time.id %}" class="btn btn-danger">Delete</a>
                     </div>
