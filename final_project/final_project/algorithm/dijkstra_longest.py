@@ -64,22 +64,16 @@ def update_session_by_start_end(session, start, end):
     return session
 
 def get_recommended_time(session, start_time, end_time):
-    try: 
-        session = update_session_by_start_end(session=session, start = start_time, end= end_time)
+    session = update_session_by_start_end(session=session, start = start_time, end= end_time)
 
-        graph = convert_session_to_graph(session)
-        longest_distance, longest_path, path_times = dijkstra(graph=graph)
+    graph = convert_session_to_graph(session)
+    longest_distance, longest_path, path_times = dijkstra(graph=graph)
 
-        # print("Longest Distance:", longest_distance)
-        # print("Longest Path:", longest_path)
-        # print("Path Times:", path_times)
-
-        print(f"Your best time is ",longest_path[1])
-        recommended_time = longest_path[1][0:5]
-        return recommended_time
-    except Exception as e:
-        print(e)
-        return False
+    print("Longest Distance:", longest_distance)
+    print("Longest Path:", longest_path)
+    print("Path Times:", path_times)
+    recommended_time = longest_path[1]
+    return recommended_time
 
 if __name__ == "__main__":
     from datetime import time

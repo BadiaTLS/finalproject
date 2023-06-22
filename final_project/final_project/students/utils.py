@@ -187,8 +187,11 @@ def get_session_and_time_objects(current_hour):
     return session, time_objects
 
 def get_session_time_and_seat(session_id):
-    session = table_session.objects.get(id=session_id)
-    times = table_time.objects.filter(session_id=session)
+    session = table_session.objects.filter(id=session_id)
+    print("GET SESSION TIME AND SEAT",session)
+    if not session.exists(): 
+        return None
+    times = table_time.objects.filter(session_id=session[0])
     session_time_and_seat = {}
     for time_obj in times:
         if time_obj.available_seat != None:

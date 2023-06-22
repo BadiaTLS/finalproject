@@ -56,7 +56,6 @@ def students_home_view_laboratorium(request):
 @student_required
 @transaction.atomic
 def confirm_action(request, current_hour, current_date, session_name, time_objects, session_object):
-    print("Confirm Action Called")
     print(type(current_hour), type(current_date), type(session_name), type(time_objects), type(session_object))
     session_object = get_session_id_based_date_and_session_name(current_date, session_name)
     time_suggested = request.POST.get('time_suggested')
@@ -74,12 +73,11 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
         return render(request, 'students/student_preferences.html', context)
 
     time_object = get_time_by_session_id_and_suggested_time(time_suggested, session_object)
-    # print("CONFIRM ACTION ", time_object, time_suggested, session_object, type(session_object))
     if time_object is not None: 
         update_available_seats(time_object)
         user_object = get_userobject_by_id(request.user.id)
         create_booking(user_object, session_object, time_suggested)
-        print('booking success')
+        print('CONFIRM: Booking Success')
         # update_seat_availability(time_suggested, new_availability_seat)
         messages.success(request, 
                         f"Booking Success for {session_object.name}, {session_object.date} at {time_suggested}", 
@@ -191,7 +189,6 @@ def confirm(request):
         current_hour = request.POST.get('current_hour')
         current_hour, _ = get_current_hour_and_current_date()
         session = request.POST.get('session')
-        print(time_object, session_object, current_date, session)
 
         # Check if the form is valid
         if form.is_valid():
@@ -205,7 +202,6 @@ def confirm(request):
             time_object = get_time_by_session_id_and_suggested_time(time_object, session_object)
 
             # Do something with the values
-            print(time_object, current_date, current_hour, session, session_object)
             return confirm_action(request, current_hour, current_date, session, time_object, session_object)
         else:
             print("Confirm Data Not Valid")
@@ -217,7 +213,6 @@ def confirm(request):
             # messages.success(request, "Input not valid, retry again", extra_tags="warning")
             return confirm_action(request, current_hour, current_date, session, time_objects, session_id)
     else:
-        print("Send POST")
         messages.success(request, "Send Some POST data", extra_tags="danger")    
         return redirect("student_index")
 
