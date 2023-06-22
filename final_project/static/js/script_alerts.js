@@ -12,14 +12,14 @@ btnClose.addEventListener('click', () => {
     overlay.style.display = 'none';
 });
 
-function startCountdown() {
+function startCountdown(timeleft=5) {
     // clearInterval(countdown); // clear any existing countdown timer
-    timeLeft = 10; // reset the timeLeft variable
+    timeLeft = timeleft; // reset the timeLeft variable
     countdown = setInterval(() => {
         if (timeLeft <= 0) {
             clearInterval(countdown);
             // do something when the countdown reaches 0
-            document.getElementById("countdown").innerHTML = 10;
+            document.getElementById("countdown").innerHTML = timeleft;
             document.getElementById("alert-container").style.display = "none";
         } else {
             document.getElementById("countdown").innerHTML = timeLeft;

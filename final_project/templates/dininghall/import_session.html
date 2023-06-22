@@ -1,8 +1,34 @@
 {% extends "../dininghall/dininghall_index.html" %}
 
-{% block title %} Import Class {% endblock %}
+{% block title %} Dining Hall Import Sessions Menu {% endblock %}
+
+<!-- Navbar Start -->
+{% block navbar %}
+<a class="nav-link" href="{% url 'dininghall_index' %}">Home</a>
+<a class="nav-link" href="{% url 'add_menu' %}">Add Menu</a>
+<a class="nav-link active" href="{% url 'import_session' %}">Import Menu</a>
+{% endblock %}
+<!-- Navbar End -->
+
+<!-- Home Start -->
+{% block home %}
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+    <div class="container text-center my-0 pt-5 pb-4">
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Import Sessions Menu</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center text-uppercase">
+                <li class="breadcrumb-item"><a class="text-white" href="{% url 'logout' %}">Login</a></li>
+                <li class="breadcrumb-item text-white" aria-current="page">Dining Hall</li>
+                <li class="breadcrumb-item text-primary active" aria-current="page">Import Sessions Menu</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+<!-- Home End -->
 
 {% block template %}
+<div class="container-xxl bg-white pe-4 px-lg-5 center">
     <h2>IMPORT SESSION FROM EXCEL</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -12,4 +38,5 @@
         </div>
         <button type="submit" class="btn btn-primary">Import</button>
     </form>
+</div>
 {% endblock %}

@@ -1,10 +1,11 @@
 
 let counter = 0;
 let loadingTexts = [
-    "Please wait while we load...",
-    "Almost complete...",
-    "Process finished."
+    "Reserving your table... 🍽️",
+    "Preparing your spot... 🍴",
+    "Bon appétit! 🥂"
 ];
+
 let interval;
 
 // Function to show the loading screen
@@ -35,7 +36,6 @@ function submitForm(event) {
     let loadingTexts = [
         "Reserving your table... 🍽️",
         "Preparing your spot... 🍴",
-        "Almost there... 😋",
         "Bon appétit! 🥂"
     ];
     showLoading();

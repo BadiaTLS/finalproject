@@ -9,12 +9,12 @@ body {
     align-items: center;
     background-color: #333;
     color: #fff;
-    display: flex;
+    display: none;
     height: 100vh;
     justify-content: center;
     position: fixed;
     width: 100%;
-    z-index: 9999;
+    z-index: 10;
 }
 
 #loading-screen h1 {

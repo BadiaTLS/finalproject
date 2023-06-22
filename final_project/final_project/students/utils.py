@@ -104,11 +104,11 @@ def generate_menu_data(meal_name, date, menu):
     day_name = date.strftime('%A')
     return {
         'day': day_name,
-        'date': f'{menu}'  ,
+        'date': f'{menu[0]}'  ,
         'imgSrc': f'img/{meal_name.lower()}-{day_name.lower()}.jpg',
         'altText': '',
         'name': f'{day_name} {meal_name.capitalize()}',
-        'price': '$115',
+        'status': f'{menu[1]}',
         'description': f'{date}'
     }
 
@@ -116,7 +116,6 @@ def get_menu_this_week(date):
 
     # example usage
     week_dates = get_week_dates(date)
-    # print(week_dates)
 
     breakfast = []
     lunch = []
@@ -124,11 +123,10 @@ def get_menu_this_week(date):
 
     for date in week_dates:
         menus = get_menu_based_date(date)
-        b, l, d = return_menus_for_each_session_in_one_date(menus)
+        b, l, d = get_menu_b_l_d(menus)
         breakfast.append(b)
         lunch.append(l)
         dinner.append(d)
-    # print(breakfast, lunch, dinner)
     
     tabs_data = {
         'tab-1': [],
@@ -140,11 +138,21 @@ def get_menu_this_week(date):
         tabs_data['tab-2'].append(generate_menu_data('lunch', date, lunch[i]))
         tabs_data['tab-3'].append(generate_menu_data('dinner', date, dinner[i]))
 
-    # print(tabs_data)
     # convert the tabs_data dictionary to a JSON string
     menu_data_json = json.dumps(tabs_data)
 
     return menu_data_json
+
+def get_menu_b_l_d(menus):
+    meals = {}
+    for meal_name in ["Breakfast", "Lunch", "Dinner"]:
+        # Check Is Menu Avaialle
+        if not menus.filter(name=meal_name):
+            meals[meal_name] = f'{meal_name} not available', "text-secondary"
+        else:
+            menu_a = menus.filter(name=meal_name).first().menu
+            meals[meal_name] = f'{menu_a}' , "text-primary"
+    return meals["Breakfast"], meals["Lunch"], meals["Dinner"]
 
 def get_session_and_time_objects(current_hour):
     if time(20, 0) <= current_hour <= time(23, 59, 59) or time(0, 0) <= current_hour <= time(9, 59):
@@ -166,7 +174,7 @@ def get_session_time_and_seat(session_id):
     times = table_time.objects.filter(session_id=session)
     session_time_and_seat = {}
     for time_obj in times:
-        if time_obj.available_seat:
+        if time_obj.available_seat != None:
             session_time_and_seat[time_obj.time] = time_obj.available_seat
         else:
             session_time_and_seat[time_obj.time] = time_obj.seat_limit
@@ -239,7 +247,7 @@ def get_student_dininghall_context(request):
             return context
     
     menus = get_menu_based_date(current_date)
-    breakfast, lunch, dinner = return_menus_for_each_session_in_one_date(menus)
+    breakfast, lunch, dinner = get_menu_b_l_d(menus)
     menu_this_week = get_menu_this_week(current_date)
 
     context = {
@@ -255,7 +263,8 @@ def get_student_dininghall_context(request):
         'can_booking': True,
         'current_session' : session.upper(),
         # Here we can add more... Like Menus
-        'menu_this_week' : menu_this_week
+        'menu_this_week' : menu_this_week,
+        'email' : request.user.email,
     }
     return context
 
@@ -271,8 +280,6 @@ def get_suggestion_time(session_object, email, current_date):
     return suggestion_time
 
 def get_context_from_latest_booking(latest_booking, current_hour, current_date):
-    print(latest_booking, current_hour, current_date)
-
     booked_suggestion_time = latest_booking.recommended_time
     menu = latest_booking.session_id
     booked_menu = menu.menu
@@ -332,14 +339,6 @@ def update_available_seats(time):
     time.save()
     return time 
 
-def return_menus_for_each_session_in_one_date(menus):
-    meals = {}
-    for meal_name in ["Breakfast", "Lunch", "Dinner"]:
-        if not menus.filter(name=meal_name):
-            meals[meal_name] = f"Tidak ada {meal_name.lower()}"
-        else:
-            meals[meal_name] = menus.filter(name=meal_name).first().menu
-    return meals["Breakfast"], meals["Lunch"], meals["Dinner"]
 
 def delete_booking_and_update_available_seat_by_user_id(user_id):
     try: 

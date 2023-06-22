@@ -56,8 +56,8 @@
                 <a href="{% url 'dining_hall' %}"
                     class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Reserve Now</a>
                 {% else %}
-                <p class="text-white animated slideInLeft mb-4 pb-0"><strong>You’ve already reserved {{session}} for
-                        {{time_suggested | default_if_none:"-" }} 😊</strong></p>
+                <p class="text-primary animated slideInLeft mb-4 pb-0"><strong>You’ve already reserved {{session}} for {{date}}
+                        at {{time_suggested | default_if_none:"-" }} 😊</strong></p>
                 <a href="{% url 'student_preferences' %}"
                     class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Reserve for Later</a>
                 <a href="{% url 'dining_hall' %}"

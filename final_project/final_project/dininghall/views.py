@@ -21,6 +21,7 @@ def dininghall_index(request):
         time_objects.append((session_id, fetch_time_objects(session_id)))
 
     context = {"session_objects": session_objects, "time_objects": time_objects}
+    context['email'] = request.user.email
     return render(request, "dininghall/dininghall_index.html", context)
 
 
@@ -41,7 +42,9 @@ def add_session(request):
         form_time = TimeForm()
         if "submitted" in request.GET:
             submitted = True
-    return render(request, "dininghall/add_menu.html", {"form_session": form_session, "form_time": form_time, "submitted": submitted})
+    context = {"form_session": form_session, "form_time": form_time, "submitted": submitted}
+    context['email'] = request.user.email
+    return render(request, "dininghall/add_menu.html", context)
 
 @login_required(login_url='login')
 @user_passes_test(check_dininghall_role, login_url='not_dininghall')
@@ -53,7 +56,10 @@ def edit_session(request, session_id):
         update_session(form)
         messages.success(request, "Edit Session Successfully", extra_tags='success')
         return redirect('dininghall_index')
-    return render(request, 'dininghall/edit_menu.html', {'menu': session, 'form': form})
+    
+    context = {'menu': session, 'form': form}
+    context['email'] = request.user.email
+    return render(request, 'dininghall/edit_menu.html', context)
 
 @login_required(login_url='login')
 @user_passes_test(check_dininghall_role, login_url='not_dininghall')
@@ -74,7 +80,9 @@ def edit_time(request, time_id):
         update_session(form)
         messages.success(request, "Edit Time Successfully", extra_tags='success')
         return redirect('dininghall_index')
-    return render(request, 'dininghall/edit_menu.html', {'time_objects': time, 'form': form})
+    context = {'time_objects': time, 'form': form}
+    context['email'] = request.user.email
+    return render(request, 'dininghall/edit_menu.html', context )
 
 @login_required(login_url='login')
 @user_passes_test(check_dininghall_role, login_url='not_dininghall')
@@ -100,8 +108,20 @@ def import_session(request):
         excel_file = request.FILES['excel_file']
 
         if excel_file.name.endswith('.xlsx'):
-            workbook = openpyxl.load_workbook(excel_file)
-            worksheet = workbook.active
+            try:
+                workbook = openpyxl.load_workbook(excel_file)
+                worksheet = workbook.active
+            except Exception as e:
+                messages.error(request, f'Error reading Excel file: {e}', extra_tags='error')
+                return redirect('import_session')
+
+            # validate required columns
+            required_columns = ['Date', 'Name', 'Menu', 'Seat Limit']
+            headers = [cell.value for cell in worksheet[1]]
+            missing_columns = [col for col in required_columns if col not in headers]
+            if missing_columns:
+                messages.error(request, f'Missing required columns: {", ".join(missing_columns)}', extra_tags='error')
+                return redirect('import_session')
 
             with transaction.atomic():
                 for row in worksheet.iter_rows(min_row=2, values_only=True):
@@ -110,13 +130,18 @@ def import_session(request):
                     menu = row[2]
                     seat_limit = row[3]
 
-                    session, _ = table_session.objects.get_or_create(
+                    session, created = table_session.objects.update_or_create(
                         date=date,
                         name=name,
                         defaults={
                             'menu': menu,
                         }
                     )
+
+                    # if created:
+                    #     messages.success(request, f'Created new session: {session}', extra_tags='success')
+                    # else:
+                    #     messages.success(request, f'Updated existing session: {session}', extra_tags='success')
 
                     if session.name == "Breakfast":
                         times = [
@@ -145,15 +170,25 @@ def import_session(request):
                             time(19, 30),
                         ]
 
-                    table_times = []
+                    # retrieve existing table_time objects for this session
+                    existing_times = table_time.objects.filter(session_id=session)
+
+                    # update or create table_time objects
                     for t in times:
-                        table_times.append(table_time(
-                            time=t,
+                        table_t, created = table_time.objects.update_or_create(
                             session_id=session,
-                            seat_limit=seat_limit,
-                            available_seat=None,
-                        ))
-                    table_time.objects.bulk_create(table_times)
+                            time=t,
+                            defaults={
+                                'seat_limit': seat_limit,
+                                'available_seat': None,
+                            }
+                        )
+
+                        # if created:
+                        #     messages.success(request, f'Created new table_time: {table_t}', extra_tags='success')
+                        # else:
+                        #     messages.success(request, f'Updated existing table_time: {table_t}', extra_tags='success')
+
 
             messages.success(request, 'Sessions and times imported successfully.', extra_tags='success')
             return redirect('dininghall_index')
@@ -161,7 +196,8 @@ def import_session(request):
             messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
             return redirect('import_session')
     else:
-        return render(request, 'dininghall/import_session.html')
+        context = {'email': request.user.email}
+        return render(request, 'dininghall/import_session.html', context)
 
 def not_dininghall(request):
     messages.error(request, 'You are not authorized to access dining hall resources. You need the Dining Hall role.', extra_tags='error')

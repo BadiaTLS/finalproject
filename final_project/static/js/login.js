@@ -1,7 +1,7 @@
 
 // Show the loading screen initially
 var loadingScreen = document.getElementById('loading-screen');
-loadingScreen.style.display = 'flex';
+// loadingScreen.style.display = 'flex';
 
 // Wait for 1.5 seconds and then hide the loading screen
 setTimeout(function () {
