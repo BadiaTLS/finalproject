@@ -28,8 +28,7 @@ def students_index(request):
     context['email'] = request.user.email
     context['fullname'] =  request.user.name
     context['time_suggested'] : time_ordered
-    context['session'] : session
-    
+    context['session'] : session    
     return render(request, "students/student_index.html", context )
 
 @student_required
@@ -71,6 +70,12 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
             'can_booking': True
         }
         return render(request, 'students/student_preferences.html', context)
+    if is_seat_full(session_id=session_object, date=current_date, time=time_suggested):
+        messages.success(request, f"Apologies, but {session_object.name} on {session_object.date} at {time_suggested} is already full.", extra_tags="warning")
+        context = get_student_dininghall_context(request)
+        context['email'] = request.user.email
+        # return render(request, "students/student_index.html", context=context) 
+        return redirect('student_index')
 
     time_object = get_time_by_session_id_and_suggested_time(time_suggested, session_object)
     if time_object is not None: 
@@ -82,7 +87,10 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
         messages.success(request, 
                         f"Booking Success for {session_object.name}, {session_object.date} at {time_suggested}", 
                         extra_tags="success")
-        return redirect('student_index') 
+        context = get_student_dininghall_context(request=request)
+        context['can_booking'] = False
+        return render(request=request, template_name= "students/student_dininghall_view.html", context=context)
+        return redirect('student_index' ) 
         
     messages.success(request, f"Booking Failed for {session_object.name}, {session_object.date} at {time_suggested}", extra_tags="warning")
 
@@ -92,25 +100,33 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
 @student_required
 @transaction.atomic
 def cancel_order(request):
-    user_id = request.user.id
-    # DELETE and UPDATE Database
-    message = delete_booking_and_update_available_seat_by_user_id(user_id)
-    messages.success(request, message, extra_tags="success")
-    
-    return redirect("student_index")
+    if request.method == 'POST':
+        user_object = request.user
+        session_id = request.POST.get('o')
+        print(session_id)
+        session_object = table_session.objects.get(pk=session_id)
+        # print( "THIS IS CANCEL",session_object)
+        # DELETE and UPDATE Database
+        message , extra_tags = delete_booking_and_update_available_seat_by_user_id(user_object, session_object)
+        
+        messages.success(request, message=message, extra_tags=extra_tags)
+        return redirect("dining_hall")
+    messages.success(request, message="The Method is GET", extra_tags="danger")
+    return redirect("dining_hall")
+
 
 @student_required
 @transaction.atomic
 def student_preferences(request):
     if request.method == 'POST':
-        is_take = request.POST.get('take')
-        if is_take:
+        is_searching = request.POST.get('search_button_pressed')
+        if is_searching:
             start_time = request.POST.get('start_range')
             end_time = request.POST.get('end_range')
 
             session = request.POST.get('session_pref')
             date_pref = request.POST.get('date_pref')
-            current_date = datetime.strptime(date_pref, "%Y-%m-%d").date()
+            date_pref = datetime.strptime(date_pref, "%Y-%m-%d").date()
 
             # latest_booking = get_latest_booking(request.user)
             # if latest_booking:
@@ -118,28 +134,33 @@ def student_preferences(request):
             #     if context:
             #         return context
 
+            print(request.user.id, date_pref, session)
             if is_booked_by_user_date_session(request.user.id, date_pref, session):
                 messages.success(request, f"You already booked {session} for {date_pref}.", extra_tags="danger")
                 return redirect('student_preferences')
 
             current_hour, _ = get_current_hour_and_current_date()
-            _, time_objects = get_session_and_time_objects(current_hour)
+            _s, time_objects = get_session_and_time_objects(current_hour)
 
-            session_id = get_session_id_based_date_and_session_name(current_date, session)
-            session_info = get_session_time_and_seat(get_session_id(current_date, session))
+            session_id = get_session_id_based_date_and_session_name(date_pref, session)
+            session_info = get_session_time_and_seat(get_session_id(date_pref, session))
+
+            if date_pref < _:
+                messages.success(request, f"Apologies, but the {session} on {date_pref} is no longer available for booking, as the allotted time has elapsed.", extra_tags="danger")
+                return redirect('student_preferences')
 
             suggested_time = get_recommended_time(session_info, start_time, end_time)
 
 
-            menus = get_menu_based_date(current_date)
+            menus = get_menu_based_date(date_pref)
             breakfast, lunch, dinner = get_menu_b_l_d(menus)
             context = {
                 'time_objects': time_objects,
                 'session_id': session_id,
                 'time_suggested': suggested_time,
                 'session': session,
-                'date': current_date,
-                'day': current_date.strftime('%A'),
+                'date': date_pref,
+                'day': date_pref.strftime('%A'),
                 'breakfast': breakfast,
                 'lunch': lunch,
                 'dinner': dinner,
@@ -147,6 +168,8 @@ def student_preferences(request):
                 'current_session' : session.upper(),
                 'email' : request.user.email,
             }
+
+
             return render(request, 'students/student_preferences.html', context)
     
     if request.method == 'GET':

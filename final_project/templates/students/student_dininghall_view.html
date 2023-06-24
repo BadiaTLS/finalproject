@@ -90,8 +90,12 @@
             <a href="{% url 'student_preferences' %}">
             <button class="btn btn btn-primary bg-primary text-white  w-100 py-3 mb-3" type="submit">Reserve for Later</button>
             </a>
-
-          <p class="breadcrumb-item text-center"><a href="{% url 'cancel_order' %}">Cancel Reservation</a></p>
+          
+            <form action="cancel_order" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="o" value="{{ session_id }}">
+              <button class="btn btn btn-primary bg-dark text-primary  w-100 py-3 mb-3">Cancel Reservation</button>
+            </form>
           {% endif %}
           {% endif %}
         </div>

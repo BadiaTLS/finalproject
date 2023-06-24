@@ -79,7 +79,7 @@
             </div>
 
             <div class="col-12">
-              <input type="hidden" name="take" value=True>
+              <input type="hidden" name="search_button_pressed" value=True>
               <button onclick=scrollIntoRes() class="btn btn-primary w-100 py-3" type="submit">Search For
                 Availability</button>
             </div>
@@ -91,8 +91,7 @@
       <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
         {% if time_suggested != False%}
         {% if time_suggested != "NotSearched" %}
-        <h1 class="text-white mb-0 text-center">
-          Reserve {{session| default_if_none:"-"}} for {{date | default_if_none:"-"}} at {{time_suggested |default_if_none:"-" }} for the best experience</h1>
+        <h1 class="text-white mb-0 text-center">Reserve {{session| default_if_none:"-"}} for {{date | default_if_none:"-"}} at {{time_suggested|default_if_none:"-" }} for the best experience</h1>
         <!-- Button will appear if time_suggested is there -->
         <form action="confirm" method="POST">
           {% csrf_token %}

@@ -56,12 +56,14 @@ def convert_session_to_graph(session, start_node_label='S', middle_node_label='M
 
         graph[middle_node_label].update({end_node_label: 1})
         graph[end_node_label] = {}
-
+    print(f"SESSION : {session}")
+    print(f"GRAPH : {graph}")
     return graph
 
 def update_session_by_start_end(session, start, end):
     # Here to check session
     return session
+
 
 def get_recommended_time(session, start_time, end_time):
     try: 
@@ -70,9 +72,9 @@ def get_recommended_time(session, start_time, end_time):
         graph = convert_session_to_graph(session)
         longest_distance, longest_path, path_times = dijkstra(graph=graph)
 
-        # print("Longest Distance:", longest_distance)
-        # print("Longest Path:", longest_path)
-        # print("Path Times:", path_times)
+        print("Longest Distance:", longest_distance)
+        print("Longest Path:", longest_path)
+        print("Path Times:", path_times)
 
         print(f"Your best time is ",longest_path[1])
         recommended_time = longest_path[1][0:5]
@@ -95,6 +97,25 @@ if __name__ == "__main__":
     }
     start_time = '?'
     end_time = '?'
+
+    from datetime import time, datetime
+    
+    SESSION = {
+        datetime.time(7, 0): 0,
+        datetime.time(7, 30): 1, 
+        datetime.time(8, 0): 1, 
+        datetime.time(8, 30): 1, 
+        datetime.time(9, 0): 1
+        }
+    GRAPH = {
+        'S': {'07:00:00': 0, '07:30:00': 0, '08:00:00': 0, '08:30:00': 0, '09:00:00': 0}, '07:00:00': {'M': 0}, 
+        'M': {'E': 1}, 
+        'E': {}, 
+        '07:30:00': {'M': 1}, 
+        '08:00:00': {'M': 1}, 
+        '08:30:00': {'M': 1}, 
+        '09:00:00': {'M': 1}
+        }
 
     result = get_recommended_time(session=session, start_time=start_time, end_time=end_time)
     print(result)

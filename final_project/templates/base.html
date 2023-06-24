@@ -121,9 +121,9 @@
     {% for message in messages %}
     <div id="alert-container">
       <div class="alert-card alert {% if message.tags %}alert-{{ message.tags }}{% endif %} pulse mt-4">
-        <div class="alert-card-title">ALERT</div>
-        <div class="alert-card-content"> <br>{{message}}<br> </div>
-        <div class="alert-card-footer"> <br>This page will be closed in <div id="countdown">5</div></div> 
+        <div class="alert-card-title">ALERT </div>
+        <div class="alert-card-content"> {{message}}</div>
+        <div class="alert-card-footer">This page will be closed in <div id="countdown">5</div></div> 
         <button type="button" class="btn-close" aria-label="Close"><i class="fas"></i></button>
       </div>
     </div>

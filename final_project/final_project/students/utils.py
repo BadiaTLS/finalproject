@@ -6,6 +6,14 @@ from final_project.algorithm.dijkstra import get_recommended_time
 import json
 
 # CHECK
+def is_seat_full(time, session_id, date):
+    available_seat = get_available_seat_by_date_session_id(time ,date, session_id)
+    if available_seat == None:
+        return False
+    if available_seat <= 0:
+        return True
+    return False
+
 def is_time_booked(request):
     result = table_booking_dininghall.objects.filter(user_id=request.user.id).exists()
     if result: 
@@ -32,6 +40,9 @@ def is_between(time, time_range):
 
 def is_booked_by_user_date_session(user_id , date , session_name):
     print(f"IS BOOKING: ", user_id,type(user_id), date,  type(date),session_name, type(session_name))
+    if type(date) != str:
+        date = str(date)
+
     if type(user_id) == int and type(date) == str and type(session_name) == str: 
         print(f"IS BOOKING: IF ", user_id,type(user_id), date,  type(datetime.strptime(date, "%Y-%M-%d")),session_name, type(session_name))
 
@@ -39,6 +50,7 @@ def is_booked_by_user_date_session(user_id , date , session_name):
         # print(session_object)
         # date = datetime.strptime(date, "%Y-%M-%d")
         booking = table_booking_dininghall.objects.filter(user_id = user_id, session_id__date = date)
+        print(booking)
         print(f"IS BOOKED", booking)
         if not booking.exists():
             return False
@@ -48,6 +60,10 @@ def is_booked_by_user_date_session(user_id , date , session_name):
         return False
 
 # GET
+def get_available_seat_by_date_session_id(time, date, session_id):
+    time_object = table_time.objects.filter(session_id = session_id, session_id__date = date, time=time).first()
+    return time_object.available_seat
+
 def get_userobject_by_id(id):
     user_object = CustomUser.objects.get(id=id)
     return user_object
@@ -188,7 +204,6 @@ def get_session_and_time_objects(current_hour):
 
 def get_session_time_and_seat(session_id):
     session = table_session.objects.filter(id=session_id)
-    print("GET SESSION TIME AND SEAT",session)
     if not session.exists(): 
         return None
     times = table_time.objects.filter(session_id=session[0])
@@ -302,7 +317,7 @@ def get_suggestion_time(session_object, email, current_date):
 def get_context_from_latest_booking(latest_booking, current_hour, current_date):
     booked_suggestion_time = latest_booking.recommended_time
     menu = latest_booking.session_id
-    booked_menu = menu.menu
+    booked_menu = menu.id
     booked_session = menu.name
 
 
@@ -354,16 +369,30 @@ def translate_day_to_en(day):
 
 def update_available_seats(time):
     if time.available_seat == 0:
-        raise ValueError("Not enough available seats")
+        message, extra_tags = ("Not enough available seats", 'danger')
+        return message, extra_tags
+        
     time.available_seat = (time.available_seat or time.seat_limit) - 1
     time.save()
     return time 
 
 
-def delete_booking_and_update_available_seat_by_user_id(user_id):
+def delete_booking_and_update_available_seat_by_user_id(user_id, session_id):
+    # print(user_id.name, type(user_id), session_id, type(session_id))
+    # booking_object = table_booking_dininghall.objects.filter(user_id=user_id.id, session_id=session_id).first()    
+    # booking_object = booking_object
+    # session_id = booking_object.session_id
+    # recommended_time = booking_object.recommended_time
+
+    # booked_time_object = table_time.objects.get(session_id=session_id, time = recommended_time)
+    # booked_time_object.available_seat += 1
+    # booked_time_object.save()
+    # booking_object.delete()
+    # return f"Success Reservastion Cancelled, {session_id.name} for {session_id.date}", 'success'
+    
+
     try: 
-        booking_object = table_booking_dininghall.objects.filter(user_id=user_id).latest('created_at')
-        
+        booking_object = table_booking_dininghall.objects.filter(user_id=user_id.id, session_id=session_id).first()    
         session_id = booking_object.session_id
         recommended_time = booking_object.recommended_time
 
@@ -371,6 +400,6 @@ def delete_booking_and_update_available_seat_by_user_id(user_id):
         booked_time_object.available_seat += 1
         booked_time_object.save()
         booking_object.delete()
-        return "Success: Booking Deleted and Available Seat Updated" 
-    except: 
-        return "Failed: Booking Deleted and Available Seat Updated "
+        return f"Success Reservastion Cancelled, {session_id.name} for {session_id.date}", 'success'
+    except Exception as e: 
+        return f" {e} Failed: Reservation didn't cancelled", 'danger'
