@@ -51,6 +51,13 @@
       </div>
       <div class="col-md-6 bg-dark d-flex align-items-center">
         <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+          {% if not time_suggested %}
+          <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
+          <h1 class="text-white mb-4 text-center">No Available Spot To Reserve</h1>
+          <a href="{% url 'student_preferences' %}">
+            <button class="btn btn-primary w-100 py-3" type="submit" value="no" name="choice">Choose Another Session & Time</button>
+          </a>
+          {% else %}
           {% if can_booking %}
           <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
           <h1 class="text-white mb-4 text-center">Reserve at {{time_suggested | default_if_none:"-"}} for the Best
@@ -60,6 +67,12 @@
             <div class="row g-3">
               <div class="col-12">
                 <input type="hidden" name="time_suggested" value="{{ time_suggested }}">
+                <input type="hidden" name="time_object" value="{{ time_suggested }}">
+                <input type="hidden" name="session_object" value="{{ session_id }}">
+  
+                <input type="hidden" name="current_date" value="{{ date }}">
+                <input type="hidden" name="current_hour" value="{{ current_hour }}">
+                <input type="hidden" name="session" value="{{ session }}">
                 <button onclick="submitForm(event)" class="btn btn-primary w-100 py-3" type="submit" value="yes"
                   name="choice">Reserve Now</button>
               </div>
@@ -77,8 +90,13 @@
             <a href="{% url 'student_preferences' %}">
             <button class="btn btn btn-primary bg-primary text-white  w-100 py-3 mb-3" type="submit">Reserve for Later</button>
             </a>
-
-          <p class="breadcrumb-item text-center"><a href="{% url 'cancel_order' %}">Cancel Reservation</a></p>
+          
+            <form action="cancel_order" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="o" value="{{ session_id }}">
+              <button class="btn btn btn-primary bg-dark text-primary  w-100 py-3 mb-3">Cancel Reservation</button>
+            </form>
+          {% endif %}
           {% endif %}
         </div>
       </div>
@@ -171,7 +189,7 @@
     <div class="w-100 d-flex flex-column text-start ps-4">
       <h5 class="d-flex justify-content-between border-bottom pb-2">
         <span>${item.day}</span>
-        <span class="text-primary">${item.date}</span>
+        <span class="${item.status}" >${item.date}</span>
       </h5>
       <small class="fst-italic">${item.description}</small>
     </div>

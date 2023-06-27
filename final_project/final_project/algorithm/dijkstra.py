@@ -1,102 +1,121 @@
-from datetime import datetime
+import heapq
 
-def _dijkstra_max_seats(graph, start, end):
-    # Create a dictionary to store the maximum number of seats available from the start node to each node
+def dijkstra(graph, start='S', end='E'):
     distances = {node: float('-inf') for node in graph}
-    distances[start] = float('inf')
-
-    # Create a set to keep track of visited nodes
+    distances[start] = 0
+    priority_queue = [(distances[start], start)]  # Use positive distance for min-heap
     visited = set()
+    previous = {}
+    time = {}
 
-    while True:
-        # Find the unvisited node with the maximum number of seats available
-        current_node = None
-        current_distance = float('-inf')
-        for node, distance in distances.items():
-            if node not in visited and distance > current_distance:
-                current_node = node
-                current_distance = distance
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
 
-        # If no unvisited node was found, we're done
-        if current_node is None:
+        if current_node == end:
             break
 
-        # Mark the current node as visited
+        if current_node in visited:
+            continue
+
         visited.add(current_node)
 
-        # Update the distances of the neighboring nodes
         for neighbor, weight in graph[current_node].items():
-            distance = min(current_distance, weight)
-            if distance > distances[neighbor]:
-                distances[neighbor] = distance
-    
-    return distances[end]
+            new_distance = current_distance + weight  # Use addition for longest distance
+            if new_distance > distances[neighbor]:  # Compare with longest distance
+                distances[neighbor] = new_distance
+                previous[neighbor] = current_node
+                time[neighbor] = weight
+                heapq.heappush(priority_queue, (new_distance, neighbor))
 
-def _create_graph(session):
-    graph = {}
-    session_items = list(session.items())
-    for i in range(len(session_items)):
-        t1, seats1 = session_items[i]
-        graph[t1.strftime('%H:%M')] = {}
-        for j in range(i+1, len(session_items)):
-            t2, seats2 = session_items[j]
-            graph[t1.strftime('%H:%M')][t2.strftime('%H:%M')] = max(seats1, seats2)
+    longest_distance = distances[end]
+    longest_path = [end]
+    current_node = end
+
+    while current_node != start:
+        current_node = previous[current_node]
+        longest_path.append(current_node)
+
+    longest_path = longest_path[::-1]
+    path_times = [time[node] for node in longest_path[1:]]
+
+    return longest_distance, longest_path, path_times
+
+def convert_session_to_graph(session, start_node_label='S', middle_node_label='M', end_node_label='E'):
+    graph = {start_node_label: {}}
+
+    for start_time, duration in session.items():
+        start_node = str(start_time)
+
+        if start_node not in graph[start_node_label]:
+            graph[start_node_label][start_node] = 0
+
+        graph[start_node] = {middle_node_label: duration}
+        # graph[start_node_label][start_node].update({middle_node_label: duration})
+        if middle_node_label not in graph:
+            graph[middle_node_label] = {}
+
+        graph[middle_node_label].update({end_node_label: 1})
+        graph[end_node_label] = {}
+    print(f"SESSION : {session}")
+    print(f"GRAPH : {graph}")
     return graph
 
-def round_time_down(time_string):
-    time_obj = datetime.strptime(time_string, '%H:%M')
-    rounded_time_obj = time_obj.replace(minute=(time_obj.minute // 30) * 30, second=0)
-    return rounded_time_obj.strftime('%H:%M')
+def update_session_by_start_end(session, start, end):
+    # Here to check session
+    return session
 
-def get_recommended_time(session, start : str, end : str):
-    if type(start) == str: 
-        start = round_time_down(start)
-        start = datetime.strptime(start, '%H:%M').time()
 
-    if type(end) == str: 
-        end = round_time_down(end)
-        end = datetime.strptime(end, '%H:%M').time()
-
-    session_start, session_end  = list(session.keys())[0], list(session.keys())[-1]
-
-    # print(session, start, end)
-    # print(type(start), type(end))
-    # print(type(session_start), type(session_end))
-
-    key_list = list(session.keys())
-    val_list = list(session.values())
-
-    if start not in key_list or end not in key_list:
-        if start > session_end: 
-            return False
-        if end < session_start:
-            return False
-        if start < session_start: 
-            start = session_start.strftime("%H:%M")
-        if end > session_end:
-            end = session_end.strftime("%H:%M")
-
-    if type(start) == str: 
-        start = datetime.strptime(start, '%H:%M').time()
-    if type(end) == str: 
-        end = datetime.strptime(end, '%H:%M').time()
-    
-    start, end = start.strftime("%H:%M"), end.strftime("%H:%M")
-    recommended_time = 0
+def get_recommended_time(session, start_time, end_time):
     try: 
-        graph = _create_graph(session)
-        max_seats = _dijkstra_max_seats(graph, round_time_down(start), round_time_down(end))
+        session = update_session_by_start_end(session=session, start = start_time, end= end_time)
 
-        position = val_list.index(max_seats)
-        recommended_time = key_list[position].strftime("%H:%M")
-        if max_seats == 0:
-            return False
-        else: 
-            pass
+        graph = convert_session_to_graph(session)
+        longest_distance, longest_path, path_times = dijkstra(graph=graph)
 
-        # print(f"The maximum number of seats available between {start} and {end} is {max_seats}, and the time is {recommended_time}")
-    except:
-        print(AssertionError)
+        print("Longest Distance:", longest_distance)
+        print("Longest Path:", longest_path)
+        print("Path Times:", path_times)
 
-    return recommended_time
+        print(f"Your best time is ",longest_path[1])
+        recommended_time = longest_path[1][0:5]
+        return recommended_time
+    except Exception as e:
+        print(e)
+        return False
 
+if __name__ == "__main__":
+    from datetime import time
+    # Example usage:
+    session = {
+        time(11, 0): 100,
+        time(11, 30): 11,
+        time(12, 0): 12,
+        time(12, 30): 10,
+        time(13, 0): 4,
+        time(13, 30): 0,
+        time(13, 0): 0,
+    }
+    start_time = '?'
+    end_time = '?'
+
+    from datetime import time, datetime
+    
+    SESSION = {
+        datetime.time(7, 0): 0,
+        datetime.time(7, 30): 1, 
+        datetime.time(8, 0): 1, 
+        datetime.time(8, 30): 1, 
+        datetime.time(9, 0): 1
+        }
+    GRAPH = {
+        'S': {'07:00:00': 0, '07:30:00': 0, '08:00:00': 0, '08:30:00': 0, '09:00:00': 0}, '07:00:00': {'M': 0}, 
+        'M': {'E': 1}, 
+        'E': {}, 
+        '07:30:00': {'M': 1}, 
+        '08:00:00': {'M': 1}, 
+        '08:30:00': {'M': 1}, 
+        '09:00:00': {'M': 1}
+        }
+
+    result = get_recommended_time(session=session, start_time=start_time, end_time=end_time)
+    print(result)

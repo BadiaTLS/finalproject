@@ -1,0 +1,1 @@
+python final_project\manage.py runserver

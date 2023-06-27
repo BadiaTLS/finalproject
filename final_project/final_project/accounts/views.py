@@ -11,9 +11,15 @@ def login_user(request):
         
         if user is not None:
             if is_valid_user_role(user.role):
-                login(request, user)
-                messages.success(request, "You have successfully logged in.", extra_tags='success')
-                return redirect('/' + user.role)
+                # return redirect('/' + user.role)
+                if user.role != 'student' and user.role != 'dininghall':
+                    print(user.role)
+                    login(request, user)
+                    messages.success(request, f"You have successfully logged in. {user}", extra_tags='success')
+                    return redirect('/student')
+                else:
+                    login(request, user)
+                    return redirect('/' + user.role)
             else:
                 messages.error(request, "Invalid email or password. Please try again.", extra_tags='error')
         else:
@@ -26,4 +32,8 @@ def logout_user(request):
     return redirect('login')
 
 def is_valid_user_role(role):
-    return role in ['student', 'dininghall', 'sas']
+    return role in ['student', 'dininghall', 'sas', 'dosen']
+
+def custom_404(request, exception):
+    print("Custom 404 view function called")
+    return redirect('login')
