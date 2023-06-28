@@ -26,12 +26,12 @@ from final_project.accounts.views import custom_404
 handler404 = custom_404
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin', admin.site.urls),
     path('', include('django.contrib.auth.urls')),
     path('', include('final_project.accounts.urls')),
-    path('student/', include('final_project.students.urls')),
-    path('dininghall/', include('final_project.dininghall.urls')),
-    path('sas/', include('final_project.sas.urls')),
+    path('student', include('final_project.students.urls')),
+    path('dininghall', include('final_project.dininghall.urls')),
+    path('sas', include('final_project.sas.urls')),
 ]
 
 # add at the last
