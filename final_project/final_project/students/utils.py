@@ -133,6 +133,28 @@ def get_week_dates(date_str):
 
     return week_dates
 
+def get_month_dates(date_str):
+    # parse the input date string
+    if type(date_str) == str:
+        date = datetime.strptime(date_str, '%Y-%m-%d')
+    else:
+        date = date_str
+
+    # calculate the start of the month
+    start_of_month = date.replace(day=1)
+
+    # calculate the end of the month
+    if date.month == 12:
+        end_of_month = date.replace(year=date.year+1, month=1, day=1) - timedelta(days=1)
+    else:
+        end_of_month = date.replace(month=date.month+1, day=1) - timedelta(days=1)
+
+    # generate a list of dates for the entire month
+    num_days = (end_of_month - start_of_month).days + 1
+    month_dates = [start_of_month + timedelta(days=i) for i in range(num_days)]
+
+    return month_dates
+
 def generate_menu_data(meal_name, date, menu):
     day_name = date.strftime('%A')
     return {
@@ -149,6 +171,7 @@ def get_menu_this_week(date):
 
     # example usage
     week_dates = get_week_dates(date)
+    week_dates = get_month_dates(date)
 
     breakfast = []
     lunch = []
@@ -156,7 +179,10 @@ def get_menu_this_week(date):
 
     for date in week_dates:
         menus = get_menu_based_date(date)
-        b, l, d = get_menu_b_l_d(menus)
+        if not get_menu_b_l_d(menus):
+            b, l, d = [("None", "None"), ("None", "None"), ("None", "None")]
+        else:
+            b, l, d = get_menu_b_l_d(menus)
         breakfast.append(b)
         lunch.append(l)
         dinner.append(d)
@@ -173,10 +199,12 @@ def get_menu_this_week(date):
 
     # convert the tabs_data dictionary to a JSON string
     menu_data_json = json.dumps(tabs_data)
-
     return menu_data_json
 
 def get_menu_b_l_d(menus):
+    if not menus.exists():
+        return False
+
     meals = {}
     for meal_name in ["Breakfast", "Lunch", "Dinner"]:
         # Check Is Menu Avaialle
@@ -283,23 +311,20 @@ def get_student_dininghall_context(request):
     
     menus = get_menu_based_date(current_date)
     breakfast, lunch, dinner = get_menu_b_l_d(menus)
-    menu_this_week = get_menu_this_week(current_date)
 
     context = {
+        'email': request.user.email,
         'time_objects': time_objects,
         'session_id': session_id,
         'time_suggested': suggestion_time,
         'session': session,
         'date': current_date,
         'day': current_date.strftime('%A'),
-        'breakfast': breakfast,
-        'lunch': lunch,
-        'dinner': dinner,
         'can_booking': True,
         'current_session' : session.upper(),
-        # Here we can add more... Like Menus
-        'menu_this_week' : menu_this_week,
-        'email' : request.user.email,
+        'breakfast': breakfast[0],
+        'lunch': lunch[0],
+        'dinner': dinner[0],
     }
     return context
 
@@ -320,6 +345,8 @@ def get_context_from_latest_booking(latest_booking, current_hour, current_date):
     booked_menu = menu.id
     booked_session = menu.name
 
+    menus = get_menu_based_date(current_date)
+    breakfast, lunch, dinner = get_menu_b_l_d(menus)
 
     if is_within_restricted_range(booked_suggestion_time, current_hour):
         context = {
@@ -329,7 +356,9 @@ def get_context_from_latest_booking(latest_booking, current_hour, current_date):
             'time_suggested': booked_suggestion_time.strftime('%H:%M'),
             'day': current_date.strftime('%A'),
             'can_booking': False,
-            'menu_this_week': get_menu_this_week(current_date)
+            'breakfast': breakfast[0],
+            'lunch': lunch[0],
+            'dinner': dinner[0],
         }
         return context
 

@@ -25,21 +25,22 @@ def student_required(view_func):
 def students_index(request):
     time_ordered, session = get_order_time(request.user.id)
     context = get_student_dininghall_context(request)
-    context['email'] = request.user.email
     context['fullname'] =  request.user.name
     context['time_suggested'] : time_ordered
     context['session'] : session    
     return render(request, "students/student_index.html", context )
 
 @student_required
-def menu(request):
-    context = get_student_dininghall_context(request)
-    return render(request, 'students/menu.html', context)
+def student_menu_view(request):
+    if request.method == 'GET':
+        context = get_student_dininghall_context(request)
+        menu_this_week = get_menu_this_week(date=context['date'])
+        context['menu_this_week'] = menu_this_week
+        return render(request, 'students/menu.html', context)
 
 @student_required
 def students_home_view_dininghall(request):
     context = get_student_dininghall_context(request)
-    context['email'] = request.user.email
     return render(request, 'students/student_dininghall_view.html', context)
 
 @student_required
@@ -96,7 +97,6 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
 
     return redirect('student_index') 
 
-
 @student_required
 @transaction.atomic
 def cancel_order(request):
@@ -151,9 +151,6 @@ def student_preferences(request):
 
             suggested_time = get_recommended_time(session_info, start_time, end_time)
 
-
-            menus = get_menu_based_date(date_pref)
-            breakfast, lunch, dinner = get_menu_b_l_d(menus)
             context = {
                 'time_objects': time_objects,
                 'session_id': session_id,
@@ -161,9 +158,6 @@ def student_preferences(request):
                 'session': session,
                 'date': date_pref,
                 'day': date_pref.strftime('%A'),
-                'breakfast': breakfast,
-                'lunch': lunch,
-                'dinner': dinner,
                 'can_booking': True,
                 'current_session' : session.upper(),
                 'email' : request.user.email,
@@ -197,8 +191,6 @@ def student_preferences(request):
             }
         return render(request, 'students/student_preferences.html', context)
     
-
-
 @student_required
 def confirm(request):
     from .forms import ConfirmForm

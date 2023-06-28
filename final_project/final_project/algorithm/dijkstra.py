@@ -56,8 +56,8 @@ def convert_session_to_graph(session, start_node_label='S', middle_node_label='M
 
         graph[middle_node_label].update({end_node_label: 1})
         graph[end_node_label] = {}
-    print(f"SESSION : {session}")
-    print(f"GRAPH : {graph}")
+    # print(f"SESSION : {session}")
+    # print(f"GRAPH : {graph}")
     return graph
 
 def update_session_by_start_end(session, start, end):
@@ -72,11 +72,11 @@ def get_recommended_time(session, start_time, end_time):
         graph = convert_session_to_graph(session)
         longest_distance, longest_path, path_times = dijkstra(graph=graph)
 
-        print("Longest Distance:", longest_distance)
-        print("Longest Path:", longest_path)
-        print("Path Times:", path_times)
+        # print("Longest Distance:", longest_distance)
+        # print("Longest Path:", longest_path)
+        # print("Path Times:", path_times)
 
-        print(f"Your best time is ",longest_path[1])
+        # print(f"Your best time is ",longest_path[1])
         recommended_time = longest_path[1][0:5]
         return recommended_time
     except Exception as e:
