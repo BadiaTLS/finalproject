@@ -27,7 +27,8 @@ def students_index(request):
     context = get_student_dininghall_context(request)
     context['fullname'] =  request.user.name
     context['time_suggested'] : time_ordered
-    context['session'] : session    
+    context['session'] : session
+    context['email'] = request.user.email
     return render(request, "students/student_index.html", context )
 
 @student_required
@@ -36,11 +37,13 @@ def student_menu_view(request):
         context = get_student_dininghall_context(request)
         menu_this_week = get_menu_this_week(date=context['date'])
         context['menu_this_week'] = menu_this_week
+        context['email'] = request.user.email
         return render(request, 'students/menu.html', context)
 
 @student_required
 def students_home_view_dininghall(request):
     context = get_student_dininghall_context(request)
+    context['email'] = request.user.email
     return render(request, 'students/student_dininghall_view.html', context)
 
 @student_required
@@ -75,7 +78,6 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
         messages.success(request, f"Apologies, but {session_object.name} on {session_object.date} at {time_suggested} is already full.", extra_tags="warning")
         context = get_student_dininghall_context(request)
         context['email'] = request.user.email
-        # return render(request, "students/student_index.html", context=context) 
         return redirect('student_index')
 
     time_object = get_time_by_session_id_and_suggested_time(time_suggested, session_object)
@@ -84,7 +86,6 @@ def confirm_action(request, current_hour, current_date, session_name, time_objec
         user_object = get_userobject_by_id(request.user.id)
         create_booking(user_object, session_object, time_suggested)
         print('CONFIRM: Booking Success')
-        # update_seat_availability(time_suggested, new_availability_seat)
         messages.success(request, 
                         f"Booking Success for {session_object.name}, {session_object.date} at {time_suggested}", 
                         extra_tags="success")
@@ -105,8 +106,6 @@ def cancel_order(request):
         session_id = request.POST.get('o')
         print(session_id)
         session_object = table_session.objects.get(pk=session_id)
-        # print( "THIS IS CANCEL",session_object)
-        # DELETE and UPDATE Database
         message , extra_tags = delete_booking_and_update_available_seat_by_user_id(user_object, session_object)
         
         messages.success(request, message=message, extra_tags=extra_tags)
@@ -127,12 +126,6 @@ def student_preferences(request):
             session = request.POST.get('session_pref')
             date_pref = request.POST.get('date_pref')
             date_pref = datetime.strptime(date_pref, "%Y-%m-%d").date()
-
-            # latest_booking = get_latest_booking(request.user)
-            # if latest_booking:
-            #     context = get_context_from_latest_booking(latest_booking, current_hour, current_date)
-            #     if context:
-            #         return context
 
             print(request.user.id, date_pref, session)
             if is_booked_by_user_date_session(request.user.id, date_pref, session):
@@ -222,35 +215,10 @@ def confirm(request):
             print("Confirm Data Not Valid")
             messages.success(request, "Oops! Invalid input. Please retry.", extra_tags="danger")
             return render(request, "students/student_preferences.html")
-            current_hour, current_date = get_current_hour_and_current_date()
-            session, time_objects = get_session_and_time_objects(current_hour)
-            session_id = get_session_id_based_date_and_session_name(current_date, session)
-            # messages.success(request, "Input not valid, retry again", extra_tags="warning")
-            return confirm_action(request, current_hour, current_date, session, time_objects, session_id)
     else:
         messages.success(request, "Send Some POST data", extra_tags="danger")    
         return redirect("student_index")
 
-
-# @student_required
-# def confirm(request):
-#     if request.method == 'POST':
-#         current_hour = request.POST.get('current_hour')
-#         current_date = request.POST.get('current_date')
-#         time_objects = request.POST.get('time_object')
-#         session_object = request.POST.get('session_id')
-#         session_name = request.POST.get('session')
-#         print(type(current_hour), type(current_date), type(session_name), type(time_objects), type(session_object))
-
-#         # try: 
-#         #     print("CONFRIM: ")
-#         #     return confirm_action(request, current_hour, current_date, session_name, time_objects, session_object)
-#         # except:
-#         #     current_hour, current_date = get_current_hour_and_current_date()
-#         #     session, time_objects = get_session_and_time_objects(current_hour)
-#         #     session_id = get_session_id_based_date_and_session_name(current_date, session)
-#         return confirm_action(request, current_hour, current_date, session_name, time_objects, session_object)
-
 def not_student(request):
     messages.error(request, 'You are not authorized to access student resources. You need the Student role.')
-    return redirect('dininghall_index')
+    return redirect('login')

@@ -91,3 +91,18 @@ h2 small {
 .time-objects-container {
   display: none;
 }
+
+
+/* Search Bar and Paginations */
+/* Center the search bar */
+#searchInput {
+  display: block;
+  margin: 0 auto;
+  width: 70vw;
+  margin-bottom: 3rem;
+}
+
+/* Center the pagination controls */
+#pagination {
+  text-align: center;
+}

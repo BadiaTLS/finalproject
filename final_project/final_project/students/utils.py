@@ -45,11 +45,7 @@ def is_booked_by_user_date_session(user_id , date , session_name):
 
     if type(user_id) == int and type(date) == str and type(session_name) == str: 
         print(f"IS BOOKING: IF ", user_id,type(user_id), date,  type(datetime.strptime(date, "%Y-%M-%d")),session_name, type(session_name))
-
-        # session_object = table_session.objects.filter(name = session_name, date = datetime.strptime(date, "%Y-%M-%d"))
-        # print(session_object)
-        # date = datetime.strptime(date, "%Y-%M-%d")
-        booking = table_booking_dininghall.objects.filter(user_id = user_id, session_id__date = date)
+        booking = table_booking_dininghall.objects.filter(user_id = user_id, session_id__date = date, session_id__name = session_name)
         print(booking)
         print(f"IS BOOKED", booking)
         if not booking.exists():
