@@ -12,7 +12,7 @@ def login_user(request):
         if user is not None:
             if is_valid_user_role(user.role):
                 # return redirect('/' + user.role)
-                if user.role != 'student' and user.role != 'dininghall':
+                if user.role != 'student' and user.role != 'dininghall' and user.role != 'sas':
                     print(user.role)
                     login(request, user)
                     messages.success(request, f"You have successfully logged in. {user}", extra_tags='success')

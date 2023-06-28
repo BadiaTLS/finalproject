@@ -1,33 +1,25 @@
 {% extends "../students/student_index.html" %}
 
-{% block title %} Service Dining Hall Page{% endblock %}
+{% block title %} Dining Hall Reservation Page{% endblock %}
 
 {% block style %}
 {% endblock %}
 
 {% block navbar %}
 <a href="{% url 'student_index' %}" class="nav-item nav-link">Home</a>
-<a href="#" class="nav-item nav-link active">Dining Hall</a>
+<a href="#" class="nav-item nav-link active">Dining Hall Reservation Page</a>
 <a href="{% url 'library' %}" class="nav-item nav-link">Library</a>
 <a href="{% url 'laboratorium' %}" class="nav-item nav-link">Lab</a>
-
-<div class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-  <div class="dropdown-menu m-0">
-    <a href="#" class="dropdown-item">Dining Hall</a>
-    <a href="#menu" class="dropdown-item">Menu</a>
-  </div>
-</div>
 {% endblock %}
 
 {% block home %}
 <div class="container-xxl py-5 bg-dark hero-header mb-5">
   <div class="container text-center my-0 pt-5 pb-4">
-    <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall</h1>
+    <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall Reservation Page</h1>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-center text-uppercase">
         <li class="breadcrumb-item"><a class="text-white" href="{% url 'student_index' %}">Home</a></li>
-        <li class="breadcrumb-item text-primary active " aria-current="page">Dining Hall</li>
+        <li class="breadcrumb-item text-primary active " aria-current="page">Dining Hall Reservation Page</li>
       </ol>
     </nav>
   </div>
@@ -37,31 +29,38 @@
 {% block template %}
 <!-- Reservation Start -->
 <div class="container-xxl bg-white p-0" style="max-width: 1320px;">
-  <h1 class="mb-4 text-center">Order {{session}} for {{day}}, {{date}}</h1>
+  <h2 class="mb-3 text-center">Don’t miss out on a satisfying meal with minimal wait time!</h2>
+  <!-- <h1 class="mb-4 text-center">Order {{session}} for {{day}}, {{date}}</h1> -->
 
   <div class="container-xxl py-0 px-0 wow fadeInUp" data-wow-delay="0.1s">
     <div class="row g-0">
-      <div class="col-md-6">
-        <div class="video">
-          <button type="button" class="btn-play" data-bs-toggle="modal"
-            data-src="https://www.youtube.com/embed/4nY0yg_yicY" data-bs-target="#videoModal">
-            <span></span>
-          </button>
+
+      <div class="col-md-6 bg-dark d-flex ">
+        <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+          <h2 class="ff-secondary text-start fw-normal text-white"> Today's Menu</h2>
+          <h2 class="ff-secondary text-start text-primary fw-normal mb-5"> {{day}}, {{date}}</h2>
+          <h3 class="text-white mb-2">Breakfast : <span class="text-primary text-center">{{breakfast}}</span></h3>
+          <h3 class="text-white mb-2">Lunch : <span class="text-primary text-center">{{lunch}}</span></h3>
+          <h3 class="text-white mb-2">Dinner : <span class="text-primary text-center">{{dinner}}</span></h3>
+          <a href="{% url 'menu' %}">
+            <button class="btn btn-primary w-100 py-3" type="submit" value="no" name="choice">Explore Our Monthly Menus</button>
+          </a>
         </div>
       </div>
-      <div class="col-md-6 bg-dark d-flex align-items-center">
+
+      <div class="col-md-6 bg-dark d-flex">
         <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+          <h2 class=" ff-secondary text-start text-white fw-normal">Reservation</h2>
+          <h2 class="ff-secondary text-start text-primary fw-normal mb-5"> {{day}}, {{date}}</h2>
           {% if not time_suggested %}
-          <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
           <h1 class="text-white mb-4 text-center">No Available Spot To Reserve</h1>
           <a href="{% url 'student_preferences' %}">
             <button class="btn btn-primary w-100 py-3" type="submit" value="no" name="choice">Choose Another Session & Time</button>
           </a>
           {% else %}
           {% if can_booking %}
-          <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
-          <h1 class="text-white mb-4 text-center">Reserve at {{time_suggested | default_if_none:"-"}} for the Best
-            Dining Experience! </h1>
+          <h3 class="text-white mb-4">Our system recommends reserving your spot at <span class="text-primary">{{time_suggested | default_if_none:"-"}}</span> for a Satisfying Meal with Less Waiting!”</h3>
+          <h3 class="text-white mb-4">Would you like to make a reservation now?</h3>
           <form id="myForm" action="confirm" method="POST">
             {% csrf_token %}
             <div class="row g-3">
@@ -74,19 +73,18 @@
                 <input type="hidden" name="current_hour" value="{{ current_hour }}">
                 <input type="hidden" name="session" value="{{ session }}">
                 <button onclick="submitForm(event)" class="btn btn-primary w-100 py-3" type="submit" value="yes"
-                  name="choice">Reserve Now</button>
+                  name="choice">Yes</button>
               </div>
               <div class="col-12">
-                <button class="btn btn-primary w-100 py-3" type="submit" value="no" name="choice">Choose Another
+                <button class="btn btn-primary w-100 py-3" type="submit" value="no" name="choice">No, Choose Another
                   Time</button>
               </div>
             </div>
           </form>
           {% else %}
 
-          <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
-          <h1 class="text-white mb-4 text-center">You’ve already reserved {{session}} for {{day}}, {{date}} at
-            {{time_suggested | default_if_none:"-" }} 😊</h1>
+          <h3 class="text-white mb-4 text-center">You’ve already reserved <span class="text-primary"> {{session}} for {{day}}, {{date}} at
+            {{time_suggested | default_if_none:"-" }} </span> 😊</h3>
             <a href="{% url 'student_preferences' %}">
             <button class="btn btn btn-primary bg-primary text-white  w-100 py-3 mb-3" type="submit">Reserve for Later</button>
             </a>
@@ -103,106 +101,10 @@
     </div>
   </div>
 
-  <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content rounded-0">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <!-- 16:9 aspect ratio -->
-          <div class="ratio ratio-16x9">
-            <iframe class="embed-responsive-item" src="" id="video" allowfullscreen allowscriptaccess="always"
-              allow="autoplay"></iframe>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 <!-- Reservation End -->
-
-<div id="menu" class="container-xxl py-5 mt-5">
-</div>
-
-<!-- Menu Start -->
-<div class="container-xxl py-5 mt-5">
-  <div class="container">
-    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-      <h5 class="section-title ff-secondary text-center text-primary fw-normal">Food Menu</h5>
-      <h1 class="mb-5">Weekly Menu: A Culinary Delight 🍽️</h1>
-    </div>
-    <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
-      <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
-        <li class="nav-item">
-          <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" data-bs-toggle="pill" href="#tab-1">
-            <i class="fa fa-coffee fa-2x text-primary"></i>
-            <div class="ps-3">
-              <small class="text-body">Delectable</small>
-              <h6 class="mt-n1 mb-0">Breakfast</h6>
-            </div>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-2">
-            <i class="fa fa-hamburger fa-2x text-primary"></i>
-            <div class="ps-3">
-              <small class="text-body">Exquisite </small>
-              <h6 class="mt-n1 mb-0">Launch</h6>
-            </div>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill" href="#tab-3">
-            <i class="fa fa-utensils fa-2x text-primary"></i>
-            <div class="ps-3">
-              <small class="text-body">Sumptuous</small>
-              <h6 class="mt-n1 mb-0">Dinner</h6>
-            </div>
-          </a>
-        </li>
-      </ul>
-      <div class="tab-content" value="{{ menu_this_week }}">
-        <div id="tab-1" class="tab-pane fade show p-0 active"></div>
-        <div id="tab-2" class="tab-pane fade show p-0"></div>
-        <div id="tab-3" class="tab-pane fade show p-0"></div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Menu End -->
 {% endblock %}
 
 {% block script %}
-<script>
-  const tabsData = JSON.parse('{{ menu_this_week|safe }}');
-
-  Object.entries(tabsData).forEach(([tabId, menuItems]) => {
-    let menuHTML = '<div class="row g-4">';
-
-    menuItems.forEach(item => {
-      menuHTML += `
-    <div class="col-lg-6">
-    <div class="d-flex align-items-center">
-    <div class="w-100 d-flex flex-column text-start ps-4">
-      <h5 class="d-flex justify-content-between border-bottom pb-2">
-        <span>${item.day}</span>
-        <span class="${item.status}" >${item.date}</span>
-      </h5>
-      <small class="fst-italic">${item.description}</small>
-    </div>
-    </div>
-    </div>`;
-    });
-
-    menuHTML += '</div>';
-
-    // insert the generated HTML into the corresponding tab element
-    document.getElementById(tabId).innerHTML = menuHTML;
-  });
-</script>
-
 <script src="/static/js/index_loading.js"></script>
 {% endblock %}

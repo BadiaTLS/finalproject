@@ -45,3 +45,5 @@ Fill the user information and make sure you fill every field, click save.
 Logout from admin and back to http://127.0.0.1:8000/
 
 Enter the email dan password you create before and enjoy
+
+https://github.com/BadiaTLS/finalproject.git

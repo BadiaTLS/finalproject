@@ -144,12 +144,13 @@
         <div class="row g-5">
           <div class="col-lg-3 col-md-6">
             <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Links</h4>
-            <!-- {% block footer-link %}
-            {% endblock %} -->
+            {% block footer-link %}
             <a href="{% url 'student_index' %}" class="btn btn-link">Home</a>
             <a href="{% url 'dining_hall' %}" class="btn btn-link">Dining Hall</a>
             <a href="{% url 'library' %}" class="btn btn-link">Library</a>
             <a href="{% url 'laboratorium' %}" class="btn btn-link">Lab</a>
+
+            {% endblock %}
           </div>
           <div class="col-lg-3 col-md-6">
             <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
