@@ -84,14 +84,28 @@ AUTHENTICATION_BACKENDS = [
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+import os
+import sys
+
+# get the path to the directory containing the settings.py file
+settings_dir = os.path.dirname(os.path.abspath(__file__))
+
+# construct the path to the secret.py file
+secret_path = os.path.join(settings_dir, '..', '..', 'secret.py')
+
+# add the directory containing the secret.py file to sys.path
+sys.path.append(os.path.dirname(secret_path))
+
+from secret import DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_PORT
+
 DATABASES = {
     'default': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'my_db',
-    'USER' : 'hero',
-    'PASSWORD' : 'my_db@123',
-    'HOST' : 'localhost',
-    'PORT' : '5432',
+    'NAME': DATABASE_NAME,
+    'USER' : DATABASE_USER,
+    'PASSWORD' : DATABASE_PASSWORD,
+    'HOST' : DATABASE_HOST,
+    'PORT' : DATABASE_PORT,
 }
 }
 
