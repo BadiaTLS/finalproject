@@ -1,5 +1,0 @@
-DATABASE_PASSWORD = 'my_db@123'
-DATABASE_NAME = 'my_db'
-DATABASE_USER = 'hero'
-DATABASE_HOST = 'localhost'
-DATABASE_PORT = '5432'
