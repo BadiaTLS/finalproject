@@ -3,23 +3,23 @@
 {% block title %} Welcome Dining Hall {% endblock %}
 
 {% block logo %}
-<a class="navbar-brand" href="{% url 'dininghall_index' %}">DINING HALL</a>
+<a class="navbar-brand" href="{% url 'edit_menu_table' %}">DINING HALL</a>
 {% endblock %}
 
 {% block styles %}
 {% load static %}
-    <link rel="stylesheet" href="{% static 'styles/styles_dininghall_index.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/styles_edit_menu_table.css' %}">
 {% endblock %}
 
 {% block navbar %}
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'dininghall_index' %}">Home</a>
+        <a class="nav-link" href="{% url 'edit_menu_table' %}">Home</a>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="{% url 'add_menu' %}">Add Menu</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'import_session' %}">Import Menu</a>
+        <a class="nav-link" href="{% url 'upload_menu_file' %}">Import Menu</a>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="{% url 'export_order_record' %}">Export</a>
@@ -72,7 +72,7 @@
             <div class="col col-4">{{ session.menu }}</div>
             <div class="col col-5">
                 <button class="btn btn-primary show-more-btn">Show More</button>
-                <a href="{% url 'edit_menu' session.id %}" class="btn btn-primary">Edit</a>
+                <a href="{% url 'edit_menu_manual' session.id %}" class="btn btn-primary">Edit</a>
                 <a href="{% url 'delete_menu' session.id %}" class="btn btn-danger">Delete</a>
                 <div class="time-objects-container hide">
                     {% for time_object in time_objects %}

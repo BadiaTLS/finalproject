@@ -1,18 +1,21 @@
 from django.shortcuts import render, redirect
 from .forms import SessionForm, TimeForm
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import user_passes_test
 from django.db import transaction
 from .utils import *
 from datetime import time
 
-def check_dininghall_role(user):
-    return user.role == 'dininghall'
+def dininghall_required(view_func):
+    def wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if request.user.role != 'dininghall':
+            return redirect('not_dininghall')
+        return view_func(request, *args, **kwargs)
+    return wrapped_view
 
-@login_required(login_url='login')
-@user_passes_test(check_dininghall_role, login_url='not_dininghall')
-def dininghall_index(request):
+@dininghall_required
+def edit_menu_table(request):
     session_objects = fetch_all_session_objects()
     session_ids = [session.id for session in session_objects]
     time_objects = []
@@ -22,11 +25,15 @@ def dininghall_index(request):
 
     context = {"session_objects": session_objects, "time_objects": time_objects}
     context['email'] = request.user.email
-    return render(request, "dininghall/dininghall_index.html", context)
+    return render(request, "dininghall/edit_menu_table.html", context)
 
+@dininghall_required
+def dininghall_home_page(request):
+    context = {}
+    context['email'] = request.user.email
+    return render(request, "dininghall/dininghall_home_page.html", context)
 
-@login_required(login_url='login')
-@user_passes_test(check_dininghall_role, login_url='not_dininghall')
+@dininghall_required
 @transaction.atomic
 def add_session(request):
     submitted = False
@@ -36,7 +43,7 @@ def add_session(request):
         if form_session.is_valid() and form_time.is_valid():
             save_session_and_times(form_session, form_time)
             messages.success(request, "Add New Session Successfully", extra_tags='success')
-            return redirect("dininghall_index")
+            return redirect("edit_menu_table")
     else:
         form_session = SessionForm()
         form_time = TimeForm()
@@ -46,8 +53,7 @@ def add_session(request):
     context['email'] = request.user.email
     return render(request, "dininghall/add_menu.html", context)
 
-@login_required(login_url='login')
-@user_passes_test(check_dininghall_role, login_url='not_dininghall')
+@dininghall_required
 @transaction.atomic
 def edit_session(request, session_id):
     session = get_session_by_id(session_id)
@@ -55,23 +61,21 @@ def edit_session(request, session_id):
     if form.is_valid():
         update_session(form)
         messages.success(request, "Edit Session Successfully", extra_tags='success')
-        return redirect('dininghall_index')
+        return redirect('edit_menu_table')
     
     context = {'menu': session, 'form': form}
     context['email'] = request.user.email
-    return render(request, 'dininghall/edit_menu.html', context)
+    return render(request, 'dininghall/edit_menu_manual.html', context)
 
-@login_required(login_url='login')
-@user_passes_test(check_dininghall_role, login_url='not_dininghall')
+@dininghall_required
 @transaction.atomic
 def delete_session(request, session_id):
     session = get_session_by_id(session_id)
     delete_session_object(session)
     messages.success(request, "Delete Menu Succesfully", extra_tags='success')
-    return redirect('dininghall_index')
+    return redirect('edit_menu_table')
 
-@login_required(login_url='login')
-@user_passes_test(check_dininghall_role, login_url='not_dininghall')
+@dininghall_required
 @transaction.atomic
 def edit_time(request, time_id):
     time = get_time_by_id(time_id)
@@ -79,31 +83,28 @@ def edit_time(request, time_id):
     if form.is_valid():
         update_session(form)
         messages.success(request, "Edit Time Successfully", extra_tags='success')
-        return redirect('dininghall_index')
+        return redirect('edit_menu_table')
     context = {'time_objects': time, 'form': form}
     context['email'] = request.user.email
-    return render(request, 'dininghall/edit_menu.html', context )
+    return render(request, 'dininghall/edit_menu_manual.html', context )
 
-@login_required(login_url='login')
-@user_passes_test(check_dininghall_role, login_url='not_dininghall')
+@dininghall_required
 @transaction.atomic
 def delete_time(request, time_id):
     session = get_time_by_id(time_id)
     delete_time_object(session)
     messages.success(request, "Delete Time Succesfully", extra_tags='success')
-    return redirect('dininghall_index')
+    return redirect('edit_menu_table')
 
-@login_required(login_url='login')
-@user_passes_test(check_dininghall_role, login_url='not_dininghall')
+@dininghall_required
 def export_order_record(request):
     file_path = "order_record.xlsx"
     export_data_to_excel(file_path)
     messages.success(request, "Export Data Succesfully", extra_tags='success')
     return download_file_response(file_path)
 
-@login_required(login_url='login')
-@user_passes_test(check_dininghall_role, login_url='not_dininghall')
-def import_session(request):
+@dininghall_required
+def upload_menu_file(request):
     if request.method == 'POST':
         excel_file = request.FILES['excel_file']
 
@@ -113,7 +114,7 @@ def import_session(request):
                 worksheet = workbook.active
             except Exception as e:
                 messages.error(request, f'Error reading Excel file: {e}', extra_tags='error')
-                return redirect('import_session')
+                return redirect('upload_menu_file')
 
             # validate required columns
             required_columns = ['Date', 'Name', 'Menu', 'Seat Limit']
@@ -121,7 +122,7 @@ def import_session(request):
             missing_columns = [col for col in required_columns if col not in headers]
             if missing_columns:
                 messages.error(request, f'Missing required columns: {", ".join(missing_columns)}', extra_tags='error')
-                return redirect('import_session')
+                return redirect('upload_menu_file')
 
             with transaction.atomic():
                 for row in worksheet.iter_rows(min_row=2, values_only=True):
@@ -191,13 +192,36 @@ def import_session(request):
 
 
             messages.success(request, 'Sessions and times imported successfully.', extra_tags='success')
-            return redirect('dininghall_index')
+            return redirect('edit_menu_table')
         else:
             messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
-            return redirect('import_session')
+            return redirect('upload_menu_file')
     else:
         context = {'email': request.user.email}
-        return render(request, 'dininghall/import_session.html', context)
+        return render(request, 'dininghall/upload_menu_file.html', context)
+
+@dininghall_required
+def download_report(request):
+    context = {}
+    context = {'email': request.user.email}
+    if request.method == 'POST':
+        # Star Date and End Date is String
+        start_date = request.POST.get('start_range')
+        end_date = request.POST.get('end_range')
+        print(f'Start date: {start_date}')
+        print(f'End date: {end_date}')
+
+        if not validate_dates(start_date, end_date):
+            messages.success(request, "We regret to inform you that the data download has failed due to incorrect date input. Please enter the date correctly to proceed. Thank you for your attention to this matter.", extra_tags='danger')
+            return render(request, 'dininghall/download_report.html', context=context)
+        _,  start_date, end_date = validate_dates(start_date, end_date)
+        file_path = f"Order Report from {start_date} to {end_date}.doc"
+        export_data_to_doc(file_path, start_date=start_date, end_date=end_date)
+        messages.success(request, "Download Success", extra_tags='success')
+        # return render(request, 'dininghall/download_report.html', context=context)
+        return download_report_doc(file_path=file_path)
+    else:
+        return render(request, 'dininghall/download_report.html', context=context)
 
 def not_dininghall(request):
     messages.error(request, 'You are not authorized to access dining hall resources. You need the Dining Hall role.', extra_tags='error')

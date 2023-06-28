@@ -1,4 +1,5 @@
-call venv\Scripts\activate.bat
+call %~dp0tavenv\Scripts\activate.bat
+set PROMPT=(tavenv) $P$G
 
 IF EXIST final_project\db.sqlite3 DEL /F final_project\db.sqlite3
 
@@ -17,4 +18,5 @@ echo from final_project.accounts.models import CustomUser; CustomUser.objects.cr
 
 python final_project\manage.py runserver
 
-call venv\Scripts\deactivate.bat
+call tavenv\Scripts\deactivate.bat
+pause

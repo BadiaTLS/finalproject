@@ -102,3 +102,75 @@ def download_file_response(file_path):
 
     os.remove(file_path)
     return response
+
+# DOWNLOAD REPORT FUNTIONS START #
+import os
+from django.http import HttpResponse
+from datetime import datetime
+from docx import Document
+
+def export_data_to_doc(file_path, start_date, end_date):
+    document = Document()
+    document.add_heading('Order Report', 0)
+
+    headers = ["Date", "Name", "Time Range", "Available", "Limit", "Menu"]
+    table = document.add_table(rows=1, cols=len(headers))
+    hdr_cells = table.rows[0].cells
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header
+
+    sessions = fetch_all_session_objects()
+    for session in sessions:
+        if start_date <= session.date <= end_date:
+            times = fetch_time_objects(session.id)
+
+            # Calculate start and end times for this session
+            start_time = min(time_obj.time for time_obj in times)
+            end_time = max(time_obj.time for time_obj in times)
+            time_range = f"{start_time} - {end_time}"
+
+            # Get other data for this session
+            date = session.date
+            name = session.get_name_display()
+            menu = session.menu
+            available = sum(time_obj.available_seat if time_obj.available_seat is not None else time_obj.seat_limit for time_obj in times)
+            limit = sum(time_obj.seat_limit for time_obj in times)
+
+            # Add row to table
+            row_data = [date, name, time_range, available, limit, menu]
+            row_cells = table.add_row().cells
+            for i, value in enumerate(row_data):
+                row_cells[i].text = str(value)
+
+    document.save(file_path)
+
+
+def download_report_doc(file_path):
+    with open(file_path, 'rb') as file:
+        file_data = file.read()
+
+    filename = os.path.basename(file_path)
+    response = HttpResponse(file_data, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    os.remove(file_path)
+    return response
+
+
+def validate_dates(start_date: str, end_date: str, date_format: str = '%Y-%m-%d') -> bool:
+    """
+    Validate if start_date and end_date are valid dates in the specified format.
+
+    :param start_date: The start date string to validate.
+    :param end_date: The end date string to validate.
+    :param date_format: The date format to use for validation (default: '%Y-%m-%d').
+    :return: True if both start_date and end_date are valid dates in the specified format, False otherwise.
+    """
+    try:
+        parsed_start_date = datetime.strptime(start_date, date_format).date()
+        parsed_end_date = datetime.strptime(end_date, date_format).date()
+        return True, parsed_start_date, parsed_end_date
+    except ValueError:
+        return False
+    
+# DOWNLOAD REPORT FUNTIONS END #

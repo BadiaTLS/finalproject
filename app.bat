@@ -1,7 +1,10 @@
-call %~dp0venv\Scripts\activate.bat
+call %~dp0tavenv\Scripts\activate.bat
+set PROMPT=(tavenv) $P$G
 
 echo %VIRTUAL_ENV%
+echo %PROMPT%
 
 python final_project\manage.py runserver
 
-call venv\Scripts\deactivate.bat
+call tavenv\Scripts\deactivate.bat
+pause
