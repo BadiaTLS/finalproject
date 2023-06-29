@@ -113,7 +113,7 @@ load_dotenv()
 # Postgres Database by RailWay (UPDATE EVERYDAY if NOT TAKE THE DATABASE)
 import dj_database_url
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get("POSTGRES_URL"))
+    'default': dj_database_url.parse(os.environ.get("DB_URL"))
 }
 
 
