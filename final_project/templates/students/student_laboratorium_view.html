@@ -1,0 +1,45 @@
+{% extends "../students/student_index.html" %}
+
+{% block title %} Service Laboratorium Page {% endblock %}
+
+{% block styles %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/styles_not_available.css' %}">
+{% endblock %}
+
+{% block navbar %}
+
+<a href="{% url 'student_index' %}" class="nav-item nav-link">Home</a>
+<a href="{% url 'dining_hall' %}" class="nav-item nav-link">Dining Hall Reservation Page</a>
+<a href="{% url 'library' %}" class="nav-item nav-link">Library</a>
+<a href="#" class="nav-item nav-link active">Lab</a>
+
+{% endblock %}
+
+
+{% block home %}
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+  <div class="container text-center my-0 pt-5 pb-4">
+    <h1 class="display-3 text-white mb-3 animated slideInDown">Laboratory</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center text-uppercase">
+        <li class="breadcrumb-item"><a class="text-white" href="{% url 'student_index' %}">Home</a></li>
+        <li class="breadcrumb-item text-primary active" aria-current="page">Lab</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block template %}
+<div id= 'center' class="center">
+    <p>🔬 LABORATORY 🔬<br> ❌ NOT AVAILABLE ❌<br> 🔙 Click to go back 🔙</p>
+</div>
+
+<script>
+    document.getElementById('center').addEventListener('click', function() {
+        window.history.back();
+    });
+</script>
+{% endblock %}

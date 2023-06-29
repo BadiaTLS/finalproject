@@ -1,0 +1,44 @@
+{% extends "../sas/sas_index.html" %}
+
+{% block title %} Import Class {% endblock %}
+
+{% block navbar %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'sas_index' %}">Home</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'import_user' %}">Import User</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'import_class' %}">Import Class</a>
+</li>
+{% endblock %}
+
+{% block sashome %}
+<h1 class="display-3 text-white mb-3 animated slideInDown" style="display: inline-block; margin-right: 1.04vw;">Import
+</h1>
+<h1 class="display-3 text-primary bg-dark mb-3 animated slideInDown"
+    style="display: inline-block; margin-right: 1.04vw;">Classes</h1>
+<h1 class="display-3 text-white mb-3 animated slideInDown" style="display: inline-block;"> - SAS</h1>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb justify-content-center text-uppercase">
+        <li class="breadcrumb-item"><a class="text-white" href="{% url 'sas_index' %}">Home</a></li>
+        <li class="breadcrumb-item text-primary  active" aria-current="page">SAS</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block template %}
+<div class="container">
+<h2>IMPORT CLASS FROM EXCEL</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="excel_file">Select Excel File:</label>
+        <input type="file" class="form-control-file" id="excel_file" name="excel_file" accept=".xlsx">
+    </div>
+    <button type="submit" class="btn btn-primary">Import</button>
+</form>
+</div>
+{% endblock %}

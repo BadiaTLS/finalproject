@@ -1,0 +1,110 @@
+{% extends "../students/student_index.html" %}
+
+{% block title %} Dining Hall Reservation Page{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block navbar %}
+<a href="{% url 'student_index' %}" class="nav-item nav-link">Home</a>
+<a href="#" class="nav-item nav-link active">Dining Hall Reservation Page</a>
+<a href="{% url 'library' %}" class="nav-item nav-link">Library</a>
+<a href="{% url 'laboratorium' %}" class="nav-item nav-link">Lab</a>
+{% endblock %}
+
+{% block home %}
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+  <div class="container text-center my-0 pt-5 pb-4">
+    <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall <span class="text-primary">Reservation</span> Page</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center text-uppercase">
+        <li class="breadcrumb-item"><a class="text-white" href="{% url 'student_index' %}">Home</a></li>
+        <li class="breadcrumb-item text-primary active " aria-current="page">Dining Hall Reservation Page</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+{% endblock %}
+
+{% block template %}
+<!-- Reservation Start -->
+<div class="container-xxl bg-white p-0" style="max-width: 1320px;">
+  <h2 class="mb-3 text-center">Don’t miss out on a satisfying meal with minimal wait time!</h2>
+  <!-- <h1 class="mb-4 text-center">Order {{session}} for {{day}}, {{date}}</h1> -->
+
+  <div class="container-xxl py-0 px-0 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="row g-0">
+
+      <div class="col-md-6 bg-dark d-flex ">
+        <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+          <h2 class="ff-secondary text-start fw-normal text-white"> Today's Menu</h2>
+          <h2 class="ff-secondary text-start text-primary fw-normal mb-5"> {{day}}, {{date}}</h2>
+          <h3 class="text-white mb-2">Breakfast : <span class="text-primary text-center">{{breakfast}}</span></h3>
+          <h3 class="text-white mb-2">Lunch : <span class="text-primary text-center">{{lunch}}</span></h3>
+          <h3 class="text-white mb-2">Dinner : <span class="text-primary text-center">{{dinner}}</span></h3>
+          <a href="{% url 'menu' %}">
+            <button class="btn btn-primary w-100 py-3" type="submit" value="no" name="choice">Explore Our Monthly Menus</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-md-6 bg-dark d-flex">
+        <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
+          <h2 class=" ff-secondary text-start text-white fw-normal">Reservation</h2>
+          <h2 class="ff-secondary text-start text-primary fw-normal mb-5"> {{day}}, {{date}}</h2>
+          {% if not time_suggested %}
+          <h1 class="text-white mb-4 text-center">No Available Spot To Reserve</h1>
+          <a href="{% url 'student_preferences' %}">
+            <button class="btn btn-primary w-100 py-3" type="submit" value="no" name="choice">Choose Another Session & Time</button>
+          </a>
+          {% else %}
+          {% if can_booking %}
+          <h3 class="text-white mb-4">Our system recommends reserving your spot at <span class="text-primary">{{time_suggested | default_if_none:"-"}}</span> for a Satisfying Meal with Less Waiting!”</h3>
+          <h3 class="text-white mb-4">Would you like to make a reservation now?</h3>
+          <form id="myForm" action="confirm" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-12">
+                <input type="hidden" name="time_suggested" value="{{ time_suggested }}">
+                <input type="hidden" name="time_object" value="{{ time_suggested }}">
+                <input type="hidden" name="session_object" value="{{ session_id }}">
+  
+                <input type="hidden" name="current_date" value="{{ date }}">
+                <input type="hidden" name="current_hour" value="{{ current_hour }}">
+                <input type="hidden" name="session" value="{{ session }}">
+                <button onclick="submitForm(event)" class="btn btn-primary w-100 py-3" type="submit" value="yes"
+                  name="choice">Yes</button>
+              </div>
+              <div class="col-12">
+                <button class="btn btn-primary w-100 py-3" type="submit" value="no" name="choice">No, Choose Another
+                  Time</button>
+              </div>
+            </div>
+          </form>
+          {% else %}
+
+          <h3 class="text-white mb-4 text-center">You’ve already reserved <span class="text-primary"> {{session}} for {{day}}, {{date}} at
+            {{time_suggested | default_if_none:"-" }} </span> 😊</h3>
+            <a href="{% url 'student_preferences' %}">
+            <button class="btn btn btn-primary bg-primary text-white  w-100 py-3 mb-3" type="submit">Reserve for Later</button>
+            </a>
+          
+            <form action="cancel_order" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="o" value="{{ session_id }}">
+              <button class="btn btn btn-primary bg-dark text-primary  w-100 py-3 mb-3">Cancel Reservation</button>
+            </form>
+          {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- Reservation End -->
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/index_loading.js"></script>
+{% endblock %}

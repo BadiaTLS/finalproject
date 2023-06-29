@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  {% block links %}
+  {% endblock %}
+
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
+  
+  {% block styles %}
+  {% endblock %}
+</head>
+<body>
+  <nav>
+    <div class="navbar">
+      <div class="container nav-container">
+          <input class="checkbox" type="checkbox" name="" id="" />
+          <div class="hamburger-lines">
+            <span class="line line1"></span>
+            <span class="line line2"></span>
+            <span class="line line3"></span>
+          </div>
+          
+          <div class="logo">
+            {% block logo_name %}
+              <a href="">CIT</a>
+            {% endblock %}
+          </div>
+          
+          <ul>
+            {% block topnav %}
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#service">Service</a></li>
+            {% endblock %}
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+          </ul>
+      </div>
+    </div>
+  </nav>
+
+  {% block main_content %}
+  {% endblock %}
+
+  <button class="button-to-top">
+    <i class="fa fa-arrow-up"></i>
+  </button>
+
+  <footer>
+    <div class="footer-elements">
+      <p style="text-align: center;">&copy; Company, Ltd. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  {% block scripts %}
+  {% endblock %}
+  
+</body>
+</html>

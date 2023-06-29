@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+</style>
+</head>
+<body onload="myFunction()" style="margin:0;">
+
+<div id="loader" class="animate-bottom">
+  Loading...
+</div>
+
+<div style="display:none;" id="myDiv" class="animate-bottom">
+  <p>Redirecting to the student index page...</p>
+</div>
+
+<script>
+var myVar;
+
+function myFunction() {
+  myVar = setTimeout(showPage, 1500);
+}
+
+function showPage() {
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("myDiv").style.display = "block";
+  setTimeout(redirectToIndex, 1500);
+}
+
+function redirectToIndex() {
+  window.location.href = "{% url 'login' %}";
+}
+</script>
+
+</body>
+</html>
