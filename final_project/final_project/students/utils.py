@@ -306,7 +306,12 @@ def get_student_dininghall_context(request):
             return context
     
     menus = get_menu_based_date(current_date)
-    breakfast, lunch, dinner = get_menu_b_l_d(menus)
+    try:
+        breakfast, lunch, dinner = get_menu_b_l_d(menus)
+    except: 
+        breakfast = None
+        lunch = None
+        dinner = None
 
     context = {
         'email': request.user.email,
