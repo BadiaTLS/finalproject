@@ -308,6 +308,9 @@ def get_student_dininghall_context(request):
     menus = get_menu_based_date(current_date)
     try:
         breakfast, lunch, dinner = get_menu_b_l_d(menus)
+        breakfast = breakfast[0]
+        lunch = lunch[0]
+        dinner = dinner[0]
     except: 
         breakfast = None
         lunch = None
@@ -323,9 +326,9 @@ def get_student_dininghall_context(request):
         'day': current_date.strftime('%A'),
         'can_booking': True,
         'current_session' : session.upper(),
-        'breakfast': breakfast[0],
-        'lunch': lunch[0],
-        'dinner': dinner[0],
+        'breakfast': breakfast,
+        'lunch': lunch,
+        'dinner': dinner,
     }
     return context
 
