@@ -4,6 +4,7 @@ from final_project.dininghall.models import table_time, table_session, table_boo
 from final_project.sas.models import table_classes
 from final_project.algorithm.dijkstra import get_recommended_time
 import json
+import pytz
 
 # CHECK
 def is_seat_full(time, session_id, date):
@@ -74,14 +75,12 @@ def get_order_time(user_id):
         return None, 0
 
 def get_current_hour_and_current_date():
-    # Setup Manual
-    # current_hour = time(11,0,0) #datetime.now().time()
-    # current_date = datetime(2023,6,6) #datetime.now().date()
+    # Automatic by Specific Timezone
+    # Get the desired timezone
+    tz = pytz.timezone('Asia/Jakarta')
 
-    # Automatic
-    
-    current_hour = datetime.now().time()
-    current_date = datetime.now().date()
+    current_hour = datetime.now(tz).time()
+    current_date = datetime.now(tz).date()
 
     if time(20, 0) <= current_hour <= time(23, 59, 59):
         current_date += timedelta(days=1)
