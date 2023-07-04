@@ -97,13 +97,6 @@ def delete_time(request, time_id):
     return redirect('edit_menu_table')
 
 @dininghall_required
-def export_order_record(request):
-    file_path = "order_record.xlsx"
-    export_data_to_excel(file_path)
-    messages.success(request, "Export Data Succesfully", extra_tags='success')
-    return download_file_response(file_path)
-
-@dininghall_required
 def upload_menu_file(request):
     if request.method == 'POST':
         excel_file = request.FILES['excel_file']
@@ -138,11 +131,6 @@ def upload_menu_file(request):
                             'menu': menu,
                         }
                     )
-
-                    # if created:
-                    #     messages.success(request, f'Created new session: {session}', extra_tags='success')
-                    # else:
-                    #     messages.success(request, f'Updated existing session: {session}', extra_tags='success')
 
                     if session.name == "Breakfast":
                         times = [
@@ -185,12 +173,6 @@ def upload_menu_file(request):
                             }
                         )
 
-                        # if created:
-                        #     messages.success(request, f'Created new table_time: {table_t}', extra_tags='success')
-                        # else:
-                        #     messages.success(request, f'Updated existing table_time: {table_t}', extra_tags='success')
-
-
             messages.success(request, 'Sessions and times imported successfully.', extra_tags='success')
             return redirect('edit_menu_table')
         else:
@@ -218,7 +200,8 @@ def download_report(request):
         file_path = f"Order Report from {start_date} to {end_date}.doc"
         messages.success(request, "Download Success", extra_tags='success')
         # return render(request, 'dininghall/download_report.html', context=context)
-        return download_report_doc(start_date=start_date, end_date=end_date, filename=file_path)
+        download_report_doc(start_date=start_date, end_date=end_date, filename=file_path)
+        return redirect('download_report')
     else:
         return render(request, 'dininghall/download_report.html', context=context)
 

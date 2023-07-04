@@ -121,15 +121,3 @@
 <a class="btn btn-link" href="{% url 'download_report' %}">Donwload</a>
 {% endblock %}
 <!-- Footer End -->
-
-<!-- Alert Start -->
-{% block message %}
-{% if messages %}
-{% for message in messages %}
-<div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
-    {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% endblock %}
-<!-- Alert End -->
