@@ -109,7 +109,10 @@ from django.http import HttpResponse
 from datetime import datetime
 from docx import Document
 
-def export_data_to_doc(file_path, start_date, end_date):
+from io import BytesIO
+
+def download_report_doc(start_date, end_date, filename):
+    # Generate the Word document in memory
     document = Document()
     document.add_heading('Order Report', 0)
 
@@ -142,20 +145,15 @@ def export_data_to_doc(file_path, start_date, end_date):
             for i, value in enumerate(row_data):
                 row_cells[i].text = str(value)
 
-    document.save(file_path)
+    # Save the Word document to a BytesIO object
+    file_data = BytesIO()
+    document.save(file_data)
 
-
-def download_report_doc(file_path):
-    with open(file_path, 'rb') as file:
-        file_data = file.read()
-
-    filename = os.path.basename(file_path)
-    response = HttpResponse(file_data, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    # Set the response headers and content
+    response = HttpResponse(file_data.getvalue(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
-    os.remove(file_path)
     return response
-
 
 def validate_dates(start_date: str, end_date: str, date_format: str = '%Y-%m-%d') -> bool:
     """

@@ -11,15 +11,11 @@
 
 <!-- Navbar Start -->
 {% block navbar %}
-<a class="nav-link {% if request.resolver_match.url_name == 'dininghall_home_page' %}active{% endif %}"
-    href="{% url 'dininghall_home_page' %}">Home</a>
-<a class="nav-link {% if request.resolver_match.url_name == 'edit_menu_table' %}active{% endif %}"
-    href="{% url 'edit_menu_table' %}">Update</a>
+<a class="nav-link {% if request.resolver_match.url_name == 'dininghall_home_page' %}active{% endif %}" href="{% url 'dininghall_home_page' %}">Home</a>
+<a class="nav-link {% if request.resolver_match.url_name == 'edit_menu_table' %}active{% endif %}" href="{% url 'edit_menu_table' %}">Update</a>
 <!-- <a class="nav-link {% if request.resolver_match.url_name == 'add_menu' %}active{% endif %}" href="{% url 'add_menu' %}">Add Menu</a> -->
-<a class="nav-link {% if request.resolver_match.url_name == 'upload_menu_file' %}active{% endif %}"
-    href="{% url 'upload_menu_file' %}">Upload</a>
-<a class="nav-link {% if request.resolver_match.url_name == 'download_report' %}active{% endif %}"
-    href="{% url 'download_report' %}">Download</a>
+<a class="nav-link {% if request.resolver_match.url_name == 'upload_menu_file' %}active{% endif %}" href="{% url 'upload_menu_file' %}">Upload</a>
+<a class="nav-link {% if request.resolver_match.url_name == 'download_report' %}active{% endif %}" href="{% url 'download_report' %}">Download</a>
 {% endblock %}
 <!-- Navbar End -->
 
@@ -28,17 +24,13 @@
 <div class="container-xxl py-5 bg-dark hero-header mb-5">
     <div class="container text-center my-0 pt-5 pb-4">
         {% if request.resolver_match.url_name == 'dininghall_home_page' %}
-        <h1 class="display-3 text-white mb-3 animated slideInDown">Welcome <span class="text-primary">{{email}}</span>
-            to<br>Dining Hall - Home Page</h1>
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Welcome <span class="text-primary">{{email}}</span> to<br>Dining Hall - Home Page</h1>
         {% elif request.resolver_match.url_name == 'edit_menu_table' %}
-        <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall - <span
-                class="text-primary">Update</span> Menu Options</h1>
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall - <span class="text-primary">Update</span> Menu Options</h1>
         {% elif request.resolver_match.url_name == 'upload_menu_file' %}
-        <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall - <span
-                class="text-primary">Import</span> Menu File</h1>
-        {% elif request.resolver_match.url_name == 'add_menu' %}
-        <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall - <span
-                class="text-primary">Download</span> Report</h1>
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall - <span class="text-primary">Import</span> Menu File</h1>
+        {% elif request.resolver_match.url_name == 'download_report' %}
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall - <span class="text-primary">Download</span> Report</h1>
         {% endif %}
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-center text-uppercase">
@@ -55,6 +47,8 @@
                 <li class="breadcrumb-item text-primary active" aria-current="page">Add Menu</li>
                 {% elif request.resolver_match.url_name == 'upload_menu_file' %}
                 <li class="breadcrumb-item text-primary active" aria-current="page">Import Menu</li>
+                {% elif request.resolver_match.url_name == 'download_report' %}
+                <li class="breadcrumb-item text-primary active" aria-current="page">Download Report</li>
                 {% endif %}
             </ol>
 

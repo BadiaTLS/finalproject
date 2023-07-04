@@ -216,10 +216,9 @@ def download_report(request):
             return render(request, 'dininghall/download_report.html', context=context)
         _,  start_date, end_date = validate_dates(start_date, end_date)
         file_path = f"Order Report from {start_date} to {end_date}.doc"
-        export_data_to_doc(file_path, start_date=start_date, end_date=end_date)
         messages.success(request, "Download Success", extra_tags='success')
         # return render(request, 'dininghall/download_report.html', context=context)
-        return download_report_doc(file_path=file_path)
+        return download_report_doc(start_date=start_date, end_date=end_date, filename=file_path)
     else:
         return render(request, 'dininghall/download_report.html', context=context)
 
