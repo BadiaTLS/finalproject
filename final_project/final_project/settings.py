@@ -84,36 +84,10 @@ AUTHENTICATION_BACKENDS = [
 from dotenv import load_dotenv
 load_dotenv()
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': os.environ.get("DB_NAME"),
-#         'USER': os.environ.get("DB_USER"),
-#         'PASSWORD': os.environ.get("DB_PASSWORD"),
-#         'HOST': os.environ.get("DB_HOST"),
-#         'PORT': os.environ.get("DB_PORT"),
-#     }
-# }
-
-# Postgres Database by Neon Postgres
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': os.environ.get("POSTGRES_DATABASE"),
-#         'USER': os.environ.get("POSTGRES_USER"),
-#         'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
-#         'HOST': os.environ.get("POSTGRES_HOST"),
-#         'URL': os.environ.get("POSTGRES_URL"),
-#     }
-# }
-
 # Postgres Database by RailWay (UPDATE EVERYDAY if NOT TAKE THE DATABASE)
 import dj_database_url
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get("DB_URL"))
+    'default': dj_database_url.parse(os.environ.get("POSTGRES_URL"))
 }
 
 
