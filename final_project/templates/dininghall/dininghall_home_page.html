@@ -106,6 +106,9 @@
     document.getElementById("export-report").onclick = function () {
         location.href = "{% url 'edit_menu_table' %}";
     }
+    document.getElementById("download-report").onclick = function() {
+        location.href = "{% url 'download_report' %}";
+    }
 </script>
 {% endblock %}
 <!-- Scripts End -->
@@ -115,7 +118,7 @@
 <a class="btn btn-link" href="{% url 'dininghall_home_page' %}">Home</a>
 <a class="btn btn-link" href="{% url 'edit_menu_table' %}">Update</a>
 <a class="btn btn-link" href="{% url 'upload_menu_file' %}">Upload</a>
-<a class="btn btn-link" href="{% url 'upload_menu_file' %}">Donwload</a>
+<a class="btn btn-link" href="{% url 'download_report' %}">Donwload</a>
 {% endblock %}
 <!-- Footer End -->
 

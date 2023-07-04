@@ -10,5 +10,4 @@ set DJANGO_SUPERUSER_EMAIL=admin@example.com
 set DJANGO_SUPERUSER_PASSWORD=admin
 python manage.py createsuperuser --noinput
 
-
 python3.9 manage.py collectstatic
