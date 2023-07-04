@@ -84,6 +84,17 @@ AUTHENTICATION_BACKENDS = [
 from dotenv import load_dotenv
 load_dotenv()
 
+# DATABASES = {
+#     'default': {
+#     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#     'NAME': 'my_db',
+#     'USER' : 'hero',
+#     'PASSWORD' : 'my_db@123',
+#     'HOST' : 'localhost',
+#     'PORT' : '5432',
+# }
+# }
+
 # Postgres Database by RailWay (UPDATE EVERYDAY if NOT TAKE THE DATABASE)
 import dj_database_url
 DATABASES = {

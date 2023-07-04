@@ -91,7 +91,25 @@ def get_latest_booking_for_menu(session_object):
     latest_booking_for_session_object = table_booking_dininghall.objects.filter(session_id=session_object).latest('id')
     return latest_booking_for_session_object
 
-def get_latest_booking(user_id):
+def get_latest_booking(user_id, current_date, session_name):
+    print(type(user_id), type(current_date), type(session_name))
+    if type(current_date) != str:
+        current_date = str(current_date)
+
+    user_id = user_id.id
+    print(type(user_id), type(current_date), type(session_name))
+    print(user_id, current_date, session_name)   
+
+    if type(user_id) == int and type(current_date) == str and type(session_name) == str:
+        try: 
+            booking = table_booking_dininghall.objects.get(user_id__id = user_id, session_id__date = current_date, session_id__name = session_name)
+            if booking:
+                return booking
+        except:
+            return False
+    else: 
+        return False
+
     # This will return the object
     try: 
         latest_booking = table_booking_dininghall.objects.filter(user_id=user_id).latest('created_at')
@@ -239,6 +257,12 @@ def get_session_time_and_seat(session_id):
             session_time_and_seat[time_obj.time] = time_obj.seat_limit
     return session_time_and_seat
 
+def get_session_start_time(session_id):
+    times = table_time.objects.filter(session_id=session_id)
+    session_object = times[0]
+    session_start_time = session_object.time
+    return session_start_time
+
 def get_session_id(date, name):
     session = table_session.objects.filter(date=date, name=name).first()
     if session:
@@ -270,7 +294,6 @@ def get_start_end_for_algorithm(email, day, session_times):
 
     # print(f"Kelas Hari ini {day}: {class_list}\n Kelas yang dihadiri {email}: {class_list_by_email}")
 
-
     # Get The classes for the day
     for i in class_list_by_email:
         for session_time in session_times:
@@ -299,7 +322,8 @@ def get_student_dininghall_context(request):
     else:
         suggestion_time = None
 
-    latest_booking = get_latest_booking(request.user)
+    latest_booking = get_latest_booking(user_id=request.user, current_date=current_date, session_name=session)
+    print(latest_booking)
     if latest_booking:
         context = get_context_from_latest_booking(latest_booking, current_hour, current_date)
         if context:
@@ -350,8 +374,10 @@ def get_context_from_latest_booking(latest_booking, current_hour, current_date):
     booked_session = menu.name
 
     menus = get_menu_based_date(current_date)
-    breakfast, lunch, dinner = get_menu_b_l_d(menus)
-
+    if not get_menu_b_l_d(menus):
+        b, l, d = [("None", "None"), ("None", "None"), ("None", "None")]
+    else:
+        b, l, d = get_menu_b_l_d(menus)
     if is_within_restricted_range(booked_suggestion_time, current_hour):
         context = {
             'session': booked_session,
@@ -360,9 +386,9 @@ def get_context_from_latest_booking(latest_booking, current_hour, current_date):
             'time_suggested': booked_suggestion_time.strftime('%H:%M'),
             'day': current_date.strftime('%A'),
             'can_booking': False,
-            'breakfast': breakfast[0],
-            'lunch': lunch[0],
-            'dinner': dinner[0],
+            'breakfast': b[0],
+            'lunch': l[0],
+            'dinner': d[0],
         }
         return context
 

@@ -141,6 +141,19 @@ def student_preferences(request):
             if date_pref < _:
                 messages.success(request, f"Apologies, but the {session} on {date_pref} is no longer available for booking, as the allotted time has elapsed.", extra_tags="danger")
                 return redirect('student_preferences')
+            
+            try: 
+                session_start_time = get_session_start_time(session_id=session_id.id)
+            except:
+                messages.success(request, f"Apologies, Options not available for {session} on {date_pref}", extra_tags="danger")
+                return redirect('student_preferences')
+
+            if date_pref == _ and current_hour > session_start_time:
+                messages.success(request, f"Apologies, but the {session} on {date_pref} at {current_hour} is no longer available for booking, as the allotted time has elapsed.", extra_tags="danger")
+                return redirect('student_preferences')
+            
+            start_time = datetime.strptime(start_time, "%H:%M").time()
+            end_time = datetime.strptime(end_time, "%H:%M").time()
 
             suggested_time = get_recommended_time(session_info, start_time, end_time)
 
