@@ -200,8 +200,7 @@ def download_report(request):
         file_path = f"Order Report from {start_date} to {end_date}.doc"
         messages.success(request, "Download Success", extra_tags='success')
         # return render(request, 'dininghall/download_report.html', context=context)
-        download_report_doc(start_date=start_date, end_date=end_date, filename=file_path)
-        return redirect('download_report')
+        return download_report_doc(start_date=start_date, end_date=end_date, filename=file_path)
     else:
         return render(request, 'dininghall/download_report.html', context=context)
 
