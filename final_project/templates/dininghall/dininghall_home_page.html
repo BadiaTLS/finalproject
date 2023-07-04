@@ -2,6 +2,13 @@
 
 {% block title %} Welcome Dining Hall Home Page {% endblock %}
 
+<!-- Logo Start -->
+{% block logo %}
+<a href="{% url 'dininghall_home_page' %}" class="navbar-brand p-0">
+    <h1 class="text-primary m-0"><img src="/static/images/logo.jpg" alt="logo"></h1>
+</a>
+{% endblock %}
+
 <!-- Styles Start -->
 {% block styles %}
 {% load static %}
