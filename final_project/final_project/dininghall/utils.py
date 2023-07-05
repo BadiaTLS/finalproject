@@ -17,8 +17,33 @@ def get_session_by_id(session_id):
 def get_time_by_id(time_id):
     return table_time.objects.get(pk=time_id)
 
-def update_session(form_session):
+def update_session_limit(form_session):
     form_session.save()
+
+def update_session_available_seat(time_id, limit_after):
+    time_object =  table_time.objects.get(pk=time_id)
+    limit_before = time_object.seat_limit
+    available_before = time_object.available_seat
+    difference = abs(limit_before - limit_after)
+    print(limit_before, limit_after, difference, available_before)
+    print(time_object, type(time_object))
+
+    if available_before < time_object.available_seat:
+        return False
+
+    if limit_before > limit_after: 
+        time_object.available_seat = available_before - difference
+        print(f"Lebih besar {limit_before, limit_after}")
+    elif limit_before < limit_after: 
+        value = (available_before + difference)
+        time_object.available_seat = value
+        print(f"Lebih kecil = {available_before} + {difference} = {time_object.available_seat}")
+    else: 
+        time_object.available_seat = time_object.seat_limit
+    
+    time_object.seat_limit = limit_after
+    time_object.save()
+    return True
 
 def delete_session_object(session_id):
     session_id.delete()

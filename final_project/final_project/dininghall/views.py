@@ -59,7 +59,7 @@ def edit_session(request, session_id):
     session = get_session_by_id(session_id)
     form = SessionForm(request.POST or None, instance=session)
     if form.is_valid():
-        update_session(form)
+        update_session_limit(form)
         messages.success(request, "Edit Session Successfully", extra_tags='success')
         return redirect('edit_menu_table')
     
@@ -81,7 +81,11 @@ def edit_time(request, time_id):
     time = get_time_by_id(time_id)
     form = TimeForm(request.POST or None, instance=time)
     if form.is_valid():
-        update_session(form)
+        limit_value = request.POST.get("seat_limit")
+        update_session_available_seat(time_id=time_id, limit_after=int(limit_value))
+        if not update_session_available_seat:
+            messages.success(request, "Edit Time Failed", extra_tags='danger')
+            return redirect('edit_menu_table')    
         messages.success(request, "Edit Time Successfully", extra_tags='success')
         return redirect('edit_menu_table')
     context = {'time_objects': time, 'form': form}
