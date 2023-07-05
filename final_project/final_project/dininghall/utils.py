@@ -91,6 +91,7 @@ def save_session_and_times(form_session, form_time):
             time=time_value,
             session_id=session,
             seat_limit=form_time.cleaned_data["seat_limit"],
+            available_seat = form_time.cleaned_data["seat_limit"],
         )
 
 def download_file_response(file_path):

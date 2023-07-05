@@ -9,8 +9,6 @@ import pytz
 # CHECK
 def is_seat_full(time, session_id, date):
     available_seat = get_available_seat_by_date_session_id(time ,date, session_id)
-    if available_seat == None:
-        return False
     if available_seat <= 0:
         return True
     return False
