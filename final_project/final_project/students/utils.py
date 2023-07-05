@@ -78,7 +78,8 @@ def get_current_hour_and_current_date():
     current_hour = datetime.now(tz).time()
     current_date = datetime.now(tz).date()
 
-    if time(20, 0) <= current_hour <= time(23, 59, 59):
+    if time(17, 0, 0) <= current_hour <= time(23, 59, 59):
+        current_hour = time(7, 0, 0)
         current_date += timedelta(days=1)
     return current_hour, current_date
 
