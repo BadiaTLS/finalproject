@@ -169,7 +169,7 @@ def upload_menu_file(request):
                             time=t,
                             defaults={
                                 'seat_limit': seat_limit,
-                                'available_seat': None,
+                                'available_seat': seat_limit,
                             }
                         )
 
