@@ -190,9 +190,6 @@ def download_report(request):
         # Star Date and End Date is String
         start_date = request.POST.get('start_range')
         end_date = request.POST.get('end_range')
-        print(f'Start date: {start_date}')
-        print(f'End date: {end_date}')
-
         if not validate_dates(start_date, end_date):
             messages.success(request, "We regret to inform you that the data download has failed due to incorrect date input. Please enter the date correctly to proceed. Thank you for your attention to this matter.", extra_tags='danger')
             return render(request, 'dininghall/download_report.html', context=context)

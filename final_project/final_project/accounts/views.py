@@ -13,7 +13,6 @@ def login_user(request):
             if is_valid_user_role(user.role):
                 # return redirect('/' + user.role)
                 if user.role != 'student' and user.role != 'dininghall' and user.role != 'sas':
-                    print(user.role)
                     login(request, user)
                     messages.success(request, f"You have successfully logged in. {user}", extra_tags='success')
                     return redirect('/student')
@@ -35,5 +34,4 @@ def is_valid_user_role(role):
     return role in ['student', 'dininghall', 'sas', 'dosen']
 
 def custom_404(request, exception):
-    print("Custom 404 view function called")
     return redirect('login')

@@ -45,15 +45,11 @@ def is_booked_by_user_date_session(user_id , date , session_name):
         date = str(date)
 
     if type(user_id) == int and type(date) == str and type(session_name) == str: 
-        print(f"IS BOOKING: IF ", user_id,type(user_id), date,  type(datetime.strptime(date, "%Y-%M-%d")),session_name, type(session_name))
         booking = table_booking_dininghall.objects.filter(user_id = user_id, session_id__date = date, session_id__name = session_name)
-        print(booking)
-        print(f"IS BOOKED", booking)
         if not booking.exists():
             return False
         return True
     else: 
-        print("FALSE")
         return False
 
 # GET
@@ -291,24 +287,18 @@ def get_start_end_for_algorithm(email, day, session_times):
     class_list = get_classes_by_day(day)
     class_list_by_email = get_classes_by_email(email, class_list)
 
-    # print(f"Kelas Hari ini {day}: {class_list}\n Kelas yang dihadiri {email}: {class_list_by_email}")
-
     # Get The classes for the day
     for i in class_list_by_email:
         for session_time in session_times:
             if is_between(session_time, (i.class_start_time, i.class_end_time)):
                 session_times[session_time] = 0
-                # print(session_times[session_time])
-                # print(f"{session_time} is between {i.class_start_time} and {i.class_end_time}")
             else:
                 pass
-                # print(f"{session_time} is not between {i.class_start_time} and {i.class_end_time}")    
 
     # start = class_list_by_email[0].class_start_time
     # end = class_list_by_email[0].class_end_time
     start, end = list(session_times.keys())[0], list(session_times.keys())[-1]
 
-    # print(start, end, email, day, session_times)
     return start, end, session_times
 
 def get_student_dininghall_context(request):
@@ -325,6 +315,7 @@ def get_student_dininghall_context(request):
     print(latest_booking)
     if latest_booking:
         context = get_context_from_latest_booking(latest_booking, current_hour, current_date)
+        print("LATEST BOOKING CALLED")
         if context:
             return context
     
@@ -436,19 +427,6 @@ def update_available_seats(time):
 
 
 def delete_booking_and_update_available_seat_by_user_id(user_id, session_id):
-    # print(user_id.name, type(user_id), session_id, type(session_id))
-    # booking_object = table_booking_dininghall.objects.filter(user_id=user_id.id, session_id=session_id).first()    
-    # booking_object = booking_object
-    # session_id = booking_object.session_id
-    # recommended_time = booking_object.recommended_time
-
-    # booked_time_object = table_time.objects.get(session_id=session_id, time = recommended_time)
-    # booked_time_object.available_seat += 1
-    # booked_time_object.save()
-    # booking_object.delete()
-    # return f"Success Reservastion Cancelled, {session_id.name} for {session_id.date}", 'success'
-    
-
     try: 
         booking_object = table_booking_dininghall.objects.filter(user_id=user_id.id, session_id=session_id).first()    
         session_id = booking_object.session_id

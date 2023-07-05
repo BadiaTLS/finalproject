@@ -49,9 +49,6 @@ def round_time_down(time_string):
     return rounded_time_obj.strftime('%H:%M')
 
 def get_recommended_time(session, start : str, end : str):
-
-    print(start, type(start), end, type(end), session, type(session))
-
     if type(start) == str: 
         start = round_time_down(start)
         start = datetime.strptime(start, '%H:%M').time()
@@ -61,11 +58,6 @@ def get_recommended_time(session, start : str, end : str):
         end = datetime.strptime(end, '%H:%M').time()
 
     session_start, session_end  = list(session.keys())[0], list(session.keys())[-1]
-
-    # print(session, start, end)
-    # print(type(start), type(end))
-    # print(type(session_start), type(session_end))
-
     key_list = list(session.keys())
     val_list = list(session.values())
 
@@ -96,10 +88,7 @@ def get_recommended_time(session, start : str, end : str):
             return False
         else: 
             pass
-
-        # print(f"The maximum number of seats available between {start} and {end} is {max_seats}, and the time is {recommended_time}")
     except:
         print(AssertionError)
-
     return recommended_time
 
