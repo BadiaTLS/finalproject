@@ -1,0 +1,5 @@
+tavenv
+final_project/db.sqlite3
+*.pyc
+__pycache__/
+**/__pycache__/

@@ -84,6 +84,13 @@ AUTHENTICATION_BACKENDS = [
 from dotenv import load_dotenv
 load_dotenv()
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
 # DATABASES = {
 #     'default': {
 #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -96,10 +103,10 @@ load_dotenv()
 # }
 
 # Postgres Database by RailWay (UPDATE EVERYDAY if NOT TAKE THE DATABASE)
-import dj_database_url
-DATABASES = {
-    'default': dj_database_url.parse(os.environ.get("DB_URL"))
-}
+# import dj_database_url
+# DATABASES = {
+#     'default': dj_database_url.parse(os.environ.get("DB_URL"))
+# }
 
 
 STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
