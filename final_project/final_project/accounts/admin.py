@@ -9,7 +9,7 @@ User = get_user_model()
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'email', 'name', 'role')
+        fields = ('username', 'email', 'name', 'role', 'gender', 'major')
 
 class UserAdmin(BaseUserAdmin):
     add_form = CustomUserCreationForm
@@ -21,13 +21,13 @@ class UserAdmin(BaseUserAdmin):
     )
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal Info', {'fields': ('name', 'email', 'role')}),
+        ('Personal Info', {'fields': ('name', 'email', 'role', 'gender', 'major')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
-    list_display = ('id', 'username', 'email', 'name', 'role')
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'role')
-    search_fields = ('username', 'email', 'name')
+    list_display = ('id', 'username', 'email', 'name', 'role', 'gender', 'major')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'role', 'gender', 'major')
+    search_fields = ('username', 'email', 'name', 'gender', 'major')
     ordering = ('username',)
 
 admin.site.register(User, UserAdmin)

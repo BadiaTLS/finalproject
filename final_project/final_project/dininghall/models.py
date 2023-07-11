@@ -27,3 +27,9 @@ class table_booking_dininghall(models.Model):
     session_id = models.ForeignKey(table_session, on_delete=models.CASCADE)
     recommended_time = models.TimeField()    
     created_at = models.DateTimeField(auto_now_add=True)
+
+class table_live_booking(models.Model):
+    arrival_time = models.TimeField()
+    served_time = models.TimeField()
+    depart_time = models.TimeField()
+    bookings_id = models.ForeignKey(table_booking_dininghall, on_delete=models.CASCADE, null=True)

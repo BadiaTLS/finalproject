@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import table_session, table_booking_dininghall, table_time
+from .models import table_session, table_booking_dininghall, table_time, table_live_booking
 
 @admin.register(table_session)
 class table_session_admin(admin.ModelAdmin):
@@ -37,3 +37,10 @@ class table_booking_dininghall_admin(admin.ModelAdmin):
         return obj.user_id.username if obj.user_id else None
 
     display_user_id.short_description = 'User ID'
+
+@admin.register(table_live_booking)
+class table_live_booking_admin(admin.ModelAdmin):
+    list_display = ("id","arrival_time", "served_time", "depart_time", "bookings_id")
+    search_fields = ("arrival_time", "served_time", "depart_time", "bookings_id")
+    list_filter = ("arrival_time", "served_time", "depart_time")
+    ordering = ("arrival_time",)
