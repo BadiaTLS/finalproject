@@ -2,9 +2,12 @@ from datetime import datetime, time, timedelta
 from final_project.accounts.models import CustomUser
 from final_project.dininghall.models import table_time, table_session, table_booking_dininghall
 from final_project.sas.models import table_classes
-from final_project.algorithm.dijkstra import get_recommended_time
 import json
 import pytz
+
+def get_recommended_time(session, start_time, end_time):
+    max_value = max(value for key, value in session.items() if start_time <= key <= end_time)
+    return max_value
 
 # CHECK
 def is_seat_full(time, session_id, date):

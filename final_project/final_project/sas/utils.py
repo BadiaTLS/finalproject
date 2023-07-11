@@ -23,7 +23,7 @@ def process_excel_file(excel_file):
     existing_users_dict = {user.email: user for user in CustomUser.objects.all()}
 
     for row in worksheet.iter_rows(min_row=2, values_only=True):
-        user_id, name, email, role = row
+        user_id, name, email, role, gender, major = row
         print(f"User {user_id} checked")
 
         # Check if user with the same email exists
@@ -33,6 +33,8 @@ def process_excel_file(excel_file):
             user.username = user_id
             user.name = name
             user.role = role
+            user.gender = gender
+            user.major = major
             existing_users.append(user)
         else:
             hashed_password = make_password(user_id, hasher='pbkdf2_sha256')
@@ -43,7 +45,9 @@ def process_excel_file(excel_file):
                 password=hashed_password,
                 email=email,
                 name=name,
-                role=role
+                role=role,
+                gender = gender,
+                major = major,
             )
             new_users.append(new_user)
 
@@ -53,7 +57,7 @@ def process_excel_file(excel_file):
 def update_database(new_users, existing_users):
     # Create new users and update existing users in a single database query
     CustomUser.objects.bulk_create(new_users)
-    CustomUser.objects.bulk_update(existing_users, ['username', 'name', 'role'])
+    CustomUser.objects.bulk_update(existing_users, ['username', 'name', 'role', 'gender', 'major'])
 
 
 # IMPORT CLASSES
