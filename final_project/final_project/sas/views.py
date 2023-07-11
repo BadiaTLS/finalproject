@@ -49,12 +49,45 @@ def import_class(request):
 
         if handle_uploaded_file(excel_file):
             messages.success(request, 'Classes imported successfully.', extra_tags='success')
-            return redirect('sas_index', context=context)
+            return redirect('import_class')
         else:
             messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
             return redirect('import_class')
     else:
         return render(request, 'sas/import_class.html', context=context)
+
+
+from django.shortcuts import render
+from .forms import UploadFileForm
+
+@login_required(login_url='login')
+@user_passes_test(check_sas_role, login_url='not_sas')
+def upload_file(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES['file']
+            success = handle_uploaded_file(file)
+            if success:
+                messages.success(request, 'Classes imported successfully.', extra_tags='success')
+                return render(request, 'sas/upload.html')
+            else:
+                messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
+                return render(request, 'sas/upload.html')
+    else:
+        form = UploadFileForm()
+    return render(request, 'sas/upload.html', {'form': form})
+
+def delete_all_class_view(request):
+    if request.method == 'POST':
+        # Call the delete_all_class function to delete all data
+        delete_all_class()
+
+        # Redirect to a success page
+        messages.success(request, 'Classes Delete Success.', extra_tags='success')
+        return redirect('sas_index')
+    messages.success(request, 'Class Delete Failed.', extra_tags='danger')
+    return redirect('sas_index')
 
 def not_sas(request):
     messages.error(request, 'You are not authorized to access different role resources', extra_tags='error')

@@ -4,7 +4,6 @@ from datetime import time
 from final_project.accounts.models import CustomUser
 from django.contrib.auth.hashers import make_password
 from .models import table_classes, Attendee
-from django.db import transaction
 
 def get_all_user():
     return CustomUser.objects.all()
@@ -59,96 +58,50 @@ def update_database(new_users, existing_users):
     CustomUser.objects.bulk_create(new_users)
     CustomUser.objects.bulk_update(existing_users, ['username', 'name', 'role', 'gender', 'major'])
 
+def handle_uploaded_file(file):
+    # Read the contents of the uploaded file into a DataFrame
+    df = pd.read_excel(file)
 
-# IMPORT CLASSES
-# def handle_uploaded_file(excel_file):
-#     # Check if file is an Excel file
-#     if not excel_file.name.endswith(".xlsx"):
-#         return False
-
-#     # Read data from Excel file
-#     data = pd.read_excel(excel_file)
-
-#     # Iterate over rows of data
-#     for index, row in data.iterrows():
-#         # Get data from row
-#         class_code = row["class_code"]
-#         class_name = row["class_name"]
-#         class_day = row["class_day"].lower()
-#         class_start_time = time(hour=int(row["class_start_time"].split(":")[0]), minute=int(row["class_start_time"].split(":")[1]))
-#         class_end_time = time(hour=int(row["class_end_time"].split(":")[0]), minute=int(row["class_end_time"].split(":")[1]))
-#         attendees = row["attendees"].split(", ")
-
-#         # Create Attendee objects
-#         for email in attendees:
-#             Attendee.objects.get_or_create(email=email)
-
-#         # Create table_classes object
-#         table_class = table_classes.objects.create(
-#             class_code=class_code,
-#             class_name=class_name,
-#             class_day=class_day,
-#             class_start_time=class_start_time,
-#             class_end_time=class_end_time
-#         )
-
-#         # Add attendees to table_classes object
-#         for email in attendees:
-#             attendee = Attendee.objects.get(email=email)
-#             table_class.attendees.add(attendee)
-
-#     return True
-
-def handle_uploaded_file(excel_file):
-    # Check if file is an Excel file
-    if not excel_file.name.endswith(".xlsx"):
-        return False
-
-    # Read data from Excel file
-    data = pd.read_excel(excel_file)
-
-    # Get all existing Attendee objects
-    existing_attendees = Attendee.objects.using('default').all()
-    existing_attendees_emails = [attendee.email for attendee in existing_attendees]
-
-    # Create a list to store new Attendee objects
-    new_attendees = []
-
-    # Iterate over rows of data
-    for index, row in data.iterrows():
-        # Get data from row
-        class_code = row["class_code"]
-        class_name = row["class_name"]
-        class_day = row["class_day"].lower()
-        class_start_time = time(hour=int(row["class_start_time"].split(":")[0]), minute=int(row["class_start_time"].split(":")[1]))
-        class_end_time = time(hour=int(row["class_end_time"].split(":")[0]), minute=int(row["class_end_time"].split(":")[1]))
-        attendees = row["attendees"].split(", ")
-
-        # Create new Attendee objects
-        for email in attendees:
-            if email not in existing_attendees_emails:
-                attendee, created = Attendee.objects.get_or_create(email=email)
-                if created:
-                    new_attendees.append(attendee)
-
-        # Create table_classes object
-        table_class = table_classes.objects.create(
-            class_code=class_code,
-            class_name=class_name,
-            class_day=class_day,
-            class_start_time=class_start_time,
-            class_end_time=class_end_time
+    # Iterate over the rows of the DataFrame
+    for index, row in df.iterrows():
+        # Get or create a table_classes object for each row
+        class_obj, created = table_classes.objects.get_or_create(
+            class_code=row['class_code'],
+            defaults={
+                'class_name': row['class_name'],
+                'class_day': row['class_day'],
+                'class_start_time': row['class_start_time'],
+                'class_end_time': row['class_end_time']
+            }
         )
 
-        # Add attendees to table_classes object
-        for email in attendees:
-            attendee = next((attendee for attendee in existing_attendees if attendee.email == email), None)
-            if attendee is None:
-                attendee = next((attendee for attendee in new_attendees if attendee.email == email), None)
-            attendee.save()
-            table_class.attendees.add(attendee)
+        # Update the fields of the table_classes object if it already exists
+        if not created:
+            class_obj.class_name = row['class_name']
+            class_obj.class_day = row['class_day']
+            class_obj.class_start_time = row['class_start_time']
+            class_obj.class_end_time = row['class_end_time']
+            class_obj.save()
 
-    # Create new Attendee objects in database
-    Attendee.objects.bulk_create(new_attendees)
+        # Split the attendees field into a list of email addresses
+        attendees = row['attendees'].split(', ')
+
+        # Clear the existing attendees from the table_classes object
+        class_obj.attendees.clear()
+
+        # Iterate over the email addresses
+        for email in attendees:
+            # Get or create an Attendee object for each email address
+            attendee, created = Attendee.objects.get_or_create(email=email)
+
+            # Add the attendee to the table_classes object
+            class_obj.attendees.add(attendee)
 
     return True
+
+def delete_all_class():
+    # Delete all table_classes objects
+    table_classes.objects.all().delete()
+
+    # Delete all Attendee objects
+    Attendee.objects.all().delete()

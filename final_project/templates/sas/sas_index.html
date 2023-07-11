@@ -96,6 +96,11 @@
             <h3>Class Table</h3>
             <input type="text" id="user-search" placeholder="Search">
             <table class="table" id="class-search">
+            <form action="{% url 'delete_all_class' %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Delete All Data">
+            </form>
+                
                 <thead>
                     <tr>
                         <th scope="col">Class Code</th>

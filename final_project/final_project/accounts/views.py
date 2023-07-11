@@ -15,7 +15,7 @@ def login_user(request):
                 if user.role != 'student' and user.role != 'dininghall' and user.role != 'sas':
                     login(request, user)
                     messages.success(request, f"You have successfully logged in. {user}", extra_tags='success')
-                    return redirect('/student')
+                    return redirect('/student/')
                 else:
                     login(request, user)
                     return redirect('/' + user.role)
