@@ -23,7 +23,7 @@ class table_classes(models.Model):
         (thursday, "thursday"),
         (friday, "friday")
     ]
-    class_code = models.CharField(max_length=10, primary_key=True)
+    class_code = models.CharField(max_length=10)
     class_name = models.CharField(max_length=75)
     class_day = models.CharField(max_length=9, choices=days, default="")
     class_start_time = models.TimeField(default=time(9, 0))

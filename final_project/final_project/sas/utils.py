@@ -108,7 +108,7 @@ def handle_uploaded_file(excel_file):
     data = pd.read_excel(excel_file)
 
     # Get all existing Attendee objects
-    existing_attendees = Attendee.objects.all()
+    existing_attendees = Attendee.objects.using('default').all()
     existing_attendees_emails = [attendee.email for attendee in existing_attendees]
 
     # Create a list to store new Attendee objects
@@ -127,7 +127,9 @@ def handle_uploaded_file(excel_file):
         # Create new Attendee objects
         for email in attendees:
             if email not in existing_attendees_emails:
-                new_attendees.append(Attendee(email=email))
+                attendee, created = Attendee.objects.get_or_create(email=email)
+                if created:
+                    new_attendees.append(attendee)
 
         # Create table_classes object
         table_class = table_classes.objects.create(
@@ -143,6 +145,7 @@ def handle_uploaded_file(excel_file):
             attendee = next((attendee for attendee in existing_attendees if attendee.email == email), None)
             if attendee is None:
                 attendee = next((attendee for attendee in new_attendees if attendee.email == email), None)
+            attendee.save()
             table_class.attendees.add(attendee)
 
     # Create new Attendee objects in database
