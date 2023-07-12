@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db import transaction
 from .utils import *
 from datetime import time
+from .models import table_booking_dininghall
 
 def dininghall_required(view_func):
     def wrapped_view(request, *args, **kwargs):
@@ -185,6 +186,48 @@ def upload_menu_file(request):
     else:
         context = {'email': request.user.email}
         return render(request, 'dininghall/upload_menu_file.html', context)
+    
+@dininghall_required
+def upload_booking_file(request):
+    if request.method == 'POST':
+        excel_file = request.FILES['excel_file']
+
+        if excel_file.name.endswith('.xlsx'):
+            try:
+                workbook = openpyxl.load_workbook(excel_file)
+                worksheet = workbook.active
+            except Exception as e:
+                messages.error(request, f'Error reading Excel file: {e}', extra_tags='error')
+                return redirect('upload_booking_file')
+
+            # validate required columns
+            required_columns = ['Recommended Time', 'User ID', 'Session ID']
+            headers = [cell.value for cell in worksheet[1]]
+            missing_columns = [col for col in required_columns if col not in headers]
+            if missing_columns:
+                messages.error(request, f'Missing required columns: {", ".join(missing_columns)}', extra_tags='error')
+                return redirect('upload_booking_file')
+
+            with transaction.atomic():
+                for row in worksheet.iter_rows(min_row=2, values_only=True):
+                    recommended_time = row[0]
+                    user_id = row[1]
+                    session_id = row[2]
+
+                    bookings, created = table_booking_dininghall.objects.update_or_create(
+                        user_id_id=user_id,
+                        session_id_id=session_id,
+                        defaults={'recommended_time': recommended_time}
+                    )
+
+            messages.success(request, 'Sessions and times imported successfully.', extra_tags='success')
+            return redirect('upload_booking_file')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
+            return redirect('upload_booking_file')
+    else:
+        context = {'email': request.user.email}
+        return render(request, 'dininghall/upload_booking_file.html', context)
 
 @dininghall_required
 def download_report(request):

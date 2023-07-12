@@ -3,7 +3,7 @@ from .models import table_session, table_booking_dininghall, table_time, table_l
 
 @admin.register(table_session)
 class table_session_admin(admin.ModelAdmin):
-    list_display = ("date", "name", "menu")
+    list_display = ("id", "date", "name", "menu")
     search_fields = ("date", "name", "menu")
     list_filter = ("date", "name")
     ordering = ("date",)

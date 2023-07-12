@@ -22,6 +22,7 @@
 <a class="nav-link {% if request.resolver_match.url_name == 'edit_menu_table' %}active{% endif %}" href="{% url 'edit_menu_table' %}">Update</a>
 <!-- <a class="nav-link {% if request.resolver_match.url_name == 'add_menu' %}active{% endif %}" href="{% url 'add_menu' %}">Add Menu</a> -->
 <a class="nav-link {% if request.resolver_match.url_name == 'upload_menu_file' %}active{% endif %}" href="{% url 'upload_menu_file' %}">Upload</a>
+<a class="nav-link {% if request.resolver_match.url_name == 'upload_booking_file' %}active{% endif %}" href="{% url 'upload_booking_file' %}">Upload Booking</a>
 <a class="nav-link {% if request.resolver_match.url_name == 'download_report' %}active{% endif %}" href="{% url 'download_report' %}">Download</a>
 {% endblock %}
 <!-- Navbar End -->
