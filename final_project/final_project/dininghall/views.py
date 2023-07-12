@@ -16,6 +16,40 @@ def dininghall_required(view_func):
     return wrapped_view
 
 @dininghall_required
+def dashboard(request):
+    current_date = datetime.now()
+    year = current_date.year
+    month = current_date.month
+    day = current_date.day
+
+    recent_bookings = table_booking_dininghall.objects.order_by('-created_at')[:5]
+
+    bar_data = get_bar_chart_data()
+
+    line_data = get_line_chart_info()
+
+    todays_bookings_count = get_todays_bookings_count()
+    today_remaining_seats = get_todays_remaining_seats()
+    todays_bookings_count, today_remaining_seats = get_total_seat_info(date=current_date)
+    
+    total_remaining_seats, total_bookings_count = get_total_seat_info()
+
+    todays_most_popular_session_name, todays_most_popular_session_count  = get_most_popular_session_info()
+    context = {
+        'bar_data' : bar_data,
+        'line_data' : line_data,
+        'todays_booking_count' : todays_bookings_count,
+        'todays_remaining_seats' : today_remaining_seats,
+        'total_remaining_seats' : total_remaining_seats, 
+        'total_bookings_count' : total_bookings_count,
+        'todays_most_popular_session_name': todays_most_popular_session_name,
+        'todays_most_popular_session_count' : todays_most_popular_session_count,
+        'recent_bookings': recent_bookings,
+        'email' : request.user.email,
+    }
+    return render(request, "dininghall/dashboard.html", context=context)
+
+@dininghall_required
 def edit_menu_table(request):
     session_objects = fetch_all_session_objects()
     session_ids = [session.id for session in session_objects]

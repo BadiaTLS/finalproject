@@ -1,0 +1,131 @@
+{% extends "../base.html" %}
+
+{% block title %} Welcome Dining Hall Home Page {% endblock %}
+
+<!-- Logo Start -->
+{% block logo %}
+<a href="{% url 'dininghall_home_page' %}" class="navbar-brand p-0">
+    <h1 class="text-primary m-0"><img src="/static/images/logo.jpg" alt="logo"></h1>
+</a>
+{% endblock %}
+
+<!-- Styles Start -->
+{% block styles %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/styles_dininghall_index.css' %}">
+{% endblock %}
+<!-- Styles End -->
+
+<!-- Navbar Start -->
+{% block navbar %}
+<a class="nav-link {% if request.resolver_match.url_name == 'dininghall_home_page' %}active{% endif %}" href="{% url 'dininghall_home_page' %}">Home</a>
+<a class="nav-link {% if request.resolver_match.url_name == 'edit_menu_table' %}active{% endif %}" href="{% url 'edit_menu_table' %}">Update</a>
+<!-- <a class="nav-link {% if request.resolver_match.url_name == 'add_menu' %}active{% endif %}" href="{% url 'add_menu' %}">Add Menu</a> -->
+<a class="nav-link {% if request.resolver_match.url_name == 'upload_menu_file' %}active{% endif %}" href="{% url 'upload_menu_file' %}">Upload</a>
+<a class="nav-link {% if request.resolver_match.url_name == 'upload_booking_file' %}active{% endif %}" href="{% url 'upload_booking_file' %}">Upload Booking</a>
+<a class="nav-link {% if request.resolver_match.url_name == 'download_report' %}active{% endif %}" href="{% url 'download_report' %}">Download</a>
+{% endblock %}
+<!-- Navbar End -->
+
+<!-- Home Start -->
+{% block home %}
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+    <div class="container text-center my-0 pt-5 pb-4">
+        {% if request.resolver_match.url_name == 'dininghall_home_page' %}
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Welcome <span class="text-primary">{{email}}</span> to<br>Dining Hall - Home Page</h1>
+        {% elif request.resolver_match.url_name == 'edit_menu_table' %}
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall - <span class="text-primary">Update</span> Menu Options</h1>
+        {% elif request.resolver_match.url_name == 'upload_menu_file' %}
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall - <span class="text-primary">Import</span> Menu File</h1>
+        {% elif request.resolver_match.url_name == 'download_report' %}
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Dining Hall - <span class="text-primary">Download</span> Report</h1>
+        {% endif %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center text-uppercase">
+                <li class="breadcrumb-item text-white" aria-current="page">
+                    {% if request.resolver_match.url_name != 'dininghall_home_page' %}
+                    <a class="text-white" href="{% url 'dininghall_home_page' %}">Home</a>
+                    {% else %}
+                    Home
+                    {% endif %}
+                </li>
+                {% if request.resolver_match.url_name == 'edit_menu_table' %}
+                <li class="breadcrumb-item text-primary active" aria-current="page">View Menu Table</li>
+                {% elif request.resolver_match.url_name == 'add_menu' %}
+                <li class="breadcrumb-item text-primary active" aria-current="page">Add Menu</li>
+                {% elif request.resolver_match.url_name == 'upload_menu_file' %}
+                <li class="breadcrumb-item text-primary active" aria-current="page">Import Menu</li>
+                {% elif request.resolver_match.url_name == 'download_report' %}
+                <li class="breadcrumb-item text-primary active" aria-current="page">Download Report</li>
+                {% endif %}
+            </ol>
+
+        </nav>
+    </div>
+</div>
+{% endblock %}
+<!-- Home End -->
+
+<!-- Body Start -->
+{% block template %}
+<div class="container">
+    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+        <h3 class="section-title ff-secondary text-center text-primary fw-normal">Available Tools</h3>
+    </div>
+    <div class="row g-4 justify-content-center"> <!-- Added 'justify-content-center' class -->
+        <div id="update-menu" class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="service-item rounded pt-3">
+                <div class="p-4">
+                    <i class="fa fa-3x fa-edit text-primary mb-4"></i>
+                    <h5 class="text-white">Update Menu Options</h5>
+                    <p class="text-white">Here you can update menu</p>
+                </div>
+            </div>
+        </div>
+        <div id="upload-file" class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+            <div class="service-item rounded pt-3">
+                <div class="p-4">
+                    <i class="fa fa-3x fa-upload text-primary mb-4"></i>
+                    <h5 class="text-white">Upload Menu File</h5>
+                    <p class="text-white">Here you can upload menu with excel file</p>
+                </div>
+            </div>
+        </div>
+        <div id="export-report" class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="service-item rounded pt-3">
+                <div class="p-4">
+                    <i class="fa fa-3x fa-download text-primary mb-4"></i>
+                    <h5 class="text-white">Download Report</h5>
+                    <p class="text-white">Here download the report within a time range</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- Body End -->
+
+<!-- Scripts Start -->
+{% block script %}
+<script>
+    document.getElementById("update-menu").onclick = function () {
+        location.href = "{% url 'edit_menu_table' %}";
+    }
+    document.getElementById("upload-file").onclick = function () {
+        location.href = "{% url 'upload_menu_file' %}";
+    }
+    document.getElementById("export-report").onclick = function () {
+        location.href = "{% url 'download_report' %}";
+    }
+</script>
+{% endblock %}
+<!-- Scripts End -->
+
+<!-- Footer Start -->
+{% block footer-link %}
+<a class="btn btn-link" href="{% url 'dininghall_home_page' %}">Home</a>
+<a class="btn btn-link" href="{% url 'edit_menu_table' %}">Update</a>
+<a class="btn btn-link" href="{% url 'upload_menu_file' %}">Upload</a>
+<a class="btn btn-link" href="{% url 'download_report' %}">Donwload</a>
+{% endblock %}
+<!-- Footer End -->

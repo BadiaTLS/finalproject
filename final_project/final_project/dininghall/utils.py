@@ -198,3 +198,160 @@ def validate_dates(start_date: str, end_date: str, date_format: str = '%Y-%m-%d'
         return False
     
 # DOWNLOAD REPORT FUNTIONS END #
+
+
+### GET CHART DATA START ###
+from .models import table_booking_dininghall
+from django.db.models import Count, Sum
+from datetime import date, timedelta
+import json
+
+
+def get_bar_chart_data():
+    # Get the start and end dates for the week
+    today = date.today()
+    start_date = today - timedelta(days=today.weekday())
+    end_date = start_date + timedelta(days=6)
+
+    # Query the database for the bookings
+    bookings = table_booking_dininghall.objects.filter(
+        session_id__date__range=(start_date, end_date)
+    ).values(
+        'session_id__date', 'session_id__name'
+    ).annotate(
+        count=Count('id')
+    ).order_by(
+        'session_id__date', 'session_id__name'
+    )
+
+    # Initialize the data for the chart
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    sessions = [table_session.breakfast, table_session.lunch, table_session.dinner]
+    colors = ["rgba(0, 156, 255, .7)", "rgba(255, 99, 132, .7)", "rgba(75, 192, 192, .7)"]
+    data = {
+        "labels": days,
+        "datasets": [
+            {
+                "label": session,
+                "data": [0] * len(days),
+                "backgroundColor": color
+            } for session, color in zip(sessions, colors)
+        ]
+    }
+
+    # Fill in the data for the chart
+    for booking in bookings:
+        day_index = booking['session_id__date'].weekday()
+        session_index = sessions.index(booking['session_id__name'])
+        data['datasets'][session_index]['data'][day_index] = booking['count']
+    data_json = json.dumps(data)
+    return data_json
+
+
+def get_line_chart_info():
+    labels = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    reserved_data = []
+    unreserved_data = []
+    # Get today's date
+    today = datetime.today()
+
+    # Calculate the start date of the week (Monday)
+    start_of_week = today - timedelta(days=today.weekday())
+
+    # Create a list of dates for the week
+    week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
+
+    for label, date in zip(labels, week_dates):
+        total_remaining_seats, total_bookings_count = get_total_seat_info(date=date)
+        reserved_data.append(total_bookings_count)
+        unreserved_data.append(total_remaining_seats)
+
+    data = {
+        'labels': labels,
+        'datasets': [
+            {
+                'label': 'Reserved',
+                'data': reserved_data,
+                'backgroundColor': 'rgba(0, 156, 255, .5)',
+                'fill': True
+            },
+            {
+                'label': 'Unreserved',
+                'data': unreserved_data,
+                'backgroundColor': 'rgba(0, 156, 255, .3)',
+                'fill': True
+            }
+        ]
+    }
+    data_json = json.dumps(data)
+    return data_json
+
+## 
+from django.utils import timezone
+from .models import table_booking_dininghall
+
+def get_todays_bookings_count():
+    today = timezone.now().date()
+    todays_bookings_count = table_booking_dininghall.objects.filter(session_id__date=today).count()
+    return todays_bookings_count
+
+
+from django.utils import timezone
+from .models import table_booking_dininghall, table_time
+
+def get_todays_remaining_seats():
+    date = timezone.now().date()
+    seat_limit = table_time.objects.filter(session_id__date=date).aggregate(Sum('seat_limit'))['seat_limit__sum']
+    bookings_count = table_booking_dininghall.objects.filter(session_id__date=date).count()
+    remaining_seats = seat_limit - bookings_count
+    return remaining_seats
+
+def get_total_seat_info11():
+    total_seat_limit = table_time.objects.aggregate(Sum('seat_limit'))['seat_limit__sum']
+    total_bookings_count = table_booking_dininghall.objects.count()
+    total_remaining_seats = total_seat_limit - total_bookings_count
+    return total_remaining_seats, total_bookings_count
+
+def get_total_seat_info(date=None, year=None, month=None, day=None):
+    table_time_qs = table_time.objects.all()
+    table_booking_dininghall_qs = table_booking_dininghall.objects.all()
+    
+    if date:
+        table_time_qs = table_time_qs.filter(session_id__date=date)
+        table_booking_dininghall_qs = table_booking_dininghall_qs.filter(session_id__date=date)
+    
+    if year:
+        table_time_qs = table_time_qs.filter(session_id__date__year=year)
+        table_booking_dininghall_qs = table_booking_dininghall_qs.filter(session_id__date__year=year)
+    
+    if month:
+        table_time_qs = table_time_qs.filter(session_id__date__month=month)
+        table_booking_dininghall_qs = table_booking_dininghall_qs.filter(session_id__date__month=month)
+    
+    if day:
+        table_time_qs = table_time_qs.filter(session_id__date__day=day)
+        table_booking_dininghall_qs = table_booking_dininghall_qs.filter(session_id__date__day=day)
+    
+
+    total_seat_limit = table_time_qs.aggregate(Sum('seat_limit'))['seat_limit__sum']
+    if total_seat_limit is None:
+        total_seat_limit = 0
+    total_bookings_count = table_booking_dininghall_qs.count()
+    total_remaining_seats = total_seat_limit - total_bookings_count
+    return total_remaining_seats, total_bookings_count
+
+from django.db.models import Count
+from django.utils import timezone
+from .models import table_session
+
+def get_most_popular_session_info():
+    today = timezone.now().date()
+    most_popular_session = table_session.objects.filter(date=today).annotate(bookings_count=Count('table_booking_dininghall')).order_by('-bookings_count').first()
+    if most_popular_session:
+        session_name = most_popular_session.name
+        bookings_count = most_popular_session.bookings_count
+        return session_name, bookings_count
+    else:
+        return None, 0
+
+### GET CHART DATA END ###
