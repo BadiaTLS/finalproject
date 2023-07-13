@@ -88,7 +88,6 @@ def save_session_and_times(form_session, form_time):
             time(7, 30),
             time(8, 0),
             time(8, 30),
-            time(9, 0),
         ]
     elif session.name == "Lunch":
         times = [
@@ -303,7 +302,10 @@ def get_todays_remaining_seats():
     date = timezone.now().date()
     seat_limit = table_time.objects.filter(session_id__date=date).aggregate(Sum('seat_limit'))['seat_limit__sum']
     bookings_count = table_booking_dininghall.objects.filter(session_id__date=date).count()
-    remaining_seats = seat_limit - bookings_count
+    if seat_limit is not None:
+        remaining_seats = seat_limit - bookings_count
+    else:
+        remaining_seats = 0 # or another default value that makes sense for your program
     return remaining_seats
 
 def get_total_seat_info11():
