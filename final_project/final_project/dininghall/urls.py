@@ -12,5 +12,6 @@ urlpatterns = [
     path('delete_dropdown/<int:time_id>', views.delete_time, name='delete_dropdown'),
     path('upload_menu_file', views.upload_menu_file, name='upload_menu_file'),
     path('upload_booking_file', views.upload_booking_file, name='upload_booking_file'),
+    path('upload_live_booking_file', views.upload_live_booking_file, name='upload_live_booking_file'),
     path('download_report', views.download_report, name='download_report'),
 ]

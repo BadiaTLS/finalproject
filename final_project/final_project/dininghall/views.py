@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db import transaction
 from .utils import *
 from datetime import time
-from .models import table_booking_dininghall
+from .models import table_booking_dininghall, table_live_booking
 
 def dininghall_required(view_func):
     def wrapped_view(request, *args, **kwargs):
@@ -228,6 +228,50 @@ def upload_booking_file(request):
     else:
         context = {'email': request.user.email}
         return render(request, 'dininghall/upload_booking_file.html', context)
+
+@dininghall_required
+def upload_live_booking_file(request):
+    if request.method == 'POST':
+        excel_file = request.FILES['excel_file']
+
+        if excel_file.name.endswith('.xlsx'):
+            try:
+                workbook = openpyxl.load_workbook(excel_file)
+                worksheet = workbook.active
+            except Exception as e:
+                messages.error(request, f'Error reading Excel file: {e}', extra_tags='error')
+                return redirect('upload_live_booking_file')
+
+            # validate required columns
+            required_columns = ['Arrival Time', 'Served Time', 'Depart Time', 'Booking ID']
+            headers = [cell.value for cell in worksheet[1]]
+            missing_columns = [col for col in required_columns if col not in headers]
+            if missing_columns:
+                messages.error(request, f'Missing required columns: {", ".join(missing_columns)}', extra_tags='error')
+                return redirect('upload_live_booking_file')
+
+            with transaction.atomic():
+                for row in worksheet.iter_rows(min_row=2, values_only=True):
+                    arrival_time = row[0]
+                    served_time = row[1]
+                    depart_time = row[2]
+                    bookings_id = row[3]
+                    if table_booking_dininghall.objects.filter(id=bookings_id).exists():
+                        bookings, created = table_live_booking.objects.update_or_create(
+                            arrival_time=arrival_time,
+                            served_time=served_time,
+                            depart_time=depart_time,
+                            bookings_id_id=bookings_id
+                        )
+
+            messages.success(request, 'Live Booking imported successfully.', extra_tags='success')
+            return redirect('upload_live_booking_file')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
+            return redirect('upload_live_booking_file')
+    else:
+        context = {'email': request.user.email}
+        return render(request, 'dininghall/upload_live_booking_file.html', context)
 
 @dininghall_required
 def download_report(request):
