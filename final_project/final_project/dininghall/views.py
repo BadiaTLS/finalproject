@@ -128,92 +128,52 @@ def download_report(request):
     else:
         return render(request, 'dininghall/download_report.html', context=context)
 
-# Upload Files
+# Upload Session Menu Files
+from .utils import read_excel_file, create_times, update_or_create_table_time
 @dininghall_required
 def upload_menu_file(request):
-    if request.method == 'POST':
-        excel_file = request.FILES['excel_file']
-
-        if excel_file.name.endswith('.xlsx'):
-            try:
-                workbook = openpyxl.load_workbook(excel_file)
-                worksheet = workbook.active
-            except Exception as e:
-                messages.error(request, f'Error reading Excel file: {e}', extra_tags='error')
-                return redirect('upload_menu_file')
-
-            # validate required columns
-            required_columns = ['Date', 'Name', 'Menu', 'Seat Limit']
-            headers = [cell.value for cell in worksheet[1]]
-            missing_columns = [col for col in required_columns if col not in headers]
-            if missing_columns:
-                messages.error(request, f'Missing required columns: {", ".join(missing_columns)}', extra_tags='error')
-                return redirect('upload_menu_file')
-
-            with transaction.atomic():
-                for row in worksheet.iter_rows(min_row=2, values_only=True):
-                    date = row[0]
-                    name = row[1]
-                    menu = row[2]
-                    seat_limit = row[3]
-
-                    session, created = table_session.objects.update_or_create(
-                        date=date,
-                        name=name,
-                        defaults={
-                            'menu': menu,
-                        }
-                    )
-
-                    if session.name == "Breakfast":
-                        times = [
-                            time(7, 0),
-                            time(7, 30),
-                            time(8, 0),
-                            time(8, 30),
-                            time(9, 0),
-                        ]
-                    elif session.name == "Lunch":
-                        times = [
-                            time(11, 0),
-                            time(11, 30),
-                            time(12, 0),
-                            time(12, 30),
-                            time(13, 0),
-                            time(13, 30),
-                        ]
-                    elif session.name == "Dinner":
-                        times = [
-                            time(17, 0),
-                            time(17, 30),
-                            time(18, 0),
-                            time(18, 30),
-                            time(19, 0),
-                            time(19, 30),
-                        ]
-
-                    # retrieve existing table_time objects for this session
-                    existing_times = table_time.objects.filter(session_id=session)
-
-                    # update or create table_time objects
-                    for t in times:
-                        table_t, created = table_time.objects.update_or_create(
-                            session_id=session,
-                            time=t,
-                            defaults={
-                                'seat_limit': seat_limit,
-                                'available_seat': seat_limit,
-                            }
-                        )
-
-            messages.success(request, 'Sessions and times imported successfully.', extra_tags='success')
-            return redirect('edit_menu_table')
-        else:
-            messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
-            return redirect('upload_menu_file')
-    else:
+    if request.method != 'POST':
         context = {'email': request.user.email}
         return render(request, 'dininghall/upload_menu_file.html', context)
+
+    excel_file = request.FILES.get('excel_file')
+    if not excel_file or not excel_file.name.endswith('.xlsx'):
+        messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
+        return redirect('upload_menu_file')
+
+    try:
+        worksheet = read_excel_file(excel_file)
+    except Exception as e:
+        messages.error(request, f'Error reading Excel file: {e}', extra_tags='error')
+        return redirect('upload_menu_file')
+
+    # Validate required columns
+    required_columns = ['Date', 'Name', 'Menu', 'Seat Limit']
+    headers = [cell.value for cell in worksheet[1]]
+    missing_columns = [col for col in required_columns if col not in headers]
+    if missing_columns:
+        messages.error(request, f'Missing required columns: {", ".join(missing_columns)}', extra_tags='error')
+        return redirect('upload_menu_file')
+
+    with transaction.atomic():
+        for row in worksheet.iter_rows(min_row=2, values_only=True):
+            date, name, menu, seat_limit = row[:4]
+
+            session, created = table_session.objects.update_or_create(
+                date=date,
+                name=name,
+                defaults={'menu': menu}
+            )
+
+            times = create_times(session)
+
+            existing_times = table_time.objects.filter(session_id=session)
+
+            for t in times:
+                update_or_create_table_time(session, t, seat_limit)
+
+    messages.success(request, 'Sessions and times imported successfully.', extra_tags='success')
+    return redirect('edit_menu_table')
     
 @dininghall_required
 def upload_booking_file(request):
