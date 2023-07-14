@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import date, timedelta
 import random
 
-start_date = date(2023, 7, 1)
+start_date = date(2023, 5, 1)
 end_date = date(2023, 7, 30)
 delta = timedelta(days=1)
 
@@ -12,9 +12,10 @@ dinner_menu = ['Daging Sapi Bakar + Nasi Putih', 'Daging Sapi Goreng + Nasi Puti
 
 data = []
 while start_date <= end_date:
-    data.append([start_date, 'Breakfast', random.choice(breakfast_menu), 5])
-    data.append([start_date, 'Lunch', random.choice(lunch_menu), 5])
-    data.append([start_date, 'Dinner', random.choice(dinner_menu), 5])
+    if start_date.weekday() not in [5, 6]:  # Skip Saturday (5) and Sunday (0)
+        data.append([start_date, 'Breakfast', random.choice(breakfast_menu), 5])
+        data.append([start_date, 'Lunch', random.choice(lunch_menu), 5])
+        data.append([start_date, 'Dinner', random.choice(dinner_menu), 5])
     start_date += delta
 
 df = pd.DataFrame(data, columns=['Date', 'Name', 'Menu', 'Seat Limit'])

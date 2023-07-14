@@ -30,6 +30,6 @@ class table_booking_dininghall(models.Model):
 
 class table_live_booking(models.Model):
     arrival_time = models.TimeField()
-    served_time = models.TimeField()
+    served_time = models.TimeField(null=True)
     depart_time = models.TimeField()
     bookings_id = models.ForeignKey(table_booking_dininghall, on_delete=models.CASCADE, null=True)

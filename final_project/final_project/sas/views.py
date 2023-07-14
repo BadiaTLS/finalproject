@@ -91,4 +91,4 @@ def delete_all_class_view(request):
 
 def not_sas(request):
     messages.error(request, 'You are not authorized to access different role resources', extra_tags='error')
-    return redirect('sas_index')
+    return redirect('login')
