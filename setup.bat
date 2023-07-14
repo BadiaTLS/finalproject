@@ -36,6 +36,12 @@ echo from final_project.accounts.models import CustomUser; CustomUser.objects.cr
 echo from final_project.accounts.models import CustomUser; CustomUser.objects.create_user(username='dininghall', email='dininghall@example.com', password='dininghall', name='Dining Hall', role='dininghall', gender='-', major='-') | python final_project\manage.py shell
 
 cls
+echo Starting Import Users...
+call generate_dummies.bat
+call import_users.bat
+echo DONE
+
+cls
 python final_project\manage.py runserver -v 0
 
 call tavenv\Scripts\deactivate.bat
