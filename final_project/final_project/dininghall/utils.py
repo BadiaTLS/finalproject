@@ -128,6 +128,61 @@ def download_file_response(file_path):
     os.remove(file_path)
     return response
 
+# Upload Session Menu START
+def read_excel_file(excel_file):
+    try:
+        workbook = openpyxl.load_workbook(excel_file)
+        worksheet = workbook.active
+    except Exception as e:
+        raise Exception(f'Error reading Excel file: {e}')
+    
+    return worksheet
+
+def create_times(session):
+    if session.name == "Breakfast":
+        times = [
+            time(7, 0),
+            time(7, 30),
+            time(8, 0),
+            time(8, 30),
+        ]
+    elif session.name == "Lunch":
+        times = [
+            time(11, 0),
+            time(11, 30),
+            time(12, 0),
+            time(12, 30),
+            time(13, 0),
+            time(13, 30),
+        ]
+    elif session.name == "Dinner":
+        times = [
+            time(17, 0),
+            time(17, 30),
+            time(18, 0),
+            time(18, 30),
+            time(19, 0),
+            time(19, 30),
+        ]
+    else:
+        times = []
+    
+    return times
+
+def update_or_create_table_time(session, time, seat_limit):
+    return table_time.objects.update_or_create(
+        session_id=session,
+        time=time,
+        defaults={
+            'seat_limit': seat_limit,
+            'available_seat': seat_limit,
+        }
+    )
+
+# Upload Session Menu END
+
+
+
 # DOWNLOAD REPORT FUNTIONS START #
 import os
 from django.http import HttpResponse

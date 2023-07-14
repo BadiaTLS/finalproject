@@ -1,12 +1,12 @@
 import pandas as pd
 import random
 
-# Check if data_dummy_session.xlsx exists and retrieve session IDs
+# Check if data_dummy_session_menu.xlsx exists and retrieve session IDs
 try:
-    session_data = pd.read_excel("data_dummy_session.xlsx")
+    session_data = pd.read_excel("data_dummy_session_menu.xlsx")
     session_ids = session_data.index.tolist()
 except FileNotFoundError:
-    print("data_dummy_session.xlsx not found.")
+    print("data_dummy_session_menu.xlsx not found.")
     session_ids = []
 
 # Check if data_dummy_users.xlsx exists and retrieve user IDs and roles
