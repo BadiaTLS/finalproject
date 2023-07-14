@@ -19,6 +19,6 @@ while start_date <= end_date:
     start_date += delta
 
 df = pd.DataFrame(data, columns=['Date', 'Name', 'Menu', 'Seat Limit'])
-df.to_excel('data_dummy_session.xlsx', index=False)
+df.to_excel('data_dummy_session_menu.xlsx', index=False)
 
 print("Session Generated Successfully")

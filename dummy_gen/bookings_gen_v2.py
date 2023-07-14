@@ -3,11 +3,11 @@ import random
 
 def read_session_data():
     try:
-        session_data = pd.read_excel("data_dummy_session.xlsx")
+        session_data = pd.read_excel("data_dummy_session_menu.xlsx")
         session_ids = session_data.index.tolist()
         return session_data, session_ids
     except FileNotFoundError:
-        print("data_dummy_session.xlsx not found.")
+        print("data_dummy_session_menu.xlsx not found.")
         return None, []
 
 def read_user_data():
