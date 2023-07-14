@@ -6,6 +6,8 @@ python %~dp0dummy_gen\user_generator.py
 timeout /t 1
 python %~dp0dummy_gen\menu_gen_v2.py
 timeout /t 1
+python %~dp0dummy_gen\menu_gen_csv.py
+timeout /t 1
 python %~dp0dummy_gen\bookings_gen_v2.py
 timeout /t 1
 python %~dp0dummy_gen\live_bookings_generator.py

@@ -128,7 +128,7 @@ def download_report(request):
     else:
         return render(request, 'dininghall/download_report.html', context=context)
 
-# Upload Session Menu Files
+# Upload Files
 from .utils import read_excel_file, create_times, update_or_create_table_time
 @dininghall_required
 def upload_menu_file(request):
