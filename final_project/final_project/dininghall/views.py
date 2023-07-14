@@ -18,36 +18,7 @@ def dininghall_required(view_func):
 # Views
 @dininghall_required
 def dashboard(request):
-    current_date = datetime.now()
-    year = current_date.year
-    month = current_date.month
-    day = current_date.day
-
-    recent_bookings = table_booking_dininghall.objects.order_by('-created_at')[:5]
-
-    bar_data = get_bar_chart_data()
-
-    line_data = get_line_chart_info()
-
-    todays_bookings_count = get_todays_bookings_count()
-    today_remaining_seats = get_todays_remaining_seats()
-    todays_bookings_count, today_remaining_seats = get_total_seat_info(date=current_date)
-    
-    total_remaining_seats, total_bookings_count = get_total_seat_info()
-
-    todays_most_popular_session_name, todays_most_popular_session_count  = get_most_popular_session_info()
-    context = {
-        'bar_data' : bar_data,
-        'line_data' : line_data,
-        'todays_booking_count' : todays_bookings_count,
-        'todays_remaining_seats' : today_remaining_seats,
-        'total_remaining_seats' : total_remaining_seats, 
-        'total_bookings_count' : total_bookings_count,
-        'todays_most_popular_session_name': todays_most_popular_session_name,
-        'todays_most_popular_session_count' : todays_most_popular_session_count,
-        'recent_bookings': recent_bookings,
-        'email' : request.user.email,
-    }
+    context = get_dashboard_context(request=request)
     return render(request, "dininghall/dashboard.html", context=context)
 
 @dininghall_required
@@ -289,49 +260,58 @@ def upload_booking_file(request):
 @dininghall_required
 def upload_live_booking_file(request):
     if request.method == 'POST':
-        excel_file = request.FILES['excel_file']
-
-        if excel_file.name.endswith('.xlsx'):
-            try:
-                workbook = openpyxl.load_workbook(excel_file)
-                worksheet = workbook.active
-            except Exception as e:
-                messages.error(request, f'Error reading Excel file: {e}', extra_tags='error')
-                return redirect('upload_live_booking_file')
-
-            # validate required columns
-            required_columns = ['Arrival Time', 'Served Time', 'Depart Time', 'Booking ID']
-            headers = [cell.value for cell in worksheet[1]]
-            missing_columns = [col for col in required_columns if col not in headers]
-            if missing_columns:
-                messages.error(request, f'Missing required columns: {", ".join(missing_columns)}', extra_tags='error')
-                return redirect('upload_live_booking_file')
-
-            with transaction.atomic():
-                for row in worksheet.iter_rows(min_row=2, values_only=True):
-                    arrival_time = row[0]
-                    served_time = row[1]
-                    depart_time = row[2]
-                    bookings_id = row[3]
-                    if table_booking_dininghall.objects.filter(id=bookings_id).exists():
-                        bookings, created = table_live_booking.objects.update_or_create(
-                            arrival_time=arrival_time,
-                            served_time=served_time,
-                            depart_time=depart_time,
-                            bookings_id_id=bookings_id
-                        )
-
-            messages.success(request, 'Live Booking imported successfully.', extra_tags='success')
-            return redirect('upload_live_booking_file')
-        else:
-            messages.error(request, 'Invalid file format. Please upload an Excel file (.xlsx).', extra_tags='error')
-            return redirect('upload_live_booking_file')
+        context = process_upload(request)
+        if 'error' in context:
+            messages.error(request, context['error'], extra_tags='error')
+        elif 'success' in context:
+            messages.success(request, context['success'], extra_tags='success')
+        return redirect('upload_live_booking_file')
     else:
-        context = {'email': request.user.email}
+        context = get_upload_live_booking_file_context(request)
         return render(request, 'dininghall/upload_live_booking_file.html', context)
+
+
+def process_upload(request):
+    excel_file = request.FILES['excel_file']
+
+    if excel_file.name.endswith('.xlsx'):
+        try:
+            workbook = openpyxl.load_workbook(excel_file)
+            worksheet = workbook.active
+        except Exception as e:
+            return {'error': f'Error reading Excel file: {e}'}
+
+        # validate required columns
+        required_columns = ['Arrival Time', 'Served Time', 'Depart Time', 'Booking ID']
+        headers = [cell.value for cell in worksheet[1]]
+        missing_columns = [col for col in required_columns if col not in headers]
+        if missing_columns:
+            return {'error': f'Missing required columns: {", ".join(missing_columns)}'}
+
+        with transaction.atomic():
+            for row in worksheet.iter_rows(min_row=2, values_only=True):
+                arrival_time = row[0]
+                served_time = row[1]
+                depart_time = row[2]
+                bookings_id = row[3]
+                if table_booking_dininghall.objects.filter(id=bookings_id).exists():
+                    bookings, created = table_live_booking.objects.update_or_create(
+                        arrival_time=arrival_time,
+                        served_time=served_time,
+                        depart_time=depart_time,
+                        bookings_id_id=bookings_id
+                    )
+
+        return {'success': 'Live Booking imported successfully.'}
+    else:
+        return {'error': 'Invalid file format. Please upload an Excel file (.xlsx).'}
+
+
+def get_upload_live_booking_file_context(request):
+    return {'email': request.user.email}
 
 # Not Dining Hall Goes Here
 
 def not_dininghall(request):
     messages.error(request, 'You are not authorized to access dining hall resources. You need the Dining Hall role.', extra_tags='error')
-    return redirect('logout')
+    return redirect('login')

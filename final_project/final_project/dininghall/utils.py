@@ -2,7 +2,7 @@ from datetime import time
 import openpyxl
 from django.http import HttpResponse
 import os
-from .models import table_session, table_time
+from .models import table_session, table_time, table_live_booking
 
 def fetch_all_session_objects():
     return table_session.objects.all()
@@ -198,8 +198,94 @@ def validate_dates(start_date: str, end_date: str, date_format: str = '%Y-%m-%d'
     
 # DOWNLOAD REPORT FUNTIONS END #
 
+# Upload Live Booking START
+
+# Upload Live Booking END
+
+
+
+# Dashboard Context START
+def get_dashboard_context(request):
+    current_date = datetime.now()
+    year = current_date.year
+    month = current_date.month
+    day = current_date.day
+
+    recent_bookings = table_booking_dininghall.objects.order_by('-created_at')[:5]
+
+    bar_data = get_bar_chart_data()
+
+    line_data = get_line_chart_info()
+
+    major_data = get_major_chart_info()
+
+    todays_bookings_count = get_todays_bookings_count()
+    today_remaining_seats = get_todays_remaining_seats()
+    todays_bookings_count, today_remaining_seats = get_total_seat_info(date=current_date)
+    
+    total_remaining_seats, total_bookings_count = get_total_seat_info()
+
+    todays_most_popular_session_name, todays_most_popular_session_count  = get_most_popular_session_info()
+
+    avg_queue_time = get_average_queue_time(current_date)
+    print(f"Average queue time: {avg_queue_time}")
+    avg_dining_time = get_average_dining_time(current_date)
+    print(f"Average depart time: {avg_dining_time}")
+    average_stay_time = get_average_stay_time(current_date)
+    print(f"Average stay time for on: {average_stay_time}")
+    
+    
+    context = {
+        'bar_data' : bar_data,
+        'line_data' : line_data,
+        'major_data': major_data,
+        'todays_booking_count' : todays_bookings_count,
+        'todays_remaining_seats' : today_remaining_seats,
+        'total_remaining_seats' : total_remaining_seats, 
+        'total_bookings_count' : total_bookings_count,
+        'todays_most_popular_session_name': todays_most_popular_session_name,
+        'todays_most_popular_session_count' : todays_most_popular_session_count,
+        'recent_bookings': recent_bookings,
+        'avg_queue_time': avg_queue_time,
+        'avg_dining_time': avg_dining_time, 
+        'average_stay_time': average_stay_time,
+        'email' : request.user.email,
+    }
+    return context
+
+# Dashboard Context END
+
 
 ### GET CHART DATA START ###
+def get_major_chart_info():
+    # Count the number of bookings for each major
+    results = table_booking_dininghall.objects.values('user_id__major').annotate(count=Count('user_id__major'))
+
+    # Format the results as a dictionary
+    data = {result['user_id__major']: result['count'] for result in results}
+
+    # You can then use this data to populate the 'data' field in your chart
+    label = ["IBDA", "IEE", "CFP", "BMS", "SCCE", "ASD"]
+    majors = ["ibda", "iee", "cfp", "bms", "scce", "asd"]
+    chart_data = {
+        'labels': label,
+        'datasets': [{
+            'backgroundColor': [
+                "rgba(255, 99, 132, 0.7)",
+                "rgba(54, 162, 235, 0.7)",
+                "rgba(255, 206, 86, 0.7)",
+                "rgba(75, 192, 192, 0.7)",
+                "rgba(153, 102, 255, 0.7)",
+                "rgba(255, 159, 64, 0.7)"
+            ],
+            'data': [data.get(major, 0) for major in majors]
+        }]
+    }
+    data_json = json.dumps(chart_data)
+    return data_json
+
+
+
 from .models import table_booking_dininghall
 from django.db.models import Count, Sum
 from datetime import date, timedelta
@@ -271,13 +357,13 @@ def get_line_chart_info():
             {
                 'label': 'Reserved',
                 'data': reserved_data,
-                'backgroundColor': 'rgba(0, 156, 255, .5)',
+                'backgroundColor': 'rgba(255, 255, 0, .1)',
                 'fill': True
             },
             {
                 'label': 'Unreserved',
                 'data': unreserved_data,
-                'backgroundColor': 'rgba(0, 156, 255, .3)',
+                'backgroundColor': 'rgba(255, 99, 132, .7)',
                 'fill': True
             }
         ]
@@ -355,5 +441,75 @@ def get_most_popular_session_info():
         return session_name, bookings_count
     else:
         return None, 0
+    
+from django.db.models import Avg, F, ExpressionWrapper
+from django.db.models.functions import Cast
+from datetime import timedelta
 
+def get_average_queue_time(target_date):
+    # Filter the table_live_booking queryset by the desired date, session, and served_time
+    queue_times = table_live_booking.objects.filter(
+        bookings_id__session_id__date=target_date,
+        served_time__isnull=False
+    )
+
+    # Calculate the average queue time
+    average_queue_time = queue_times.aggregate(
+        avg_queue_time=Avg(F('served_time') - F('arrival_time'))
+    )['avg_queue_time']
+
+    # Format the average queue time as a string with only the minute and second components
+    if average_queue_time is not None:
+        total_seconds = int(average_queue_time.total_seconds())
+        minutes, seconds = divmod(total_seconds, 60)
+        average_queue_time_str = f"{minutes}m {seconds}s"
+    else:
+        average_queue_time_str = None
+
+    return average_queue_time_str
+
+
+def get_average_dining_time(target_date):
+    # Filter the table_live_booking queryset by the desired date, session, and depart_time
+    dining_times = table_live_booking.objects.filter(
+        bookings_id__session_id__date=target_date,
+        served_time__isnull=False
+    )
+
+    # Calculate the average dining time
+    average_dining_time = dining_times.aggregate(
+        avg_dining_time=Avg(F('depart_time') - F('served_time'))
+    )['avg_dining_time']
+
+    # Format the average dining time as a string with only the minute and second components
+    if average_dining_time is not None:
+        total_seconds = int(average_dining_time.total_seconds())
+        minutes, seconds = divmod(total_seconds, 60)
+        average_dining_time_str = f"{minutes}m {seconds}s"
+    else:
+        average_dining_time_str = None
+
+    return average_dining_time_str
+
+def get_average_stay_time(target_date: date):
+    # Filter the table_live_booking queryset by the desired date, session, and depart_time
+    stay_times = table_live_booking.objects.filter(
+        bookings_id__session_id__date=target_date,
+        depart_time__isnull=False
+    )
+
+    # Calculate the average stay time
+    average_stay_time = stay_times.aggregate(
+        avg_stay_time=Avg(F('depart_time') - F('arrival_time'))
+    )['avg_stay_time']
+
+    # Format the average stay time as a string with only the minute and second components
+    if average_stay_time is not None:
+        total_seconds = int(average_stay_time.total_seconds())
+        minutes, seconds = divmod(total_seconds, 60)
+        average_stay_time_str = f"{minutes}m {seconds}s"
+    else:
+        average_stay_time_str = None
+
+    return average_stay_time_str
 ### GET CHART DATA END ###

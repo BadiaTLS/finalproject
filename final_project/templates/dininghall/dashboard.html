@@ -93,7 +93,7 @@
                             <i class="fa fa-chart-line fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Today's Reservations</p>
-                                <h6 class="mb-0">{{todays_booking_count}}</h6>
+                                <h6 class="mb-0">{{todays_booking_count}} persons</h6>
                             </div>
                         </div>
                     </div>
@@ -102,7 +102,7 @@
                             <i class="fa fa-chart-bar fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Today's Unreserved Spots</p>
-                                <h6 class="mb-0">{{todays_remaining_seats}}</h6>
+                                <h6 class="mb-0">{{todays_remaining_seats}} persons</h6>
                             </div>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                             <i class="fa fa-chart-area fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Total Reservations</p>
-                                <h6 class="mb-0">{{total_bookings_count}}</h6>
+                                <h6 class="mb-0">{{total_bookings_count}} persons</h6>
                             </div>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                             <i class="fa fa-chart-pie fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Total Unreserved Spots</p>
-                                <h6 class="mb-0">{{total_remaining_seats}}</h6>
+                                <h6 class="mb-0">{{total_remaining_seats}} persons</h6>
                             </div>
                         </div>
                     </div>
@@ -135,8 +135,8 @@
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                             <i class="fa fa-stopwatch fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">Today's Queue Time (Avg)</p>
-                                <h6 class="mb-0">12:34 mins</h6>
+                                <p class="mb-2">Average queue time (Today)</p>
+                                <h6 class="mb-0">{{avg_queue_time}}</h6>
                             </div>
                         </div>
                     </div>
@@ -144,8 +144,8 @@
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                             <i class="fa fa-clock fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">Queue Time (Live)</p>
-                                <h6 class="mb-0">12:34 mins</h6>
+                                <p class="mb-2">Average dining time (Today)</p>
+                                <h6 class="mb-0">{{avg_dining_time}}</h6>
                             </div>
                         </div>
                     </div>
@@ -153,8 +153,8 @@
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                             <i class="fa fa-hourglass fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">Customer Depart Time (Avg)</p>
-                                <h6 class="mb-0">12:34 mins</h6>
+                                <p class="mb-2">Average stay time (Today)</p>
+                                <h6 class="mb-0">{{average_stay_time}}</h6>
                             </div>
                         </div>
                     </div>
@@ -193,6 +193,19 @@
                             <canvas id="reserved-unreserved"></canvas>
                         </div>
                     </div>
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-light rounded h-100 p-4">
+                            <h6 class="mb-4">Major Chart</h6>
+                            <canvas id="major-chart" style="max-height: 30rem; max-width: 30rem;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-light rounded p-4">
+                            <h6 class="mb-4">Gender Chart</h6>
+                            <canvas id="gender-chart" style="max-height: 30rem; max-width: 30rem;"></canvas>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <!-- Sales Chart End -->
@@ -300,6 +313,35 @@
         var myChart2 = new Chart(ctx2, {
             type: "line",
             data: JSON.parse('{{ line_data|safe }}'),
+            options: {
+                responsive: true
+            }
+        });
+
+        // Major Chart
+        var ctx5 = $("#major-chart").get(0).getContext("2d");
+        var myChart5 = new Chart(ctx5, {
+            type: "pie",
+            data: JSON.parse('{{ major_data|safe }}'), 
+            
+            options: {
+                responsive: true
+            }
+        });
+        // Gender Chart
+        var ctx5 = $("#gender-chart").get(0).getContext("2d");
+        var myChart5 = new Chart(ctx5, {
+            type: "doughnut",
+            data: {
+                labels: ["Male", "FeMale"],
+                datasets: [{
+                    backgroundColor: [
+                        "rgba(255, 99, 132, 0.7)",
+                        "rgba(54, 162, 235, 0.7)",
+                    ],
+                    data: [2, 1,]
+                }]
+            },
             options: {
                 responsive: true
             }
