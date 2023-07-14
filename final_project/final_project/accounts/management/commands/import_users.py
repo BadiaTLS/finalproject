@@ -26,7 +26,7 @@ class Command(BaseCommand):
                     gender=row['gender'],
                     major=row['major']
                 )
-                self.stdout.write(self.style.SUCCESS(f"User '{user.email}' imported successfully."))
+                # self.stdout.write(self.style.SUCCESS(f"User '{user.email}' imported successfully."))
             except IntegrityError as e:
                 self.stdout.write(self.style.WARNING(f"Skipping user with email '{row['email']}' due to UNIQUE constraint violation."))
 

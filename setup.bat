@@ -39,6 +39,7 @@ cls
 echo Starting Import Users...
 call generate_dummies.bat
 call import_users.bat
+call import_sessions_menu.bat
 echo DONE
 
 cls
