@@ -1,4 +1,10 @@
-function developClusteringModel(data, k) {
+function developClusteringModel(x_values, y_values, k) {
+    // Combine x_values and y_values into a single data array
+    let data = [];
+    for (let i = 0; i < x_values.length; i++) {
+        data.push([x_values[i], y_values[i]]);
+    }
+
     // Perform k-means clustering
     let result = kMeansClustering(data, k);
 
@@ -74,33 +80,60 @@ function hasConverged(oldCentroids, centroids) {
 
 function plotClusteringChart(data, centroids) {
     let ctx = document.getElementById("clusteringChart").getContext("2d");
-    let dataPoints = [];
+
+    // Assign points to nearest centroid
+    let clusters = {};
     for (let i = 0; i < data.length; i++) {
-        dataPoints.push({ x: data[i][0], y: data[i][1] });
+        let distances = [];
+        for (let j = 0; j < centroids.length; j++) {
+            distances.push(euclideanDistance(data[i], centroids[j]));
+        }
+        let clusterIndex = distances.indexOf(Math.min(...distances));
+        if (!clusters[clusterIndex]) {
+            clusters[clusterIndex] = [];
+        }
+        clusters[clusterIndex].push({ x: data[i][0], y: data[i][1] });
     }
+
+    // Create datasets for each cluster
+    let datasets = [];
+    let colors = [
+        "rgba(255,99,132,0.6)",
+        "rgba(54,162,235,0.6)",
+        "rgba(255,206,86,0.6)",
+        "rgba(75,192,192,0.6)",
+        "rgba(153,102,255,0.6)",
+        "rgba(255,159,64,0.6)"
+    ];
+    for (let i = 0; i < Object.keys(clusters).length-1; i++) {
+        datasets.push({
+            label: "Cluster " + (i + 1),
+            data: clusters[i],
+            backgroundColor: colors[i % colors.length],
+            borderColor: colors[i % colors.length],
+            borderWidth: 1, 
+            pointRadius: 5,
+        });
+    }
+
+    // Add centroids to datasets
     let centroidPoints = [];
     for (let i = 0; i < centroids.length; i++) {
         centroidPoints.push({ x: centroids[i][0], y: centroids[i][1] });
     }
+    datasets.push({
+        label: "Centroids",
+        data: centroidPoints,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        borderColor: "rgba(0,0,0,0.7)",
+        borderWidth: 1
+    });
+
+    // Create chart
     let myChart = new Chart(ctx, {
         type: "scatter",
         data: {
-            datasets: [
-                {
-                    label: "Data Points",
-                    data: dataPoints,
-                    backgroundColor: "rgba(255,99,132,0.2)",
-                    borderColor: "rgba(255,99,132,1)",
-                    borderWidth: 1
-                },
-                {
-                    label: "Centroids",
-                    data: centroidPoints,
-                    backgroundColor: "rgba(54,162,235,0.2)",
-                    borderColor: "rgba(54,162,235,1)",
-                    borderWidth: 1
-                }
-            ]
+            datasets: datasets
         },
         options: {
             scales: {
@@ -114,3 +147,4 @@ function plotClusteringChart(data, centroids) {
         }
     });
 }
+

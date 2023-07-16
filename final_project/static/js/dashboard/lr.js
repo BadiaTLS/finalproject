@@ -13,9 +13,6 @@ function developLrModel(x_values, y_values) {
 
     //Write the regression equation to the screen
     document.getElementById('regressionEquation').innerHTML = "<b>Regression Equation: </b> " + String(regressor['slope']) + "*x + " + String(regressor['intercept']);
-
-
-
 }
 
 function linearRegression(x_values, y_values) {

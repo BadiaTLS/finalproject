@@ -232,6 +232,26 @@ def confirm(request):
         messages.success(request, "Send Some POST data", extra_tags="danger")    
         return redirect("student_index")
 
+
+# Start Bookings Table
+@student_required
+def show_bookings(request):
+    context = get_bookings(request=request)
+    return render(request, 'students/bookings_page.html', context)
+
+@student_required
+def delete_booking(request, booking_id):
+    from django.shortcuts import get_object_or_404
+    booking = get_object_or_404(table_booking_dininghall, pk=booking_id)
+    session_id = booking.session_id
+    recommended_time = booking.recommended_time
+
+    booked_time = table_time.objects.get(session_id=session_id, time=recommended_time)
+    booked_time.available_seat += 1
+    booked_time.save()
+    booking.delete()
+    return redirect('show_bookings')
+
 def not_student(request):
     messages.error(request, 'You are not authorized to access student resources. You need the Student role.')
     return redirect('login')
