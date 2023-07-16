@@ -12,7 +12,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     object-fit: cover;
-    background-image: url(https://calvin.ac.id/wp-content/uploads/2021/08/lightouse-photo-compressed.jpg);
+    background-image: url(../images/lightouse-photo-compressed.jpg);
     background-color: rgba(41, 41, 41, 0.5);
     filter: blur(5px);
     animation: pulse 5s infinite;
