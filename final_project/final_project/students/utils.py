@@ -6,8 +6,8 @@ import json
 import pytz
 
 def get_recommended_time(session, start_time, end_time):
-    max_value = max(value for key, value in session.items() if start_time <= key <= end_time)
-    return max_value
+    max_key = max((key for key, value in session.items() if start_time <= key <= end_time), key=lambda k: session[k])
+    return max_key
 
 # CHECK
 def is_seat_full(time, session_id, date):
@@ -52,6 +52,13 @@ def is_booked_by_user_date_session(user_id , date , session_name):
         return True
     else: 
         return False
+
+
+# GET BOOKINGS
+def get_bookings(request):
+    bookings = table_booking_dininghall.objects.filter(user_id=request.user.id)
+    context = {'bookings': bookings}
+    return context
 
 # GET
 def get_available_seat_by_date_session_id(time, date, session_id):
@@ -356,6 +363,7 @@ def get_suggestion_time(session_object, email, current_date):
 
     start, end, session_info = get_start_end_for_algorithm(email, day, session_info)
     suggestion_time = get_recommended_time(session_info, start, end)
+    suggestion_time = suggestion_time.strftime('%H:%M')
     
     return suggestion_time
 

@@ -11,6 +11,11 @@ urlpatterns = [
     path('dining_hall/cancel_order', views.cancel_order, name="cancel_order"),
     path('dining_hall/student_preferences', views.student_preferences, name="student_preferences"),
     path('dining_hall/menu', views.student_menu_view, name='menu'),
+
+    
+    path('show_bookings', views.show_bookings, name='show_bookings'),
+    path('delete_booking/<int:booking_id>/', views.delete_booking, name='delete_booking'),
+
     
     path('not_student/', views.not_student, name='not_student'),
 ]

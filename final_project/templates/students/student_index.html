@@ -13,6 +13,11 @@
 </a>
 {% endblock %}
 
+
+{% block user-dropdown %}
+<a class='dropdown-item' href="{% url 'show_bookings' %}">Show Bookings</a>
+{% endblock %}
+
 <!-- Navbar Start -->
 {% block navbar %}
 <a class="nav-link active" href="#">Home</a>

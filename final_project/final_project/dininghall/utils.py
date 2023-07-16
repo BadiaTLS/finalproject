@@ -181,8 +181,6 @@ def update_or_create_table_time(session, time, seat_limit):
 
 # Upload Session Menu END
 
-
-
 # DOWNLOAD REPORT FUNTIONS START #
 import os
 from django.http import HttpResponse
@@ -257,8 +255,6 @@ def validate_dates(start_date: str, end_date: str, date_format: str = '%Y-%m-%d'
 
 # Upload Live Booking END
 
-
-
 # Dashboard Context START
 def get_dashboard_context(request):
     current_date = datetime.now()
@@ -280,7 +276,7 @@ def get_dashboard_context(request):
     
     total_remaining_seats, total_bookings_count = get_total_seat_info()
 
-    todays_most_popular_session_name, todays_most_popular_session_count  = get_most_popular_session_info()
+    todays_most_popular_session_name, todays_most_popular_session_count  = get_most_popular_session_info(date=current_date)
 
     avg_queue_time = get_average_queue_time(current_date)
     print(f"Average queue time: {avg_queue_time}")
@@ -309,7 +305,6 @@ def get_dashboard_context(request):
     return context
 
 # Dashboard Context END
-
 
 ### GET CHART DATA START ###
 def get_major_chart_info():
@@ -487,8 +482,8 @@ from django.db.models import Count
 from django.utils import timezone
 from .models import table_session
 
-def get_most_popular_session_info():
-    today = timezone.now().date()
+def get_most_popular_session_info(date):
+    today = date
     most_popular_session = table_session.objects.filter(date=today).annotate(bookings_count=Count('table_booking_dininghall')).order_by('-bookings_count').first()
     if most_popular_session:
         session_name = most_popular_session.name

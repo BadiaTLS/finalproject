@@ -1,0 +1,202 @@
+{% extends "../students/student_index.html" %}
+
+{% block title %}Bookings{% endblock %}
+
+{% block home %}
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+    <div class="container text-center my-0 pt-5 pb-4">
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Bookings</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center text-uppercase">
+                <li class="breadcrumb-item"><a class="text-white" href="{% url 'student_index' %}">Home</a></li>
+                <li class="breadcrumb-item text-primary active" aria-current="page">Bookings</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+
+<!-- <h1>Bookings</h1>
+<table>
+    <tr>
+        <th>User</th>
+        <th>Session</th>
+        <th>Recommended Time</th>
+        <th>Created at</th>
+        <th>Action</th>
+    </tr>
+    {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.user_id }}</td>
+            <td>{{ booking.session_id.name }}</td>
+            <td>{{ booking.recommended_time }}</td>
+            <td>{{ booking.created_at }}</td>
+            <td>
+                <form action="{% url 'delete_booking' booking.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="Delete">
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table> -->
+
+{% block styles %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/styles_dininghall_index.css' %}">
+<style>
+    /* Center the search bar */
+    #searchInput {
+        display: block;
+        margin: 0 auto;
+        width: 70vw;
+        margin-bottom: 3rem;
+    }
+
+    /* Center the pagination controls */
+    #pagination {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+
+
+{% block template %}
+    <div class="container">
+        <h2>Bookings</h2>
+        <input type="text" id="searchInput" placeholder="Search Bookings Here...">
+        <ul class="responsive-table">
+            <li class="table-header">
+                <div class="col col-1">User</div>
+                <div class="col col-2">Session</div>
+                <div class="col col-3">Recommended Time</div>
+                <div class="col col-4">Created at</div>
+                <div class="col col-5">Action</div>
+            </li>
+            {% for booking in bookings %}
+                <li class="table-row"
+                    data-search="{{ booking.user_id }} {{ booking.session_id.name }} {{ booking.recommended_time }} {{ booking.created_at }}">
+                    <div class="col col-1">{{ booking.user_id }}</div>
+                    <div class="col col-2">{{ booking.session_id.name }}</div>
+                    <div class="col col-3">{{ booking.recommended_time }}</div>
+                    <div class="col col-4">{{ booking.created_at }}</div>
+                    <div class="col col-5">
+                        <form action="{% url 'delete_booking' booking.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="submit" value="Delete">
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Add pagination controls below the table -->
+        <div id="pagination">
+            <button id="prevBtn" disabled>Prev</button>
+            <span id="pageInfo"></span>
+            <button id="nextBtn">Next</button>
+        </div>
+    </div>
+
+    <!-- Add your custom JavaScript code here -->
+{% endblock %}
+
+{% block script %}
+<script>
+    // Function to toggle the display of time objects when "Show More" button is clicked
+    function toggleTimeObjects(event) {
+        var wrapper = event.target.closest(".table-row");
+        var timeObjectsContainer = wrapper.querySelector(".time-objects-container");
+        wrapper.classList.toggle("show-time-objects");
+    }
+
+    // Add event listeners to "Show More" buttons
+    var showMoreButtons = document.getElementsByClassName("show-more-btn");
+    for (var i = 0; i < showMoreButtons.length; i++) {
+        var button = showMoreButtons[i];
+        button.addEventListener("click", toggleTimeObjects);
+    }
+</script>
+<script>
+    // Get the input field and the table
+    var input = document.getElementById("searchInput");
+    var table = document.querySelector(".responsive-table");
+
+    // Get the pagination controls
+    var prevBtn = document.getElementById("prevBtn");
+    var nextBtn = document.getElementById("nextBtn");
+    var pageInfo = document.getElementById("pageInfo");
+
+    // Set the number of rows to display per page
+    var rowsPerPage = 3;
+
+    // Set the initial current page to 1
+    var currentPage = 1;
+
+    // Add event listeners to the prev and next buttons
+    prevBtn.addEventListener("click", function () {
+        currentPage--;
+        showPage();
+    });
+    nextBtn.addEventListener("click", function () {
+        currentPage++;
+        showPage();
+    });
+
+    // Function to show the current page of rows
+    function showPage() {
+        // Get all the rows in the table
+        var rows = table.querySelectorAll(".table-row");
+
+        // Filter the rows based on the search query
+        var filter = input.value.toUpperCase();
+        var filteredRows = [];
+        for (var i = 0; i < rows.length; i++) {
+            var txtValue = rows[i].getAttribute("data-search");
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                filteredRows.push(rows[i]);
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+
+        // Calculate the start and end index of the rows to display
+        var startIndex = (currentPage - 1) * rowsPerPage;
+        var endIndex = startIndex + rowsPerPage;
+
+        // Loop through all the filtered rows and hide those that are not on the current page
+        for (var i = 0; i < filteredRows.length; i++) {
+            if (i >= startIndex && i < endIndex) {
+                filteredRows[i].style.display = "";
+            } else {
+                filteredRows[i].style.display = "none";
+            }
+        }
+
+        // Update the pageInfo text
+        pageInfo.textContent = "Page " + currentPage;
+
+        // Enable or disable the prev and next buttons
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = endIndex >= filteredRows.length;
+    }
+
+    // Add an event listener to the input field to listen for changes
+    input.addEventListener("keyup", function () {
+        // Reset the pagination when the search query changes
+        currentPage = 1;
+        showPage();
+    });
+
+    // Show the initial page
+    showPage();
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('.alert').delay(3000).fadeOut(300);
+    });
+</script>
+{% endblock %}
