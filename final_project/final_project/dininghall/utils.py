@@ -3,6 +3,8 @@ import openpyxl
 from django.http import HttpResponse
 import os
 from .models import table_session, table_time, table_live_booking
+from django.db import transaction
+
 
 def fetch_all_session_objects():
     return table_session.objects.all()
@@ -252,7 +254,44 @@ def validate_dates(start_date: str, end_date: str, date_format: str = '%Y-%m-%d'
 # DOWNLOAD REPORT FUNTIONS END #
 
 # Upload Live Booking START
+def process_upload(request):
+    excel_file = request.FILES['excel_file']
 
+    if excel_file.name.endswith('.xlsx'):
+        try:
+            workbook = openpyxl.load_workbook(excel_file)
+            worksheet = workbook.active
+        except Exception as e:
+            return {'error': f'Error reading Excel file: {e}'}
+
+        # validate required columns
+        required_columns = ['Arrival Time', 'Served Time', 'Depart Time', 'Booking ID']
+        headers = [cell.value for cell in worksheet[1]]
+        missing_columns = [col for col in required_columns if col not in headers]
+        if missing_columns:
+            return {'error': f'Missing required columns: {", ".join(missing_columns)}'}
+
+        with transaction.atomic():
+            for row in worksheet.iter_rows(min_row=2, values_only=True):
+                arrival_time = row[0]
+                served_time = row[1]
+                depart_time = row[2]
+                bookings_id = row[3]
+                if table_booking_dininghall.objects.filter(id=bookings_id).exists():
+                    bookings, created = table_live_booking.objects.update_or_create(
+                        arrival_time=arrival_time,
+                        served_time=served_time,
+                        depart_time=depart_time,
+                        bookings_id_id=bookings_id
+                    )
+
+        return {'success': 'Live Booking imported successfully.'}
+    else:
+        return {'error': 'Invalid file format. Please upload an Excel file (.xlsx).'}
+
+
+def get_upload_live_booking_file_context(request):
+    return {'email': request.user.email}
 # Upload Live Booking END
 
 # Dashboard Context START
@@ -268,10 +307,10 @@ def get_dashboard_context(request):
 
     line_data = get_line_chart_info()
 
-    major_data = get_major_chart_info()
+    major_data = get_major_chart_info(date=current_date)
 
-    todays_bookings_count = get_todays_bookings_count()
-    today_remaining_seats = get_todays_remaining_seats()
+    todays_bookings_count = get_bookings_count(date=current_date)
+    today_remaining_seats = get_remaining_seats(date=current_date)
     todays_bookings_count, today_remaining_seats = get_total_seat_info(date=current_date)
     
     total_remaining_seats, total_bookings_count = get_total_seat_info()
@@ -284,9 +323,12 @@ def get_dashboard_context(request):
     print(f"Average depart time: {avg_dining_time}")
     average_stay_time = get_average_stay_time(current_date)
     print(f"Average stay time for on: {average_stay_time}")
-    
-    
+    average_queue_time_data = get_average_n_queue_time_chart_info(date=current_date)
+    average_queue_time_per_session = get_average_session_queue_time_chart_info(date=current_date)
+
     context = {
+        'antrian_n_hari' : average_queue_time_data,
+        'antrian_per_sesi' : average_queue_time_per_session, 
         'bar_data' : bar_data,
         'line_data' : line_data,
         'major_data': major_data,
@@ -307,12 +349,110 @@ def get_dashboard_context(request):
 # Dashboard Context END
 
 ### GET CHART DATA START ###
-def get_major_chart_info():
-    # Count the number of bookings for each major
-    results = table_booking_dininghall.objects.values('user_id__major').annotate(count=Count('user_id__major'))
+def get_average_n_queue_time_chart_info(date, n = 7):
+    labels = []
+    queues_data = []
+    # Get today's date
+
+    # Calculate the start date as n days before the given date
+    start_date = date - timedelta(days=n)
+
+    # Create a list of dates for the last n days
+    dates = [start_date + timedelta(days=i) for i in range(n+1)]
+
+
+    for date in dates:
+        labels.append(date.strftime('%Y-%m-%d'))
+        queues_data.append(get_average_queue_time_in_seconds(target_date=date))
+
+    data = {
+        'labels': labels,
+        'datasets': [
+            {
+                'label': 'Queue Time in Seconds',
+                'data': queues_data,
+                'backgroundColor': 'rgba(255, 255, 0, .1)',
+                'fill': True
+            },
+        ]
+    }
+    data_json = json.dumps(data)
+    return data_json
+
+from datetime import timedelta
+import json
+
+def get_average_session_queue_time_chart_info(date, n=0, selected_session=None):
+    labels = []
+    if selected_session:
+        sessions = [selected_session]
+    else:
+        sessions = [table_session.breakfast, table_session.lunch, table_session.dinner]
+
+    session_hours = {
+        table_session.breakfast: range(7, 9),
+        table_session.lunch: range(11, 14),
+        table_session.dinner: range(17, 20)
+    }
+    session_data = {session: [[] for _ in range(48)] for session in sessions}
+    base_colors = ["rgba(0, 156, 255, .99)", "rgba(255, 99, 132, .99)", "rgba(75, 192, 192, .99)"]
+
+    start_date = date - timedelta(days=n)
+    dates = [start_date + timedelta(days=i) for i in range(n+1)]
+
+    for date in dates:
+        labels.append(date.strftime('%Y-%m-%d'))
+        for session in sessions:
+            queue_times = get_average_queue_time_in_seconds_for_session(target_date=date,session_hours=session_hours , session=session)
+            for i, queue_time in enumerate(queue_times):
+                hour = i // 2
+                if hour not in session_hours[session]:
+                    continue
+                session_data[session][i].append(queue_time)
+
+    datasets = []
+    for session, base_color in zip(sessions, base_colors):
+        color_step = int(255 / (len(session_hours[session]) * 2))
+        for i in range(48):
+            hour = i // 2
+            if hour not in session_hours[session]:
+                continue
+            minute = i % 2 * 30
+            color_index = list(session_hours[session]).index(hour) * 2 + minute // 30
+            color_value = color_index * color_step
+            r, g, b, a = [int(x) if x.isnumeric() else float(x) for x in base_color[5:-1].split(',')]
+            alpha = max(0.2, a - color_value / 255)
+            color = f"rgba({r}, {g}, {b}, {alpha})"
+            datasets.append({
+                'label': f"{session} - {hour}:{minute:02d}",
+                'data': session_data[session][i],
+                "backgroundColor": color,
+                'fill': False
+            })
+
+    data = {
+        'labels': labels,
+        'datasets': datasets
+    }
+    data_json = json.dumps(data)
+    return data_json
+
+
+def get_major_chart_info(date, n=0):
+    # Calculate the start date as n days before the given date
+    start_date = date - timedelta(days=n)
+
+    # Calculate the average queue time for each major
+    results = table_live_booking.objects.filter(
+        bookings_id__session_id__date__range=(start_date, date),
+        served_time__isnull=False,
+        arrival_time__isnull=False,
+    ).annotate(
+        queue_time=F('served_time') - F('arrival_time')
+    ).values('bookings_id__user_id__major').annotate(avg_queue_time=Avg('queue_time'))
 
     # Format the results as a dictionary
-    data = {result['user_id__major']: result['count'] for result in results}
+    data = {result['bookings_id__user_id__major']: result['avg_queue_time'].total_seconds() for result in results}
 
     # You can then use this data to populate the 'data' field in your chart
     label = ["IBDA", "IEE", "CFP", "BMS", "SCCE", "ASD"]
@@ -334,13 +474,10 @@ def get_major_chart_info():
     data_json = json.dumps(chart_data)
     return data_json
 
-
-
 from .models import table_booking_dininghall
 from django.db.models import Count, Sum
 from datetime import date, timedelta
 import json
-
 
 def get_bar_chart_data():
     # Get the start and end dates for the week
@@ -425,17 +562,14 @@ def get_line_chart_info():
 from django.utils import timezone
 from .models import table_booking_dininghall
 
-def get_todays_bookings_count():
-    today = timezone.now().date()
-    todays_bookings_count = table_booking_dininghall.objects.filter(session_id__date=today).count()
+def get_bookings_count(date):
+    todays_bookings_count = table_booking_dininghall.objects.filter(session_id__date=date).count()
     return todays_bookings_count
-
 
 from django.utils import timezone
 from .models import table_booking_dininghall, table_time
 
-def get_todays_remaining_seats():
-    date = timezone.now().date()
+def get_remaining_seats(date):
     seat_limit = table_time.objects.filter(session_id__date=date).aggregate(Sum('seat_limit'))['seat_limit__sum']
     bookings_count = table_booking_dininghall.objects.filter(session_id__date=date).count()
     if seat_limit is not None:
@@ -562,4 +696,103 @@ def get_average_stay_time(target_date: date):
         average_stay_time_str = None
 
     return average_stay_time_str
+
+def get_average_dining_time_in_seconds(target_date):
+    # Filter the table_live_booking queryset by the desired date, session, and depart_time
+    dining_times = table_live_booking.objects.filter(
+        bookings_id__session_id__date=target_date,
+        served_time__isnull=False
+    )
+
+    # Calculate the average dining time
+    average_dining_time = dining_times.aggregate(
+        avg_dining_time=Avg(F('depart_time') - F('served_time'))
+    )['avg_dining_time']
+
+    # Calculate the total number of seconds for the average dining time
+    if average_dining_time is not None:
+        total_seconds = int(average_dining_time.total_seconds())
+    else:
+        total_seconds = None
+
+    return total_seconds
+
+def get_average_dining_time_in_minutes(target_date):
+    # Filter the table_live_booking queryset by the desired date, session, and depart_time
+    dining_times = table_live_booking.objects.filter(
+        bookings_id__session_id__date=target_date,
+        served_time__isnull=False
+    )
+
+    # Calculate the average dining time
+    average_dining_time = dining_times.aggregate(
+        avg_dining_time=Avg(F('depart_time') - F('served_time'))
+    )['avg_dining_time']
+
+    # Calculate the total number of minutes for the average dining time
+    if average_dining_time is not None:
+        total_seconds = int(average_dining_time.total_seconds())
+        total_minutes = total_seconds // 60
+    else:
+        total_minutes = None
+
+    return total_minutes
+
+def get_average_queue_time_in_seconds(target_date, session=False):
+    # Filter the table_live_booking queryset by the desired date, session, and served_time
+    queue_times = table_live_booking.objects.filter(
+    bookings_id__session_id__date=target_date,
+    served_time__isnull=False,
+    )
+    if session:
+        queue_times = queue_times.filter(bookings_id__session_id__name=session)
+
+    # Calculate the average queue time
+    average_queue_time = queue_times.aggregate(
+        avg_queue_time=Avg(F('served_time') - F('arrival_time'))
+    )['avg_queue_time']
+
+    # Calculate the total number of minutes for the average queue time
+    if average_queue_time is not None:
+        total_seconds = int(average_queue_time.total_seconds())
+    else:
+        total_seconds = 0
+
+    return total_seconds
+
+def get_average_queue_time_in_seconds_for_session(target_date, session_hours, session=None):
+    average_queue_times = []
+    for hour in range(24):
+        for minute in [0, 30]:
+            if session and hour not in session_hours[session]:
+                average_queue_times.append(0)
+                continue
+
+            # Filter the table_live_booking queryset by the desired date, session, served_time, hour, and minute
+            queue_times = table_live_booking.objects.filter(
+                bookings_id__session_id__date=target_date,
+                served_time__isnull=False,
+                arrival_time__hour=hour,
+                arrival_time__minute__gte=minute,
+                arrival_time__minute__lt=minute+30
+            )
+            if session:
+                queue_times = queue_times.filter(bookings_id__session_id__name=session)
+
+            # Calculate the average queue time
+            average_queue_time = queue_times.aggregate(
+                avg_queue_time=Avg(F('served_time') - F('arrival_time'))
+            )['avg_queue_time']
+
+            # Calculate the total number of minutes for the average queue time
+            if average_queue_time is not None:
+                total_seconds = int(average_queue_time.total_seconds())
+            else:
+                total_seconds = 0
+
+            average_queue_times.append(total_seconds)
+
+    return average_queue_times
+
+
 ### GET CHART DATA END ###

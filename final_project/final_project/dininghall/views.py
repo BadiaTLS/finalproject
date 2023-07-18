@@ -5,6 +5,8 @@ from django.db import transaction
 from .utils import *
 from datetime import time
 from .models import table_booking_dininghall, table_live_booking
+from django.http import JsonResponse
+
 
 def dininghall_required(view_func):
     def wrapped_view(request, *args, **kwargs):
@@ -230,48 +232,26 @@ def upload_live_booking_file(request):
         context = get_upload_live_booking_file_context(request)
         return render(request, 'dininghall/upload_live_booking_file.html', context)
 
+@dininghall_required
+def index(request):
+    return render(request, 'dininghall/index.html')
 
-def process_upload(request):
-    excel_file = request.FILES['excel_file']
+@dininghall_required
+def update_text(request, value):
+    print(value)
+    # Your logic to get the updated text from the database or any other source
+    updated_text = f"Data {value} Minggu"
 
-    if excel_file.name.endswith('.xlsx'):
-        try:
-            workbook = openpyxl.load_workbook(excel_file)
-            worksheet = workbook.active
-        except Exception as e:
-            return {'error': f'Error reading Excel file: {e}'}
-
-        # validate required columns
-        required_columns = ['Arrival Time', 'Served Time', 'Depart Time', 'Booking ID']
-        headers = [cell.value for cell in worksheet[1]]
-        missing_columns = [col for col in required_columns if col not in headers]
-        if missing_columns:
-            return {'error': f'Missing required columns: {", ".join(missing_columns)}'}
-
-        with transaction.atomic():
-            for row in worksheet.iter_rows(min_row=2, values_only=True):
-                arrival_time = row[0]
-                served_time = row[1]
-                depart_time = row[2]
-                bookings_id = row[3]
-                if table_booking_dininghall.objects.filter(id=bookings_id).exists():
-                    bookings, created = table_live_booking.objects.update_or_create(
-                        arrival_time=arrival_time,
-                        served_time=served_time,
-                        depart_time=depart_time,
-                        bookings_id_id=bookings_id
-                    )
-
-        return {'success': 'Live Booking imported successfully.'}
-    else:
-        return {'error': 'Invalid file format. Please upload an Excel file (.xlsx).'}
+    current_date = datetime.now()
 
 
-def get_upload_live_booking_file_context(request):
-    return {'email': request.user.email}
+    data = get_average_n_queue_time_chart_info(date=current_date, n=7*int(value))
+    print(data)
+
+    # Return the updated text as a JSON response
+    return JsonResponse({'text': updated_text, 'data': data})
 
 # Not Dining Hall Goes Here
-
 def not_dininghall(request):
     messages.error(request, 'You are not authorized to access dining hall resources. You need the Dining Hall role.', extra_tags='error')
     return redirect('login')
