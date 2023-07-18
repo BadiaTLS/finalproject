@@ -90,18 +90,16 @@
 
             {% block template %}
             <!-- Grafik Rata-Rata Lama Antrian per N hari-->
-            <!-- Sales Chart Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-light text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <h6 class="mb-0">Rata-Rata Lama Antrian</h6>
-                                <div id="textToUpdate">Data 1 Minggu</div>
+                                <div id="textToUpdate">Data 7 Hari</div>
                                 <div>
-                                    <button id="updateButton", value="1">1 Minggu</button>
-                                    <button id="updateButton2", value="2">2 Minggu</button>
-                                    <button id="updateButton3", value="3">3 Minggu</button>
+                                    <input type="number" id="inputValue" placeholder="Enter value">
+                                    <button id="submitButton">Submit</button>
                                 </div>
                             </div>
                             <canvas id="antrian-n-hari"></canvas>
@@ -122,6 +120,37 @@
             <!-- Grafik Rata-Rata Lama Antrian setiap sesi per hari-->
 
             <!-- Grafik Rata-Rata Lama Antrian per grup major per hari -->
+
+
+
+            <!-- Linear Regressions START -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="row g-4">
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-light text-center rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">Linear Regression JS</h6>
+                                <a href="">Reload</a>
+                            </div>
+                            <div id="regressionEquation"></div>
+                            <canvas id="regressionChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-light text-center rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">Clustering JS</h6>
+                                <a href="">Reload</a>
+                            </div>
+                            <canvas id="clusteringChart"></canvas>
+                            <div id="iterations"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Linear Regression END -->
+
+
+            </div>
 
             <!-- Sales Chart Start -->
             <div class="container-fluid pt-4 px-4">
@@ -150,37 +179,7 @@
                             <canvas id="major-chart" style="max-height: 30rem; max-width: 30rem;"></canvas>
                         </div>
                     </div>
-
                 </div>
-            </div>
-            <!-- Sales Chart End -->
-
-            <!-- Linear Regressions START -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="row g-4">
-                    <div class="col-sm-12 col-xl-6">
-                        <div class="bg-light text-center rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Linear Regression JS</h6>
-                                <a href="">Show All</a>
-                            </div>
-                            <div id="regressionEquation"></div>
-                            <canvas id="regressionChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-xl-6">
-                        <div class="bg-light text-center rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Clustering JS</h6>
-                                <a href="">Show All</a>
-                            </div>
-                            <canvas id="clusteringChart"></canvas>
-                            <div id="iterations"></div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Linear Regression END -->
-
                 <!-- Recent Booking Start -->
                 <div class="container-fluid pt-4 px-4">
                     <div class="bg-light text-center rounded p-4">
@@ -213,112 +212,129 @@
                     </div>
                 </div>
                 <!-- Recent Booking End -->
-                {% endblock %}
 
-                <!-- Footer Start -->
-                <div class="container-fluid pt-4 px-4">
-                    <div class="bg-light rounded-top p-4">
-                        <div class="row">
-                            <div class="col-12 col-sm-6 text-center text-sm-start">
-                                &copy; <a href="#">Your Site Name</a>, All Right Reserved.
-                            </div>
-                            <div class="col-12 col-sm-6 text-center text-sm-end">
-                                <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                                Designed By <a href="https://htmlcodex.com">HTML Codex</a>
-                            </div>
+
+            </div>
+            <!-- Sales Chart End -->
+            {% endblock %}
+
+            <!-- Footer Start -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="bg-light rounded-top p-4">
+                    <div class="row">
+                        <div class="col-12 col-sm-6 text-center text-sm-start">
+                            &copy; <a href="#">Your Site Name</a>, All Right Reserved.
+                        </div>
+                        <div class="col-12 col-sm-6 text-center text-sm-end">
+                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                            Designed By <a href="https://htmlcodex.com">HTML Codex</a>
                         </div>
                     </div>
                 </div>
-                <!-- Footer End -->
             </div>
+            <!-- Footer End -->
             <!-- Content End -->
 
-            <!-- Back to Top -->
+            <!-- Back to Top Button-->
             <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
         </div>
     </div>
 
-<!-- SCRIPTS START -->
-<!-- SCRIPTS START -->
-<script>
-    let antriannChart; // Declare the chart variable globally
-    
-    function showChart() {
-        // avg antrain n hari
-        const antrianctx = $("#antrian-n-hari").get(0).getContext("2d");
-        antriannChart = new Chart(antrianctx, {
-            type: "line",
-            data: JSON.parse('{{ antrian_n_hari |safe }}'),
-            options: {
-                responsive: true
-            }
-        });
-    }
+    <!-- SCRIPTS START -->
+    <!-- SCRIPTS START -->
+    <script>
+        let antriannChart; // Declare the chart variable globally
 
-    // Call the showChart function initially to render the chart
-    showChart();
-
-    // JavaScript to send an AJAX request to the Django view
-    function updateChart(event) {
-        const value = event.target.value;
-        fetch(`dininghallupdate_text/${value}/`)
-            .then(response => response.json())
-            .then(data => {
-                // Update the HTML element with the new text
-                document.getElementById('textToUpdate').innerHTML = data.text;
-
-                if (antriannChart) {
-                    antriannChart.destroy(); // Destroy the previous chart instance
-                    // Optionally, you can set the variable to null if you want to ensure that no chart instance exists
+        function showChart() {
+            // avg antrain n hari
+            const antrianctx = $("#antrian-n-hari").get(0).getContext("2d");
+            antriannChart = new Chart(antrianctx, {
+                type: "line",
+                data: JSON.parse('{{ antrian_n_hari |safe }}'),
+                options: {
+                    responsive: true
                 }
-                console.log(data);
-                // avg antrain n hari
-                const antrianctx = $("#antrian-n-hari").get(0).getContext("2d");
-                antriannChart = new Chart(antrianctx, {
-                    type: "line",
-                    data: JSON.parse(data.data),
-                    options: {
-                        responsive: true
-                    }
-                });
-            })
-            .catch(error => console.error('Error:', error));
-    }
+            });
+        }
 
-    // Call the updateChart function when the button is clicked
-    document.getElementById('updateButton').addEventListener('click', updateChart);
-    document.getElementById('updateButton2').addEventListener('click', updateChart);
-    document.getElementById('updateButton3').addEventListener('click', updateChart);
-</script>
+        // Call the showChart function initially to render the chart
+        showChart();
+
+        // JavaScript to send an AJAX request to the Django view
+        function updateChart(event) {
+            // const value = event.target.value;
+            const value = document.getElementById("inputValue").value;
+            fetch(`dininghallupdate_text/${value}/`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update the HTML element with the new text
+                    document.getElementById('textToUpdate').innerHTML = data.text;
+
+                    if (antriannChart) {
+                        antriannChart.destroy(); // Destroy the previous chart instance
+                        // Optionally, you can set the variable to null if you want to ensure that no chart instance exists
+                    }
+                    console.log(data);
+                    // avg antrain n hari
+                    const antrianctx = $("#antrian-n-hari").get(0).getContext("2d");
+                    antriannChart = new Chart(antrianctx, {
+                        type: "line",
+                        data: JSON.parse(data.data),
+                        options: {
+                            responsive: true
+                        }
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent the default form submission behavior
+
+            // Get the value entered by the user
+            console.log("It's working");
+            const value = document.getElementById("inputValue").value;
+
+            // Call the updateChart function with the user-inputted value
+            updateChart(value);
+        }
+
+        // Call the updateChart function when the button is clicked
+        document.getElementById("submitButton").addEventListener("click", handleSubmit);
+    // document.getElementById('updateButton').addEventListener('click', updateChart);
+    // document.getElementById('updateButton2').addEventListener('click', updateChart);
+    // document.getElementById('updateButton3').addEventListener('click', updateChart);
+    </script>
 
 
     <script>
         window.onload = function () {
-            var x_values = [0, 1, 2, 3, 4, 5];
-            var y_values = [1, 4, 6, 9, 3, 5];
+            showAllchart()
+            showCluster()
 
-            developLrModel(x_values, y_values);
+            var xnumbersJson = '{{ x_lr | safe }}';
+            var ynumbersJson = '{{ y_lr | safe }}';
 
+            var xprednumbersJson = '{{ x_lr_p | safe }}';
+            var yprednumbersJson = '{{ y_lr_p | safe }}';
+            // Parse the JSON string back to an array of numbers
+            var xnumb = JSON.parse(xnumbersJson);
+            var ynumb = JSON.parse(ynumbersJson);
+
+            var xpred = JSON.parse(xprednumbersJson);
+            var ypred = JSON.parse(yprednumbersJson);
+
+            developLrModel(xnumb, ynumb, xpred, ypred);
+        };
+        function showCluster() {
             let x_cluster = [68, 74, 87, 69, 70, 49, 72, 48, 65, 66, 69, 88, 57, 62, 63, 73, 84, 46, 96, 68, 52, 65, 92, 43, 76, 83, 87, 77, 68, 80, 60, 73, 55, 81, 57, 76, 74, 87, 56, 88, 62, 75, 58, 96, 68, 51, 59, 47, 85, 61];
             let y_cluster = [22.5, 21.5, 19.6, 20.3, 18.3, 22.4, 20.4, 18.8, 21.6, 19.1, 20.3, 18.3, 22.5, 19.6, 20.2, 18.2, 19.4, 22.5, 18.5, 20.6, 22.1, 19.1, 18.6, 22.1, 19.2, 18.8, 19.2, 20.3, 20.3, 19.2, 21.1, 18.3, 22.6, 18.7, 22.2, 19.3, 20.4, 19.5, 21.2, 18.4];
 
-
             let k = 3;
             developClusteringModel(x_cluster, y_cluster, k);
+        }
 
-            const navItems = document.querySelectorAll('.linky');
-
-            navItems.forEach(item => {
-                item.addEventListener('click', event => {
-                    // Remove active class from current active nav item
-                    document.querySelector('.linky.active').classList.remove('active');
-
-                    // Add active class to clicked nav item
-                    event.target.classList.add('active');
-                });
-            });
-
-
+        function showAllchart() {
             // avg antrain n hari setiap sesi
             var ctx2 = $("#antrian-setiap-sesi").get(0).getContext("2d");
             var myChart2 = new Chart(ctx2, {
@@ -359,28 +375,8 @@
                     responsive: true
                 }
             });
-            // Gender Chart
-            var ctx5 = $("#gender-chart").get(0).getContext("2d");
-            var myChart5 = new Chart(ctx5, {
-                type: "doughnut",
-                data: {
-                    labels: ["Male", "FeMale"],
-                    datasets: [{
-                        backgroundColor: [
-                            "rgba(255, 99, 132, 0.7)",
-                            "rgba(54, 162, 235, 0.7)",
-                        ],
-                        data: [2, 1,]
-                    }]
-                },
-                options: {
-                    responsive: true
-                }
-            });
-        };
+        }
     </script>
-
-
 
     <!-- Template Javascript -->
     {% load static %}

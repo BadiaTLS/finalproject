@@ -326,6 +326,10 @@ def get_dashboard_context(request):
     average_queue_time_data = get_average_n_queue_time_chart_info(date=current_date)
     average_queue_time_per_session = get_average_session_queue_time_chart_info(date=current_date)
 
+    x_lr, y_lr, x_lr_p, y_lr_p = get_lr_data(date=current_date)
+
+    print(x_lr, y_lr, x_lr_p, y_lr_p)
+
     context = {
         'antrian_n_hari' : average_queue_time_data,
         'antrian_per_sesi' : average_queue_time_per_session, 
@@ -342,6 +346,10 @@ def get_dashboard_context(request):
         'avg_queue_time': avg_queue_time,
         'avg_dining_time': avg_dining_time, 
         'average_stay_time': average_stay_time,
+        'x_lr': x_lr,
+        'y_lr': y_lr,
+        'x_lr_p': x_lr_p,
+        'y_lr_p': y_lr_p,
         'email' : request.user.email,
     }
     return context
@@ -378,6 +386,53 @@ def get_average_n_queue_time_chart_info(date, n = 7):
     }
     data_json = json.dumps(data)
     return data_json
+
+### GET LR Data ###
+def get_lr_data(date, n=30, predicted_n=7):
+    labels = []
+    queues_data = []
+
+    # Calculate the start date as n days before the given date
+    start_date = date - timedelta(days=n)
+
+    # Create a list of dates for the last n days (excluding Saturdays and Sundays)
+    for i in range(n + 1):
+        current_date = start_date + timedelta(days=i)
+        if current_date.weekday() < 5:  # Monday is 0, Friday is 4 (0 to 4 are weekdays)
+            labels.append(current_date.strftime('%Y-%m-%d'))
+            queues_data.append(get_average_queue_time_in_seconds(target_date=current_date))
+
+    x_values = labels
+    y_values = queues_data
+
+    xnumbersJson = json.dumps(x_values)
+    ynumbersJson = json.dumps(y_values)
+
+    # Predict the queue time for the next 'predicted_n' days using Moving Average
+    predicted_x_values, predicted_y_values = moving_average_forecast(x_values, y_values, window_size=3, num_steps=predicted_n)
+
+    # Convert the predicted_x_values to JSON
+    predicted_x_numbers_json = json.dumps(predicted_x_values)
+
+    # Convert the predicted_y_values to JSON
+    predicted_y_numbers_json = json.dumps(predicted_y_values)
+
+    return xnumbersJson, ynumbersJson, predicted_x_numbers_json, predicted_y_numbers_json
+
+
+### Predict MA Data ###
+import pandas as pd
+def moving_average_forecast(dates, values, window_size, num_steps):
+    # Calculate the moving average for the given window size
+    moving_average = sum(values[-window_size:]) / window_size
+
+    # Predict the next few days using the last available moving average value
+    predicted_dates = pd.date_range(start=dates[-1], periods=num_steps+1)[1:]
+    predicted_values = [int(moving_average)] * num_steps
+
+    return [date.strftime('%Y-%m-%d') for date in predicted_dates], predicted_values
+
+
 
 from datetime import timedelta
 import json

@@ -238,15 +238,11 @@ def index(request):
 
 @dininghall_required
 def update_text(request, value):
-    print(value)
     # Your logic to get the updated text from the database or any other source
-    updated_text = f"Data {value} Minggu"
+    updated_text = f"Data {value} Hari"
 
     current_date = datetime.now()
-
-
-    data = get_average_n_queue_time_chart_info(date=current_date, n=7*int(value))
-    print(data)
+    data = get_average_n_queue_time_chart_info(date=current_date, n=int(value))
 
     # Return the updated text as a JSON response
     return JsonResponse({'text': updated_text, 'data': data})

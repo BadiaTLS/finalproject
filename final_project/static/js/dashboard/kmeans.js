@@ -105,16 +105,17 @@ function plotClusteringChart(data, centroids) {
         "rgba(153,102,255,0.6)",
         "rgba(255,159,64,0.6)"
     ];
-    for (let i = 0; i < Object.keys(clusters).length-1; i++) {
+    Object.keys(clusters).forEach((clusterKey, index) => {
         datasets.push({
-            label: "Cluster " + (i + 1),
-            data: clusters[i],
-            backgroundColor: colors[i % colors.length],
-            borderColor: colors[i % colors.length],
+            label: "Cluster " + (index + 1),
+            data: clusters[clusterKey],
+            backgroundColor: colors[index % colors.length],
+            borderColor: colors[index % colors.length],
             borderWidth: 1, 
             pointRadius: 5,
         });
-    }
+    });
+
 
     // Add centroids to datasets
     let centroidPoints = [];
@@ -137,12 +138,10 @@ function plotClusteringChart(data, centroids) {
         },
         options: {
             scales: {
-                xAxes: [
-                    {
-                        type: "linear",
-                        position: "bottom"
-                    }
-                ]
+                xAxes: [{
+                    type: 'linear',
+                    position: 'bottom'
+                }]
             }
         }
     });
