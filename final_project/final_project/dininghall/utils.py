@@ -318,17 +318,12 @@ def get_dashboard_context(request):
     todays_most_popular_session_name, todays_most_popular_session_count  = get_most_popular_session_info(date=current_date)
 
     avg_queue_time = get_average_queue_time(current_date)
-    print(f"Average queue time: {avg_queue_time}")
     avg_dining_time = get_average_dining_time(current_date)
-    print(f"Average depart time: {avg_dining_time}")
     average_stay_time = get_average_stay_time(current_date)
-    print(f"Average stay time for on: {average_stay_time}")
     average_queue_time_data = get_average_n_queue_time_chart_info(date=current_date)
     average_queue_time_per_session = get_average_session_queue_time_chart_info(date=current_date)
 
     x_lr, y_lr, x_lr_p, y_lr_p = get_lr_data(date=current_date)
-
-    print(x_lr, y_lr, x_lr_p, y_lr_p)
 
     context = {
         'antrian_n_hari' : average_queue_time_data,
