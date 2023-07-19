@@ -1,0 +1,28 @@
+<!-- myapp/templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Text Example</title>
+</head>
+<body>
+    <div id="textToUpdate">Initial text that will be updated.</div>
+    
+    <button id="updateButton">Update Text</button>
+
+    <script>
+        // JavaScript to send an AJAX request to the Django view
+        function updateText() {
+            fetch('{% url "update_text" %}')
+            .then(response => response.json())
+            .then(data => {
+                // Update the HTML element with the new text
+                document.getElementById('textToUpdate').innerHTML = data.text;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Call the updateText function when the button is clicked
+        document.getElementById('updateButton').addEventListener('click', updateText);
+    </script>
+</body>
+</html>

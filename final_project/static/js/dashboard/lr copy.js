@@ -24,24 +24,17 @@ function generatePredictedData(x_values, regressor) {
     return y_hat;
 }
 
-function plotRegressionChart(x_values, y_values, x_predictions, y_predictions, regressor, x_valuess, x_predictionss) {
-    var all_x_values = x_valuess.concat(x_predictionss);
+function plotRegressionChart(x_values, y_values, x_predictions, y_predictions, regressor) {
+    var all_x_values = x_values.concat(x_predictions);
     var y_hat_values = generatePredictedData(x_values, regressor);
     var y_hat_predictions = generatePredictedData(x_predictions, regressor);
 
     var ctx = document.getElementById('regressionChart').getContext('2d');
 
-    // Create an array of None values with the same length as x
-    let noneArray = new Array(y_hat_values.length-1).fill(null);
-
-    // Concatenate the noneArray and y arrays
-    let y_res = noneArray.concat(y_hat_predictions);
-    // console.log(y_res)
-
     var datasets = [{
         type: 'line',
-        label: 'True Values Line',
-        data: y_hat_values,
+        label: 'Line of Best Fit (r2: ' + String(regressor['r2']) + ')',
+        data: y_hat_values.concat(y_hat_predictions),
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.2)'
     }, {
@@ -50,12 +43,7 @@ function plotRegressionChart(x_values, y_values, x_predictions, y_predictions, r
         data: y_values,
         borderColor: 'rgb(0, 0, 0)',
         backgroundColor: 'rgb(0, 0, 0)',
-    }, {type: 'line',
-    label: 'Predictions Line',
-    data: y_res,
-    borderColor: 'rgb(110, 255, 132)',
-    backgroundColor: 'rgba(110, 255, 132, 0.2)'
-}];
+    }];
 
     if (typeof window.mixedChart !== 'undefined') {
         window.mixedChart.destroy();
@@ -65,27 +53,29 @@ function plotRegressionChart(x_values, y_values, x_predictions, y_predictions, r
         type: 'line',
         data: {
             datasets: datasets,
-            labels: all_x_values, // Use the original date strings for x-axis labels
+            labels: all_x_values.map((value) => value.toString())
         },
         options: {
             scales: {
                 x: {
-                    position: 'bottom',
+                    type: 'linear',
+                    position: 'bottom'
                 },
                 y: {
-                    beginAtZero: false,
-                },
-            },
-        },
+                    beginAtZero: false
+                }
+            }
+        }
     });
 }
+
 
 function developLrModel(x_values, y_values, x_predictions, y_predictions) {
     var x_values_timestamps = x_values.map((dateStr) => new Date(dateStr).getTime());
     var x_predictions_timestamps = x_predictions.map((dateStr) => new Date(dateStr).getTime());
 
     var regressor = linearRegression(x_values_timestamps, y_values);
-    plotRegressionChart(x_values_timestamps, y_values, x_predictions_timestamps, y_predictions, regressor, x_values, x_predictions);
+    plotRegressionChart(x_values, y_values, x_predictions, y_predictions, regressor);
 }
 
 // Test with the provided data and an additional dataset
@@ -103,6 +93,9 @@ var y_values = [43, 41, 46, 44, 44, 43, 47, 44, 43, 45, 45, 43, 46, 46, 43, 43, 
 var x_predictions = ["2023-07-20", "2023-07-21", "2023-07-22", "2023-07-23", "2023-07-24", "2023-07-25", "2023-07-26"];
 var y_predictions = [44, 44, 44, 44, 44, 44, 44];
 
-// developLrModel(x_values, y_values, x_predictions, y_predictions);
+var x_values_timestamps = x_values.map((dateStr) => new Date(dateStr).getTime());
+var x_predictions_timestamps = x_predictions.map((dateStr) => new Date(dateStr).getTime());
+
+developLrModel(x_values_timestamps, y_values, x_predictions_timestamps, y_predictions);
 
 
