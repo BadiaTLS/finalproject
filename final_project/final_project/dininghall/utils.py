@@ -323,7 +323,7 @@ def get_dashboard_context(request):
     average_queue_time_data = get_average_n_queue_time_chart_info(date=current_date)
     average_queue_time_per_session = get_average_session_queue_time_chart_info(date=current_date)
 
-    x_lr, y_lr, x_lr_p, y_lr_p = get_lr_data(date=current_date)
+    x_lr, y_lr, x_lr_p, y_lr_p, mad, mse, mape = get_lr_data(date=current_date)
 
     context = {
         'antrian_n_hari' : average_queue_time_data,
@@ -345,6 +345,9 @@ def get_dashboard_context(request):
         'y_lr': y_lr,
         'x_lr_p': x_lr_p,
         'y_lr_p': y_lr_p,
+        'mad' : mad,
+        'mse': mse,
+        'mape': mape,
         'email' : request.user.email,
     }
     return context
@@ -383,9 +386,9 @@ def get_average_n_queue_time_chart_info(date, n = 7):
     return data_json
 
 ### GET LR Data ###
-def get_lr_data(date, n=30, predicted_n=7):
-    labels = []
-    queues_data = []
+def get_lr_data(date, n=30):
+    original_dates = []
+    original_values = []
 
     # Calculate the start date as n days before the given date
     start_date = date - timedelta(days=n)
@@ -394,38 +397,73 @@ def get_lr_data(date, n=30, predicted_n=7):
     for i in range(n + 1):
         current_date = start_date + timedelta(days=i)
         if current_date.weekday() < 5:  # Monday is 0, Friday is 4 (0 to 4 are weekdays)
-            labels.append(current_date.strftime('%Y-%m-%d'))
-            queues_data.append(get_average_queue_time_in_seconds(target_date=current_date))
+            original_dates.append(current_date.strftime('%Y-%m-%d'))
+            original_values.append(get_average_queue_time_in_seconds(target_date=current_date))
 
-    x_values = labels
-    y_values = queues_data
-
-    xnumbersJson = json.dumps(x_values)
-    ynumbersJson = json.dumps(y_values)
+    x = ['2023-06-19', '2023-06-20', '2023-06-21', '2023-06-22', '2023-06-23', '2023-06-26', '2023-06-27', '2023-06-28', '2023-06-29', '2023-06-30', '2023-07-03', '2023-07-04', '2023-07-05', '2023-07-06', '2023-07-07', '2023-07-10', '2023-07-11', '2023-07-12', '2023-07-13', '2023-07-14', '2023-07-17', '2023-07-18', '2023-07-19'] 
+    y = [43, 41, 46, 44, 44, 43, 47, 44, 43, 45, 45, 43, 46, 46, 43, 43, 45, 41, 45, 44, 44, 44, 45]
+    window_size = 3
+    num_steps = 7
 
     # Predict the queue time for the next 'predicted_n' days using Moving Average
-    predicted_x_values, predicted_y_values = moving_average_forecast(x_values, y_values, window_size=3, num_steps=predicted_n)
+    predicted_x_values, predicted_y_values = moving_average_forecast(original_dates, original_values, window_size=window_size, num_steps=num_steps)
 
-    # Convert the predicted_x_values to JSON
+
+    # MA Evaluation
+    middle = len(original_values) // 2
+    training = original_values[:middle]
+    test = original_values[middle:]
+
+    predictions = sma(training)
+    mad, mse, mape = evaluate(predictions, test)
+    print(f"MAD: {mad:.2f}, MSE: {mse:.2f}, MAPE: {mape:.2%}")
+    mad = f"{mad:.2f}"
+    mse = f"{mse:.2f}"
+    mape = f"{mape:.2%}"
+
+    middle = len(original_values) // 2
+    # original_values[:middle] = [None] * middle
+
+
+    # Convert the values to JSON for plotting in HTML
+    xnumbersJson = json.dumps(original_dates)
+    ynumbersJson = json.dumps(original_values)
     predicted_x_numbers_json = json.dumps(predicted_x_values)
-
-    # Convert the predicted_y_values to JSON
     predicted_y_numbers_json = json.dumps(predicted_y_values)
-
-    return xnumbersJson, ynumbersJson, predicted_x_numbers_json, predicted_y_numbers_json
+    return xnumbersJson, ynumbersJson, predicted_x_numbers_json, predicted_y_numbers_json, mad, mse, mape
 
 
 ### Predict MA Data ###
+def sma(values, n=5, m=3):
+    """Calculate the simple moving average of the m most recent values in a list and predict the next n values."""
+    recent_values = values[-m:]
+    avg = sum(recent_values) / len(recent_values)
+    return [avg] * n
+
+def evaluate(predictions, actuals):
+    """Evaluate the performance of a prediction method by calculating the MAD, MSE, and MAPE."""
+    errors = [p - a for p, a in zip(predictions, actuals)]
+    mad = sum(abs(e) for e in errors) / len(errors)
+    mse = sum(e ** 2 for e in errors) / len(errors)
+    mape = sum(abs(e / a) for e, a in zip(errors, actuals)) / len(errors)
+    return mad, mse, mape
+
 import pandas as pd
 def moving_average_forecast(dates, values, window_size, num_steps):
     # Calculate the moving average for the given window size
     moving_average = sum(values[-window_size:]) / window_size
 
     # Predict the next few days using the last available moving average value
-    predicted_dates = pd.date_range(start=dates[-1], periods=num_steps+1)[1:]
-    predicted_values = [int(moving_average)] * num_steps
+    training_dates = dates[-window_size:]
+    training_values = [int(moving_average)] * window_size
 
-    return [date.strftime('%Y-%m-%d') for date in predicted_dates], predicted_values
+    print("TRAININD DATES AND VALUE", training_dates, training_values)
+
+    # Predict the next few days using the last available moving average value
+    test_future_dates = pd.date_range(start=dates[-1], periods=num_steps+1)[1:]
+    test_future_values = [int(moving_average)] * num_steps
+
+    return [date.strftime('%Y-%m-%d') for date in test_future_dates], test_future_values
 
 
 
