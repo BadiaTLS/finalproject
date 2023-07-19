@@ -304,9 +304,7 @@ def get_dashboard_context(request):
     recent_bookings = table_booking_dininghall.objects.order_by('-created_at')[:5]
 
     bar_data = get_bar_chart_data()
-
     line_data = get_line_chart_info()
-
     major_data = get_major_chart_info(date=current_date)
 
     todays_bookings_count = get_bookings_count(date=current_date)
@@ -314,7 +312,6 @@ def get_dashboard_context(request):
     todays_bookings_count, today_remaining_seats = get_total_seat_info(date=current_date)
     
     total_remaining_seats, total_bookings_count = get_total_seat_info()
-
     todays_most_popular_session_name, todays_most_popular_session_count  = get_most_popular_session_info(date=current_date)
 
     avg_queue_time = get_average_queue_time(current_date)
@@ -386,7 +383,7 @@ def get_average_n_queue_time_chart_info(date, n = 7):
     return data_json
 
 ### GET LR Data ###
-def get_lr_data(date, n=30):
+def get_lr_data(date, n=30, window_size = 3, num_steps = 0):
     original_dates = []
     original_values = []
 
@@ -402,8 +399,7 @@ def get_lr_data(date, n=30):
 
     x = ['2023-06-19', '2023-06-20', '2023-06-21', '2023-06-22', '2023-06-23', '2023-06-26', '2023-06-27', '2023-06-28', '2023-06-29', '2023-06-30', '2023-07-03', '2023-07-04', '2023-07-05', '2023-07-06', '2023-07-07', '2023-07-10', '2023-07-11', '2023-07-12', '2023-07-13', '2023-07-14', '2023-07-17', '2023-07-18', '2023-07-19'] 
     y = [43, 41, 46, 44, 44, 43, 47, 44, 43, 45, 45, 43, 46, 46, 43, 43, 45, 41, 45, 44, 44, 44, 45]
-    window_size = 3
-    num_steps = 7
+    
 
     # Predict the queue time for the next 'predicted_n' days using Moving Average
     predicted_x_values, predicted_y_values = moving_average_forecast(original_dates, original_values, window_size=window_size, num_steps=num_steps)
@@ -416,7 +412,7 @@ def get_lr_data(date, n=30):
 
     predictions = sma(training)
     mad, mse, mape = evaluate(predictions, test)
-    print(f"MAD: {mad:.2f}, MSE: {mse:.2f}, MAPE: {mape:.2%}")
+    # print(f"MAD: {mad:.2f}, MSE: {mse:.2f}, MAPE: {mape:.2%}")
     mad = f"{mad:.2f}"
     mse = f"{mse:.2f}"
     mape = f"{mape:.2%}"
@@ -431,7 +427,6 @@ def get_lr_data(date, n=30):
     predicted_x_numbers_json = json.dumps(predicted_x_values)
     predicted_y_numbers_json = json.dumps(predicted_y_values)
     return xnumbersJson, ynumbersJson, predicted_x_numbers_json, predicted_y_numbers_json, mad, mse, mape
-
 
 ### Predict MA Data ###
 def sma(values, n=5, m=3):
@@ -454,18 +449,10 @@ def moving_average_forecast(dates, values, window_size, num_steps):
     moving_average = sum(values[-window_size:]) / window_size
 
     # Predict the next few days using the last available moving average value
-    training_dates = dates[-window_size:]
-    training_values = [int(moving_average)] * window_size
-
-    print("TRAININD DATES AND VALUE", training_dates, training_values)
-
-    # Predict the next few days using the last available moving average value
-    test_future_dates = pd.date_range(start=dates[-1], periods=num_steps+1)[1:]
+    test_future_dates = pd.date_range(start=dates[-2], periods=num_steps+2)[1:]
     test_future_values = [int(moving_average)] * num_steps
 
     return [date.strftime('%Y-%m-%d') for date in test_future_dates], test_future_values
-
-
 
 from datetime import timedelta
 import json

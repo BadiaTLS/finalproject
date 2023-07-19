@@ -239,13 +239,31 @@ def index(request):
 @dininghall_required
 def update_text(request, value):
     # Your logic to get the updated text from the database or any other source
-    updated_text = f"Data {value} Hari"
-
+    updated_text = f"Average Queue Time for {value} day"
+    if int(value) > 1: 
+        updated_text = f"Average Queue Time for {value} days"
+        
     current_date = datetime.now()
     data = get_average_n_queue_time_chart_info(date=current_date, n=int(value))
 
     # Return the updated text as a JSON response
     return JsonResponse({'text': updated_text, 'data': data})
+
+@dininghall_required
+def update_lrchart(request, bar):
+    # Your logic to get the updated text from the database or any other source
+    updated_text = f"Prediction for {bar} upcoming day"
+    if int(bar) > 1: 
+        updated_text = f"Prediction for {bar} upcoming days"
+
+    current_date = datetime.now()
+    # print(bar)
+    x_lr, y_lr, x_lr_p, y_lr_p, mad, mse, mape = get_lr_data(date=current_date, num_steps=int(bar))
+
+    lr_data = [x_lr, y_lr, x_lr_p, y_lr_p, mad, mse, mape]
+
+    # Return the updated text as a JSON response
+    return JsonResponse({'text': updated_text, 'lr_data': lr_data})
 
 # Not Dining Hall Goes Here
 def not_dininghall(request):

@@ -31,10 +31,17 @@ function plotRegressionChart(x_values, y_values, x_predictions, y_predictions, r
 
     var ctx = document.getElementById('regressionChart').getContext('2d');
 
+    // Create an array of None values with the same length as x
+    let noneArray = new Array(y_hat_values.length-1).fill(null);
+
+    // Concatenate the noneArray and y arrays
+    let y_res = noneArray.concat(y_hat_predictions);
+    // console.log(y_res)
+
     var datasets = [{
         type: 'line',
-        label: 'Line of Best Fit (r2: ' + String(regressor['r2']) + ')',
-        data: y_hat_values.concat(y_hat_predictions),
+        label: 'True Values Line',
+        data: y_hat_values,
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.2)'
     }, {
@@ -43,7 +50,12 @@ function plotRegressionChart(x_values, y_values, x_predictions, y_predictions, r
         data: y_values,
         borderColor: 'rgb(0, 0, 0)',
         backgroundColor: 'rgb(0, 0, 0)',
-    }];
+    }, {type: 'line',
+    label: 'Predictions Line',
+    data: y_res,
+    borderColor: 'rgb(110, 255, 132)',
+    backgroundColor: 'rgba(110, 255, 132, 0.2)'
+}];
 
     if (typeof window.mixedChart !== 'undefined') {
         window.mixedChart.destroy();
