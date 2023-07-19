@@ -6,13 +6,13 @@ class table_session_admin(admin.ModelAdmin):
     list_display = ("id", "date", "name", "menu")
     search_fields = ("date", "name", "menu")
     list_filter = ("date", "name")
-    ordering = ("date",)
+    ordering = ("id",)
 
 @admin.register(table_time)
 class table_time_admin(admin.ModelAdmin):
     list_display = ("id", "time", "session_id", "display_session_name", "seat_limit", "available_seat")
     search_fields = ("time", "session_id__name")
-    ordering = ("time",)
+    ordering = ("id",)
 
     def get_exclude(self, request, obj=None):
         if obj is None:
@@ -32,6 +32,7 @@ class table_time_admin(admin.ModelAdmin):
 @admin.register(table_booking_dininghall)
 class table_booking_dininghall_admin(admin.ModelAdmin):
     list_display = ['display_user_id', 'session_id', 'recommended_time', 'created_at']
+    ordering = ("id",)
 
     def display_user_id(self, obj):
         return obj.user_id.username if obj.user_id else None
@@ -42,5 +43,5 @@ class table_booking_dininghall_admin(admin.ModelAdmin):
 class table_live_booking_admin(admin.ModelAdmin):
     list_display = ("id","arrival_time", "served_time", "depart_time", "bookings_id")
     search_fields = ("arrival_time", "served_time", "depart_time", "bookings_id")
-    list_filter = ("arrival_time", "served_time", "depart_time")
-    ordering = ("arrival_time",)
+    list_filter = ("bookings_id",)
+    ordering = ("id",)

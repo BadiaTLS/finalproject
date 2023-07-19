@@ -320,7 +320,10 @@ def get_dashboard_context(request):
     average_queue_time_data = get_average_n_queue_time_chart_info(date=current_date)
     average_queue_time_per_session = get_average_session_queue_time_chart_info(date=current_date)
 
-    x_lr, y_lr, x_lr_p, y_lr_p, mad, mse, mape = get_lr_data(date=current_date)
+    try:
+        x_lr, y_lr, x_lr_p, y_lr_p, mad, mse, mape = get_lr_data(date=current_date)
+    except:
+        x_lr, y_lr, x_lr_p, y_lr_p, mad, mse, mape = None, None, None, None, None, None, None
 
     context = {
         'antrian_n_hari' : average_queue_time_data,
